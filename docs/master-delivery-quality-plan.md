@@ -28,7 +28,7 @@ Build a **new**, lightweight IBDAA Atelier shop management and POS system. Use t
 - KWD monetary calculations in server-side `decimal(18,3)` with invariant request parsing and explicit rounding. UTC event timestamps; Kuwait local time for display; **delivery dates are calendar dates, not JS ISO timestamps**.
 - RDLC invoice rendering is a preferred legacy **reference**, not a compatibility assumption. Prove the selected report renderer works with .NET 10 and Arabic/A4/80mm **before committing to it**; use a supported server-side PDF renderer otherwise.
 
-**Gate T0 is not passed yet.** Upgrade the existing tiny scaffold in a separate focused commit after hosting and dependency checks; do not build more features on an unsupported runtime.
+**Gate T0 is not passed yet.** The tiny scaffold now targets .NET 10 / EF Core 10.0.14; verify host SDK/runtime and a real build before declaring Gate T0 passed. Do not build transactional features before that check.
 
 ## 3. Lessons from the earlier project — guards from day one
 
@@ -202,4 +202,4 @@ No unauthorized assumptions about actual IBDAA prices, products, discounts, stoc
 
 ### Current verified state
 
-New repository, `main`/`development`, SRS snapshot, starter MVC/catalogue files and manual SQL catalogue skeleton exist. The current starter targets `net8.0`; **runtime alignment, Bootstrap integration, authentication, actual website import, transactional POS, database/browser tests and printer QA are not yet completed**. This document is a plan, not proof that the product is production-ready.
+New repository, `main`/`development`, SRS snapshot, starter MVC/catalogue files and manual SQL catalogue skeleton exist. P0 source now targets `net10.0` / EF Core 10.0.14 and includes locally served Bootstrap 5.3.8 with a responsive English/Arabic shell. **Successful .NET build, hosting compatibility and browser/RTL QA are still unverified.** Authentication, website import, transactional POS, database/browser tests and printer QA are not yet completed. This document is a plan, not proof that the product is production-ready.

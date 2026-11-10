@@ -23,8 +23,8 @@ This document defines **how the existing SRS will be presented and implemented**
 
 | Area | Decision |
 | --- | --- |
-| Server UI | ASP.NET Core 10 LTS MVC/Razor **target** after hosting validation; starter currently targets .NET 8 |
-| UI framework | Bootstrap 5.3.x, version pinned when included in source |
+| Server UI | ASP.NET Core 10 LTS MVC/Razor (P0 scaffold target; hosting/build unverified) |
+| UI framework | Bootstrap 5.3.8, self-hosted under `wwwroot/lib/bootstrap` |
 | Assets | Serve Bootstrap and app assets locally; no runtime CDN dependency |
 | Icons | Small inline SVG icons; avoid loading a whole icon-font library |
 | Interactions | Plain JavaScript modules; Bootstrap bundle only where modal/offcanvas is used |

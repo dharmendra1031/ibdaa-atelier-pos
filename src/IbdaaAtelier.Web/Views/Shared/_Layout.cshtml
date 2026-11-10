@@ -1,25 +1,56 @@
+@using System.Globalization
+@{
+    var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@(isArabic ? "ar" : "en")" dir="@(isArabic ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewData["Title"] - IBDAA Atelier</title>
-    <link rel="stylesheet" asp-append-version="true" href="~/css/site.css" />
+    <title>@ViewData["Title"] · IBDAA Atelier</title>
+    @if (isArabic)
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.rtl.min.css" asp-append-version="true" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" asp-append-version="true" />
+    }
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
+    <a class="visually-hidden-focusable skip-link" href="#mainContent">@(isArabic ? "الانتقال إلى المحتوى" : "Skip to content")</a>
     <header class="site-header">
-        <a class="brand" asp-controller="Home" asp-action="Index">
-            <span class="brand-symbol" aria-hidden="true">IA</span>
-            <span>IBDAA <strong>ATELIER</strong><small>Tailoring & Point of Sale</small></span>
-        </a>
-        <nav aria-label="Main navigation">
-            <a asp-controller="Home" asp-action="Index">Overview</a>
-            <a asp-controller="Catalog" asp-action="Index">Catalogue</a>
-        </nav>
+        <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <a class="brand d-inline-flex align-items-center gap-3 text-decoration-none" asp-controller="Home" asp-action="Index" aria-label="IBDAA Atelier">
+                <span class="brand-mark" aria-hidden="true">IA</span>
+                <span class="brand-copy">IBDAA <strong>ATELIER</strong><small>@(isArabic ? "الخياطة ونقطة البيع" : "Tailoring & Point of Sale")</small></span>
+            </a>
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <nav class="app-nav d-flex align-items-center gap-1" aria-label="@(isArabic ? "القائمة الرئيسية" : "Main navigation")">
+                    <a class="nav-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index" aria-current="@(controller == "Home" ? "page" : null)">@(isArabic ? "الرئيسية" : "Overview")</a>
+                    <a class="nav-link @(controller == "Catalog" ? "active" : "")" asp-controller="Catalog" asp-action="Index" aria-current="@(controller == "Catalog" ? "page" : null)">@(isArabic ? "المنتجات" : "Catalogue")</a>
+                </nav>
+                <form class="m-0" method="post" asp-controller="Language" asp-action="Set" asp-antiforgery="true">
+                    <input type="hidden" name="returnUrl" value="@currentUrl" />
+                    <button class="btn language-button" type="submit" name="culture" value="@(isArabic ? "en-US" : "ar-KW")" aria-label="@(isArabic ? "Switch to English" : "التبديل إلى العربية")">
+                        @(isArabic ? "English" : "العربية")
+                    </button>
+                </form>
+            </div>
+        </div>
     </header>
-    <main class="page-content">
+    <main id="mainContent" class="page-shell container-xxl">
         @RenderBody()
     </main>
-    <footer class="site-footer">IBDAA Atelier · KWD · English / Arabic</footer>
+    <footer class="site-footer">
+        <div class="container-xxl d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span>© @DateTime.UtcNow.Year IBDAA Atelier</span>
+            <span>@(isArabic ? "الدينار الكويتي · العربية / الإنجليزية" : "KWD · English / Arabic")</span>
+        </div>
+    </footer>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

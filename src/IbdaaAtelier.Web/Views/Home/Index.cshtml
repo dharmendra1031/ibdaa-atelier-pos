@@ -1,21 +1,74 @@
+@using System.Globalization
 @{
-    ViewData["Title"] = "Project";
+    ViewData["Title"] = "IBDAA Atelier";
+    var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
-<section class="hero">
-    <div>
-        <p class="eyebrow">IBDAA ATELIER · NEW PROJECT</p>
-        <h1>Tailoring shop management and point of sale.</h1>
-        <p class="lead">A focused platform for products, measurements, orders and in-store sales. Built separately from the legacy Tailor ERP.</p>
-        <a class="primary-link" asp-controller="Catalog" asp-action="Index">Browse product catalogue</a>
+<section class="hero-section row g-4 align-items-center">
+    <div class="col-lg-7">
+        <span class="eyebrow">@(isArabic ? "إبداع أتيليه · إدارة المتجر" : "IBDAA ATELIER · SHOP MANAGEMENT")</span>
+        <h1 class="hero-title">@(isArabic ? "كل تفاصيل الأتيليه، في مكان واحد." : "The atelier, thoughtfully managed.")</h1>
+        <p class="hero-description">
+            @(isArabic
+                ? "نظام بسيط لإدارة المنتجات والمقاسات والطلبات والمبيعات، صُمم لسهولة الاستخدام في المتجر."
+                : "A focused workspace for garments, measurements and in-store sales. Designed to keep everyday operations clear and effortless.")
+        </p>
+        <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+            <a class="btn btn-primary btn-lg px-4" asp-controller="Catalog" asp-action="Index">@(isArabic ? "عرض كتالوج المنتجات" : "Explore the catalogue")</a>
+            <span class="hero-caption">@(isArabic ? "النسخة الأولية · للعرض فقط" : "Initial build · read-only preview")</span>
+        </div>
     </div>
-    <aside class="hero-note">
-        <strong>Initial build</strong>
-        <p>The catalogue viewer and database foundation are being established. Admin authentication, order entry, payment and website import must be completed before real transactions.</p>
-        <span>Do not connect production data yet.</span>
-    </aside>
+    <div class="col-lg-5">
+        <div class="hero-art" aria-label="IBDAA Atelier visual identity">
+            <div class="hero-art-frame">
+                <span class="hero-art-initial" aria-hidden="true">A</span>
+                <div class="hero-art-caption">
+                    <span>IBDAA</span><strong>ATELIER</strong>
+                    <small>إبداع أتيليه</small>
+                </div>
+            </div>
+            <span class="hero-art-label">EST. · KUWAIT</span>
+        </div>
+    </div>
 </section>
-<section class="features">
-    <article><h2>Product catalogue</h2><p>Categories, bilingual names, prices and product galleries.</p></article>
-    <article><h2>Measurements</h2><p>Product and category-specific fields with size charts.</p></article>
-    <article><h2>Point of sale</h2><p>Customer-first orders, alterations, payments and receipts in the planned next stages.</p></article>
+
+<section class="section-spacing" aria-labelledby="workspaceTitle">
+    <div class="section-intro mb-4">
+        <span class="eyebrow">@(isArabic ? "النظام" : "THE WORKSPACE")</span>
+        <h2 id="workspaceTitle" class="section-title">@(isArabic ? "مصمم للعمل اليومي" : "Everything in its place")</h2>
+        <p class="text-secondary mb-0">@(isArabic ? "تجربة سهلة للموظفين والإدارة." : "A clean starting point for the features defined in the project SRS.")</p>
+    </div>
+    <div class="row g-3 g-lg-4">
+        <div class="col-md-4">
+            <div class="feature-card card h-100">
+                <div class="card-body p-4">
+                    <span class="feature-index">01 / CATALOGUE</span>
+                    <h3 class="h5 mt-4">@(isArabic ? "المنتجات والفئات" : "Products & categories")</h3>
+                    <p class="text-secondary mb-0">@(isArabic ? "الأسماء باللغتين والأسعار والصور." : "Bilingual product details, pricing and image galleries.")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card card h-100">
+                <div class="card-body p-4">
+                    <span class="feature-index">02 / FIT</span>
+                    <h3 class="h5 mt-4">@(isArabic ? "المقاسات والقياسات" : "Sizes & measurements")</h3>
+                    <p class="text-secondary mb-0">@(isArabic ? "قياسات مختلفة لكل منتج ولكل طلب." : "Flexible size charts and per-item tailoring measurements.")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card card h-100">
+                <div class="card-body p-4">
+                    <span class="feature-index">03 / POS</span>
+                    <h3 class="h5 mt-4">@(isArabic ? "الطلبات ونقطة البيع" : "Orders & point of sale")</h3>
+                    <p class="text-secondary mb-0">@(isArabic ? "طلبات واضحة ومدفوعات وفواتير دقيقة." : "Customer-first checkout, accurate payments and invoices.")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="small text-secondary mt-4 mb-0">
+        @(isArabic
+            ? "لوحة الإدارة والبيع والدفع والطباعة قيد التطوير، ولا يمكن إجراء معاملات فعلية الآن."
+            : "Admin login, billing, payment, invoice printing and website import are not enabled yet. Do not use this preview for live transactions.")
+    </p>
 </section>

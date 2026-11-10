@@ -1,6 +1,6 @@
 # Architecture and boundaries
 
-The [10 November 2026 SRS](IBDAA-Atelier-SRS-2026-11-10.md) defines this new application. The [master delivery and quality plan](master-delivery-quality-plan.md) captures implementation dependencies, old-project regression lessons and release gates. Before feature work, check hosting and align the current .NET 8 scaffold with the SRS-recommended .NET 10 LTS. The original document remains the canonical reference.
+The [10 November 2026 SRS](IBDAA-Atelier-SRS-2026-11-10.md) defines this new application. The [master delivery and quality plan](master-delivery-quality-plan.md) captures implementation dependencies, old-project regression lessons and release gates. P0 now targets .NET 10 LTS and EF Core SQL Server 10.0.14; hosting confirmation and a clean .NET 10 build remain release gates. The original document remains the canonical reference.
 
 ## Source of truth
 

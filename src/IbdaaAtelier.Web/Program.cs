@@ -1,4 +1,6 @@
+using System.Globalization;
 using IbdaaAtelier.Web.Data;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+var cultures = new[] { new CultureInfo("en-US"), new CultureInfo("ar-KW") };
+var localization = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(cultures[0]),
+    SupportedCultures = cultures,
+    SupportedUICultures = cultures
+};
+localization.RequestCultureProviders.Clear();
+localization.RequestCultureProviders.Add(new CookieRequestCultureProvider());
+
+app.UseRequestLocalization(localization);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

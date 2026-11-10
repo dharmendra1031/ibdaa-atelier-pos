@@ -1,8 +1,13 @@
+@using System.Globalization
 @{
     ViewData["Title"] = "Error";
+    var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
-<section class="empty-state">
-    <h1>Something went wrong.</h1>
-    <p>Please try again or contact your administrator.</p>
-    <a asp-controller="Home" asp-action="Index">Return home</a>
+<section class="empty-state card border-0 text-center py-5 my-4">
+    <div class="card-body py-4">
+        <div class="empty-symbol" aria-hidden="true">!</div>
+        <h1 class="h3 mt-3">@(isArabic ? "حدث خطأ" : "Something went wrong")</h1>
+        <p class="text-secondary">@(isArabic ? "يرجى المحاولة مرة أخرى أو التواصل مع المسؤول." : "Please try again or contact your administrator.")</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary mt-2">@(isArabic ? "العودة للرئيسية" : "Return to overview")</a>
+    </div>
 </section>

@@ -6,8 +6,11 @@
 
 - [x] Review previous project bugs and 23-section IBDAA SRS
 - [x] Record module-by-module dependencies, scope exclusions and acceptance tests
-- [ ] Confirm hosting and upgrade the starter from .NET 8 to .NET 10 LTS
-- [ ] Integrate locally served Bootstrap 5.3.8 and validate responsiveness
+- [x] Upgrade target framework to .NET 10 LTS and align EF Core SQL Server to 10.0.14
+- [ ] Confirm actual hosting/runtime and execute a clean .NET 10 build
+- [x] Integrate local Bootstrap 5.3.8 and premium responsive shell with English/Arabic language selection
+- [ ] Verify browser rendering at desktop/tablet/mobile widths, LTR/RTL, and physical device touch targets
+- [ ] Run Node source-contract tests and a clean authenticated acceptance suite as features are implemented
 
 ## Stage 1 — Repository and catalogue foundation (current)
 
