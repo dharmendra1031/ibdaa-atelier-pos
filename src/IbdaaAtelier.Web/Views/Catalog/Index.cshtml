@@ -1,0 +1,75 @@
+@model CatalogPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Catalogue";
+}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">PRODUCTS · المنتجات</p>
+        <h1>Product catalogue</h1>
+        <p>Read-only catalogue preview. Product administration and checkout are not enabled yet.</p>
+    </div>
+</section>
+
+<form class="catalog-filters" method="get" asp-action="Index" asp-controller="Catalog">
+    <label>
+        <span>Category</span>
+        <select name="categoryId">
+            <option value="">All categories</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.CategoryId" selected="@(Model.SelectedCategoryId == category.CategoryId)">
+                    @category.Name
+                </option>
+            }
+        </select>
+    </label>
+    <label>
+        <span>Search products</span>
+        <input type="search" name="search" value="@Model.Search" maxlength="100" placeholder="Name, Arabic name or SKU" />
+    </label>
+    <button type="submit">Search</button>
+</form>
+
+@if (Model.Products.Count == 0)
+{
+    <div class="empty-state">
+        <h2>No products found</h2>
+        <p>The new database is not seeded with sample products. Products will be imported only after the existing website catalogue is verified.</p>
+    </div>
+}
+else
+{
+    <div class="product-grid">
+        @foreach (var product in Model.Products)
+        {
+            <article class="product-card">
+                <div class="product-image">
+                    @if (!string.IsNullOrWhiteSpace(product.ImagePath))
+                    {
+                        <img src="@product.ImagePath" alt="@product.Name" loading="lazy" />
+                    }
+                    else
+                    {
+                        <span>No image</span>
+                    }
+                </div>
+                <div class="product-detail">
+                    <small>@product.ProductCode</small>
+                    <h2>@product.Name</h2>
+                    @if (!string.IsNullOrWhiteSpace(product.NameAr))
+                    {
+                        <p dir="rtl" lang="ar">@product.NameAr</p>
+                    }
+                    <div class="price">
+                        <strong>@product.Price.ToString("0.000", CultureInfo.InvariantCulture) KD</strong>
+                        @if (product.RegularPrice is decimal regular)
+                        {
+                            <s>@regular.ToString("0.000", CultureInfo.InvariantCulture) KD</s>
+                        }
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+}

@@ -1,0 +1,22 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/
+TestResults/
+*.trx
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Production.json
+**/secrets.json
+
+# Uploaded customer and product content
+**/wwwroot/uploads/
+**/wwwroot/media/

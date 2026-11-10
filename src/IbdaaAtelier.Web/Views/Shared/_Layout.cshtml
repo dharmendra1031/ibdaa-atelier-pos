@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - IBDAA Atelier</title>
+    <link rel="stylesheet" asp-append-version="true" href="~/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <span class="brand-symbol" aria-hidden="true">IA</span>
+            <span>IBDAA <strong>ATELIER</strong><small>Tailoring & Point of Sale</small></span>
+        </a>
+        <nav aria-label="Main navigation">
+            <a asp-controller="Home" asp-action="Index">Overview</a>
+            <a asp-controller="Catalog" asp-action="Index">Catalogue</a>
+        </nav>
+    </header>
+    <main class="page-content">
+        @RenderBody()
+    </main>
+    <footer class="site-footer">IBDAA Atelier · KWD · English / Arabic</footer>
+</body>
+</html>
