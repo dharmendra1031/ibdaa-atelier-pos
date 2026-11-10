@@ -7,6 +7,7 @@
 - [x] Minimal ASP.NET Core 8 MVC application and read-only catalogue screen
 - [x] Category, product, gallery, size-chart and measurement models
 - [x] SQL Server `IDENTITY` schema script and read-only verification script
+- [x] Premium Bootstrap 5.3 UI/UX and performance standards documented
 - [ ] Execute .NET build and SQL verification in an approved test environment
 - [ ] Confirm the source website's platform/API and catalogue field mappings
 

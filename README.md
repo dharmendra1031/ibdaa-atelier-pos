@@ -9,6 +9,7 @@ This is a new application. The Mashgal Tailoring codebase is reference-only; no 
 - [Original Google Docs SRS](https://docs.google.com/document/d/1OWvb0xnisZzJTEOdGS1sY3PHn_WSn6XmysiM0PtCnok/edit)
 - [Implementation stages](docs/implementation-plan.md)
 - [Architecture decisions](docs/architecture.md)
+- [Premium Bootstrap UI and performance standards](docs/ui-ux-performance-standards.md)
 
 ## Run locally
 
