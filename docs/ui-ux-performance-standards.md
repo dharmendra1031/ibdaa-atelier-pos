@@ -23,7 +23,7 @@ This document defines **how the existing SRS will be presented and implemented**
 
 | Area | Decision |
 | --- | --- |
-| Server UI | ASP.NET Core 8 MVC and Razor views |
+| Server UI | ASP.NET Core 10 LTS MVC/Razor **target** after hosting validation; starter currently targets .NET 8 |
 | UI framework | Bootstrap 5.3.x, version pinned when included in source |
 | Assets | Serve Bootstrap and app assets locally; no runtime CDN dependency |
 | Icons | Small inline SVG icons; avoid loading a whole icon-font library |
@@ -184,4 +184,4 @@ Measure these on a realistic shop PC, tablet and mobile throttling profile. A de
 - [ ] Responsive UI, keyboard operation, contrast, printing and performance targets have real test evidence.
 - [ ] No Workshop/Salary/Multi-Branch features or unnecessary frontend dependencies have slipped in.
 
-**Implementation rule:** The SRS governs behavior; this document governs UI presentation and lightweight technical choices. Any conflict requires a recorded decision before code changes.
+**Implementation rule:** The SRS governs behavior; this document governs UI presentation and lightweight technical choices. [The master plan](master-delivery-quality-plan.md) defines implementation gates and acceptance. Any conflict requires a recorded decision before code changes.

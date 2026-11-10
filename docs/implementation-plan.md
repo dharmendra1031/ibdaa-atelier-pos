@@ -1,5 +1,14 @@
 # Delivery stages — 10 November 2026
 
+**Execution and acceptance source of truth:** [Master delivery and quality plan](master-delivery-quality-plan.md). This page is a short status checklist, not a competing implementation specification.
+
+## Stage 0 — Architecture and compatibility
+
+- [x] Review previous project bugs and 23-section IBDAA SRS
+- [x] Record module-by-module dependencies, scope exclusions and acceptance tests
+- [ ] Confirm hosting and upgrade the starter from .NET 8 to .NET 10 LTS
+- [ ] Integrate locally served Bootstrap 5.3.8 and validate responsiveness
+
 ## Stage 1 — Repository and catalogue foundation (current)
 
 - [x] Separate GitHub repository; `main` and `development` branches

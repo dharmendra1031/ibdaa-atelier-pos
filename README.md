@@ -7,13 +7,14 @@ This is a new application. The Mashgal Tailoring codebase is reference-only; no 
 
 - [SRS snapshot (10 November 2026)](docs/IBDAA-Atelier-SRS-2026-11-10.md)
 - [Original Google Docs SRS](https://docs.google.com/document/d/1OWvb0xnisZzJTEOdGS1sY3PHn_WSn6XmysiM0PtCnok/edit)
+- [Master delivery and QA plan](docs/master-delivery-quality-plan.md)
 - [Implementation stages](docs/implementation-plan.md)
 - [Architecture decisions](docs/architecture.md)
 - [Premium Bootstrap UI and performance standards](docs/ui-ux-performance-standards.md)
 
 ## Run locally
 
-Requires .NET SDK 8 and SQL Server.
+Current starter requires .NET SDK 8 and SQL Server. **Planning decision:** align the new app to .NET 10 LTS before further implementation, after verifying hosting; see the master plan. The migration has not yet been applied.
 
 ```powershell
 git switch development
