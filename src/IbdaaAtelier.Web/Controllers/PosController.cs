@@ -70,7 +70,8 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
             CategoryId = categoryId,
             Search = search,
             Page = page,
-            TotalPages = totalPages
+            TotalPages = totalPages,
+            NextOrderNumber = "IA-" + ((await db.Orders.CountAsync(ct)) + 1)
         });
     }
 

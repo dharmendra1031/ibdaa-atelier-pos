@@ -1,4 +1,4 @@
-using IbdaaAtelier.Web.Data;
+﻿using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Masters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -97,7 +97,8 @@ public sealed class AdminController(AtelierDbContext db) : Controller
                 x.Method, x.Total, refundedByMethod.GetValueOrDefault(x.Method)))
                 .Concat(returned.Where(x => received.All(p => p.Method != x.Method))
                     .Select(x => new PaymentMethodTotal(x.Method, 0m, x.Total)))
-                .OrderBy(x => x.Method).ToList()
+                .OrderBy(x => x.Method).ToList(),
         });
     }
 }
+

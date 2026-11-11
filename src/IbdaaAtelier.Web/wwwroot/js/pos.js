@@ -517,6 +517,8 @@
                 })
             });
             completed = true;
+            const nextOrderNumber = document.getElementById("nextOrderNumber");
+            if (nextOrderNumber) nextOrderNumber.textContent = data.orderNumber;
             try {
                 sessionStorage.removeItem(pendingKey);
                 sessionStorage.removeItem(cartKey);

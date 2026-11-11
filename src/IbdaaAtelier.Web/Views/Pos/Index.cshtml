@@ -1,4 +1,4 @@
-@model IbdaaAtelier.Web.Models.Orders.PosPage
+﻿@model IbdaaAtelier.Web.Models.Orders.PosPage
 @using System.Globalization
 @{
     ViewData["Title"] = "New order";
@@ -7,14 +7,14 @@
 }
 <section class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3 pos-heading">
     <div>
-        <span class="eyebrow">IBDAA ATELIER · POS</span>
-        <h1 class="section-title mt-2 mb-1">@(ar ? "نقطة البيع" : "POS Billing")</h1>
-        <p class="text-secondary mb-0">@(ar ? "المنتجات · التعديلات · الخياطة" : "Garments · Alterations · Tailoring")</p>
+        <span class="eyebrow">IBDAA ATELIER آ· POS</span>
+        <h1 class="section-title mt-2 mb-1">@(ar ? "ظ†ظ‚ط·ط© ط§ظ„ط¨ظٹط¹" : "POS Billing")</h1>
+        <p class="text-secondary mb-0">@(ar ? "ط§ظ„ظ…ظ†طھط¬ط§طھ آ· ط§ظ„طھط¹ط¯ظٹظ„ط§طھ آ· ط§ظ„ط®ظٹط§ط·ط©" : "Garments آ· Alterations آ· Tailoring")</p>
     </div>
-    <nav class="d-flex flex-wrap gap-2 pos-shortcuts" aria-label="@(ar ? "روابط سريعة" : "Quick links")">
-        <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الطلبات" : "Orders")</a>
-        <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-primary">@(ar ? "العملاء" : "Customers")</a>
-        <a asp-controller="Register" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الصندوق" : "Register")</a>
+    <nav class="d-flex flex-wrap gap-2 pos-shortcuts" aria-label="@(ar ? "ط±ظˆط§ط¨ط· ط³ط±ظٹط¹ط©" : "Quick links")">
+        <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-primary">@(ar ? "ط§ظ„ط·ظ„ط¨ط§طھ" : "Orders")</a>
+        <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-primary">@(ar ? "ط§ظ„ط¹ظ…ظ„ط§ط،" : "Customers")</a>
+        <a asp-controller="Register" asp-action="Index" class="btn btn-outline-primary">@(ar ? "ط§ظ„طµظ†ط¯ظˆظ‚" : "Register")</a>
     </nav>
 </section>
 <div class="pos-shell row g-4" id="posShell"
@@ -30,37 +30,38 @@
     <div class="col-12 pos-customer-bar">
         <form id="posCheckoutForm" asp-controller="Pos" asp-action="Save" method="post" asp-antiforgery="true" class="pos-customer-form">
             <div class="pos-customer-field">
-                <label for="customerSearch" class="form-label">@(ar ? "العميل" : "Customer") *</label>
+                <label for="customerSearch" class="form-label">@(ar ? "ط§ظ„ط¹ظ…ظٹظ„" : "Customer") *</label>
                 <input id="customerSearch" class="form-control" type="search" autocomplete="off"
-                       placeholder="@(ar ? "الاسم أو رقم الهاتف" : "Name or mobile number")" />
-                <div id="customerResults" class="list-group mt-2" role="listbox" aria-label="@(ar ? "نتائج العملاء" : "Matching customers")"></div>
-                <div id="selectedCustomer" class="small text-secondary mt-2" role="status">@(ar ? "لم يتم اختيار عميل" : "No customer selected")</div>
+                       placeholder="@(ar ? "ط§ظ„ط§ط³ظ… ط£ظˆ ط±ظ‚ظ… ط§ظ„ظ‡ط§طھظپ" : "Name or mobile number")" />
+                <div id="customerResults" class="list-group mt-2" role="listbox" aria-label="@(ar ? "ظ†طھط§ط¦ط¬ ط§ظ„ط¹ظ…ظ„ط§ط،" : "Matching customers")"></div>
+                <div id="selectedCustomer" class="small text-secondary mt-2" role="status">@(ar ? "ظ„ظ… ظٹطھظ… ط§ط®طھظٹط§ط± ط¹ظ…ظٹظ„" : "No customer selected")</div>
             </div>
-            <button id="openQuickCustomer" type="button" class="btn btn-primary pos-new-customer">+ @(ar ? "عميل جديد" : "New customer")</button>
+            <button id="openQuickCustomer" type="button" class="btn btn-primary pos-new-customer">+ @(ar ? "ط¹ظ…ظٹظ„ ط¬ط¯ظٹط¯" : "New customer")</button>
             <div class="pos-delivery-field">
-                <label for="deliveryDate" class="form-label">@(ar ? "تاريخ التسليم" : "Delivery date") *</label>
+                <label for="deliveryDate" class="form-label">@(ar ? "طھط§ط±ظٹط® ط§ظ„طھط³ظ„ظٹظ…" : "Delivery date") *</label>
                 <input id="deliveryDate" type="date" value="@today" min="@today" class="form-control" required />
             </div>
+            <div class="pos-order-preview" aria-live="polite"><span>@(ar ? "رقم الطلب التالي" : "Next Order")</span><strong id="nextOrderNumber">@Model.NextOrderNumber</strong></div>
         </form>
     </div>
     <div class="col-lg-7">
-        <div class="d-flex gap-2 mb-3" role="group" aria-label="@(ar ? "نوع العنصر" : "Catalogue type")">
-            <button type="button" class="btn btn-primary flex-fill" id="showProducts" aria-controls="catalogueProducts" aria-pressed="true">@(ar ? "المنتجات" : "Products")</button>
-            <button type="button" class="btn btn-outline-primary flex-fill" id="showServices" aria-controls="catalogueServices" aria-pressed="false">@(ar ? "خدمات التعديل" : "Alterations")</button>
+        <div class="d-flex gap-2 mb-3" role="group" aria-label="@(ar ? "ظ†ظˆط¹ ط§ظ„ط¹ظ†طµط±" : "Catalogue type")">
+            <button type="button" class="btn btn-primary flex-fill" id="showProducts" aria-controls="catalogueProducts" aria-pressed="true">@(ar ? "ط§ظ„ظ…ظ†طھط¬ط§طھ" : "Products")</button>
+            <button type="button" class="btn btn-outline-primary flex-fill" id="showServices" aria-controls="catalogueServices" aria-pressed="false">@(ar ? "ط®ط¯ظ…ط§طھ ط§ظ„طھط¹ط¯ظٹظ„" : "Alterations")</button>
         </div>
         <div id="catalogueProducts">
             <section class="pos-catalogue-tools mb-3">
                 <form method="get" asp-action="Index" class="d-flex gap-2 mb-3" role="search">
                     <input type="hidden" name="categoryId" value="@Model.CategoryId" />
-                    <label class="visually-hidden" for="catalogSearch">@(ar ? "بحث عن منتج" : "Search products")</label>
+                    <label class="visually-hidden" for="catalogSearch">@(ar ? "ط¨ط­ط« ط¹ظ† ظ…ظ†طھط¬" : "Search products")</label>
                     <input id="catalogSearch" type="search" class="form-control" name="search" maxlength="100"
-                           value="@Model.Search" placeholder="@(ar ? "اسم المنتج أو الرمز" : "Find products by name or code")" />
-                    <button type="submit" class="btn btn-primary">@(ar ? "بحث" : "Search")</button>
+                           value="@Model.Search" placeholder="@(ar ? "ط§ط³ظ… ط§ظ„ظ…ظ†طھط¬ ط£ظˆ ط§ظ„ط±ظ…ط²" : "Find products by name or code")" />
+                    <button type="submit" class="btn btn-primary">@(ar ? "ط¨ط­ط«" : "Search")</button>
                 </form>
-                <nav class="pos-categories d-flex gap-2" aria-label="@(ar ? "فئات المنتجات" : "Product categories")">
+                <nav class="pos-categories d-flex gap-2" aria-label="@(ar ? "ظپط¦ط§طھ ط§ظ„ظ…ظ†طھط¬ط§طھ" : "Product categories")">
                     <a asp-action="Index" asp-route-search="@Model.Search"
                        class="pos-category @(Model.CategoryId == null ? "active" : "")"
-                       aria-current="@(Model.CategoryId == null ? "page" : null)">@(ar ? "الكل" : "All")</a>
+                       aria-current="@(Model.CategoryId == null ? "page" : null)">@(ar ? "ط§ظ„ظƒظ„" : "All")</a>
                     @foreach (var category in Model.Categories)
                     {
                         <a asp-action="Index" asp-route-categoryId="@category.CategoryId" asp-route-search="@Model.Search"
@@ -84,7 +85,7 @@
                             }
                             else
                             {
-                                <span class="pos-missing-photo" aria-hidden="true"><span class="pos-photo-outline"></span><span>@(ar ? "لا توجد صورة" : "No photo yet")</span></span>
+                                <span class="pos-missing-photo" aria-hidden="true"><span class="pos-photo-outline"></span><span>@(ar ? "ظ„ط§ طھظˆط¬ط¯ طµظˆط±ط©" : "No photo yet")</span></span>
                             }
                         </span>
                         <span class="card-body p-3 d-flex flex-column w-100">
@@ -98,7 +99,7 @@
         </div>
         @if (Model.Products.Count == 0)
         {
-            <p class="text-secondary text-center py-4">@(ar ? "لا توجد منتجات مطابقة." : "No matching products.")</p>
+            <p class="text-secondary text-center py-4">@(ar ? "ظ„ط§ طھظˆط¬ط¯ ظ…ظ†طھط¬ط§طھ ظ…ط·ط§ط¨ظ‚ط©." : "No matching products.")</p>
         }
         @if (Model.TotalPages > 1)
         {
@@ -108,12 +109,12 @@
                     @if (Model.Page > 1)
                     {
                         <a class="btn btn-outline-primary btn-sm" asp-action="Index" asp-route-page="@(Model.Page - 1)"
-                           asp-route-search="@Model.Search" asp-route-categoryId="@Model.CategoryId">@(ar ? "السابق" : "Previous")</a>
+                           asp-route-search="@Model.Search" asp-route-categoryId="@Model.CategoryId">@(ar ? "ط§ظ„ط³ط§ط¨ظ‚" : "Previous")</a>
                     }
                     @if (Model.Page < Model.TotalPages)
                     {
                         <a class="btn btn-outline-primary btn-sm" asp-action="Index" asp-route-page="@(Model.Page + 1)"
-                           asp-route-search="@Model.Search" asp-route-categoryId="@Model.CategoryId">@(ar ? "التالي" : "Next")</a>
+                           asp-route-search="@Model.Search" asp-route-categoryId="@Model.CategoryId">@(ar ? "ط§ظ„طھط§ظ„ظٹ" : "Next")</a>
                     }
                 </div>
             </nav>
@@ -124,11 +125,11 @@
                 <input type="hidden" name="services" value="true" />
                 <input type="hidden" name="categoryId" value="@Model.CategoryId" />
                 <input type="hidden" name="search" value="@Model.Search" />
-                <label class="visually-hidden" for="serviceSearch">@(ar ? "البحث عن خدمة" : "Search alterations")</label>
+                <label class="visually-hidden" for="serviceSearch">@(ar ? "ط§ظ„ط¨ط­ط« ط¹ظ† ط®ط¯ظ…ط©" : "Search alterations")</label>
                 <input id="serviceSearch" name="serviceSearch" type="search" maxlength="100"
                        class="form-control" value="@Model.ServiceSearch"
-                       placeholder="@(ar ? "اسم خدمة التعديل" : "Find alteration service")" />
-                <button class="btn btn-primary" type="submit">@(ar ? "بحث" : "Search")</button>
+                       placeholder="@(ar ? "ط§ط³ظ… ط®ط¯ظ…ط© ط§ظ„طھط¹ط¯ظٹظ„" : "Find alteration service")" />
+                <button class="btn btn-primary" type="submit">@(ar ? "ط¨ط­ط«" : "Search")</button>
             </form>
             <div class="row row-cols-1 row-cols-sm-2 g-2">
                 @foreach (var service in Model.Services)
@@ -148,24 +149,24 @@
             </div>
             @if (Model.Services.Count == 0)
             {
-                <p class="text-secondary text-center py-4">@(ar ? "لا توجد خدمات مطابقة." : "No matching alterations.")</p>
+                <p class="text-secondary text-center py-4">@(ar ? "ظ„ط§ طھظˆط¬ط¯ ط®ط¯ظ…ط§طھ ظ…ط·ط§ط¨ظ‚ط©." : "No matching alterations.")</p>
             }
             @if (Model.ServiceTotalPages > 1)
             {
-                <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="@(ar ? "صفحات الخدمات" : "Alteration pages")">
+                <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="@(ar ? "طµظپط­ط§طھ ط§ظ„ط®ط¯ظ…ط§طھ" : "Alteration pages")">
                     <span class="small text-secondary">@Model.ServicePage / @Model.ServiceTotalPages</span>
                     <div class="d-flex gap-2">
                         @if (Model.ServicePage > 1)
                         {
                             <a asp-action="Index" asp-route-services="true" asp-route-serviceSearch="@Model.ServiceSearch"
                                asp-route-servicePage="@(Model.ServicePage - 1)" asp-route-search="@Model.Search"
-                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "السابق" : "Previous")</a>
+                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "ط§ظ„ط³ط§ط¨ظ‚" : "Previous")</a>
                         }
                         @if (Model.ServicePage < Model.ServiceTotalPages)
                         {
                             <a asp-action="Index" asp-route-services="true" asp-route-serviceSearch="@Model.ServiceSearch"
                                asp-route-servicePage="@(Model.ServicePage + 1)" asp-route-search="@Model.Search"
-                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "التالي" : "Next")</a>
+                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "ط§ظ„طھط§ظ„ظٹ" : "Next")</a>
                         }
                     </div>
                 </nav>
@@ -176,31 +177,31 @@
     <div class="col-lg-5">
         <section class="card filter-card pos-checkout">
             <div class="card-body p-3 p-md-4">
-                <h2 class="h5 mb-3 pos-order-heading">@(ar ? "الطلب الحالي" : "Current order")</h2>
+                <h2 class="h5 mb-3 pos-order-heading">@(ar ? "ط§ظ„ط·ظ„ط¨ ط§ظ„ط­ط§ظ„ظٹ" : "Current order")</h2>
 
                     <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                        <h3 class="h6 mb-0">@(ar ? "العناصر" : "Items")</h3>
+                        <h3 class="h6 mb-0">@(ar ? "ط§ظ„ط¹ظ†ط§طµط±" : "Items")</h3>
                         <span id="cartCount" class="small text-secondary">0</span>
                     </div>
                     <div id="orderCart" class="pos-cart" aria-live="polite">
-                        <p class="pos-empty-cart">@(ar ? "اختر العميل ثم اضغط على المنتج لإضافته." : "Choose a customer, then tap a product to add it.")</p>
+                        <p class="pos-empty-cart">@(ar ? "ط§ط®طھط± ط§ظ„ط¹ظ…ظٹظ„ ط«ظ… ط§ط¶ط؛ط· ط¹ظ„ظ‰ ط§ظ„ظ…ظ†طھط¬ ظ„ط¥ط¶ط§ظپطھظ‡." : "Choose a customer, then tap a product to add it.")</p>
                     </div>
                     <hr />
                     <div class="d-flex align-items-baseline justify-content-between gap-2">
-                        <span>@(ar ? "المجموع" : "Total")</span>
+                        <span>@(ar ? "ط§ظ„ظ…ط¬ظ…ظˆط¹" : "Total")</span>
                         <strong id="cartTotal" class="h4 mb-0">0.000 KWD</strong>
                     </div>
                     
                     <div id="posMessage" class="small mb-3" role="status" aria-live="polite"></div>
                     <div class="pos-checkout-actions">
-                    <button type="submit" form="posCheckoutForm" id="saveOrderButton" class="btn btn-primary w-100" disabled>@(ar ? "حفظ طلب غير مدفوع" : "Save unpaid order")</button>
+                    <button type="submit" form="posCheckoutForm" id="saveOrderButton" class="btn btn-primary w-100" disabled>@(ar ? "ط­ظپط¸ ط·ظ„ط¨ ط؛ظٹط± ظ…ط¯ظپظˆط¹" : "Save unpaid order")</button>
                     <a id="savedOrderLink" class="btn btn-outline-primary w-100 mt-2" hidden>
-                        @(ar ? "استلام الدفعة" : "Take payment")
+                        @(ar ? "ط§ط³طھظ„ط§ظ… ط§ظ„ط¯ظپط¹ط©" : "Take payment")
                     </a>
                     <a id="viewSavedOrderLink" class="btn btn-outline-secondary w-100 mt-2" hidden>
-                        @(ar ? "عرض الطلب والطباعة" : "View order / Print")
+                        @(ar ? "ط¹ط±ط¶ ط§ظ„ط·ظ„ط¨ ظˆط§ظ„ط·ط¨ط§ط¹ط©" : "View order / Print")
                     </a>
-                    <button type="button" id="newOrderButton" class="btn btn-outline-secondary w-100 mt-2" hidden>@(ar ? "طلب جديد" : "Start another order")</button>
+                    <button type="button" id="newOrderButton" class="btn btn-outline-secondary w-100 mt-2" hidden>@(ar ? "ط·ظ„ط¨ ط¬ط¯ظٹط¯" : "Start another order")</button>
                     </div>
             </div>
         </section>
@@ -208,35 +209,35 @@
 </div>
 <div id="posToast" class="pos-toast" hidden role="status" aria-live="polite" aria-atomic="true">
     <span id="posToastText"></span>
-    <button id="closePosToast" type="button" class="btn-close" aria-label="@(ar ? "إغلاق الرسالة" : "Dismiss message")"></button>
+    <button id="closePosToast" type="button" class="btn-close" aria-label="@(ar ? "ط¥ط؛ظ„ط§ظ‚ ط§ظ„ط±ط³ط§ظ„ط©" : "Dismiss message")"></button>
 </div>
 <dialog id="productDialog" class="pos-dialog" aria-labelledby="dialogTitle">
     <form method="dialog" class="d-flex justify-content-between align-items-start gap-3 mb-3">
         <h2 id="dialogTitle" class="h5 mb-0"></h2>
-        <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="Close">×</button>
+        <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="Close">أ—</button>
     </form>
     <div id="dialogFields"></div>
     <div class="d-flex gap-2 mt-4">
-        <button type="button" id="addProductButton" class="btn btn-primary">@(ar ? "إضافة للطلب" : "Add to order")</button>
-        <button type="button" id="cancelProductButton" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</button>
+        <button type="button" id="addProductButton" class="btn btn-primary">@(ar ? "ط¥ط¶ط§ظپط© ظ„ظ„ط·ظ„ط¨" : "Add to order")</button>
+        <button type="button" id="cancelProductButton" class="btn btn-outline-secondary">@(ar ? "ط¥ظ„ط؛ط§ط،" : "Cancel")</button>
     </div>
 </dialog>
 
 
 <dialog id="quickCustomerDialog" class="pos-dialog" aria-labelledby="quickCustomerTitle">
     <form method="dialog" class="d-flex justify-content-between align-items-start gap-3 mb-3">
-        <h2 id="quickCustomerTitle" class="h5 mb-0">@(ar ? "عميل جديد" : "New customer")</h2>
-        <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="@(ar ? "إغلاق" : "Close")">×</button>
+        <h2 id="quickCustomerTitle" class="h5 mb-0">@(ar ? "ط¹ظ…ظٹظ„ ط¬ط¯ظٹط¯" : "New customer")</h2>
+        <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="@(ar ? "ط¥ط؛ظ„ط§ظ‚" : "Close")">أ—</button>
     </form>
     <form id="quickCustomerForm">
-        <label for="quickCustomerName" class="form-label">@(ar ? "الاسم بالإنجليزية" : "English name") *</label>
+        <label for="quickCustomerName" class="form-label">@(ar ? "ط§ظ„ط§ط³ظ… ط¨ط§ظ„ط¥ظ†ط¬ظ„ظٹط²ظٹط©" : "English name") *</label>
         <input id="quickCustomerName" name="Name" class="form-control mb-3" maxlength="120" required />
-        <label for="quickCustomerNameAr" class="form-label">@(ar ? "الاسم بالعربية" : "Arabic name") *</label>
+        <label for="quickCustomerNameAr" class="form-label">@(ar ? "ط§ظ„ط§ط³ظ… ط¨ط§ظ„ط¹ط±ط¨ظٹط©" : "Arabic name") *</label>
         <input id="quickCustomerNameAr" name="NameAr" class="form-control mb-3" maxlength="120" dir="rtl" lang="ar" required />
-        <label for="quickCustomerMobile" class="form-label">@(ar ? "رقم الجوال" : "Mobile number") *</label>
+        <label for="quickCustomerMobile" class="form-label">@(ar ? "ط±ظ‚ظ… ط§ظ„ط¬ظˆط§ظ„" : "Mobile number") *</label>
         <input id="quickCustomerMobile" name="Mobile" class="form-control mb-3" type="tel" maxlength="20" required />
         <p id="quickCustomerError" class="small text-danger" role="alert" aria-live="polite"></p>
-        <button id="saveQuickCustomer" type="submit" class="btn btn-primary w-100">@(ar ? "حفظ واختيار العميل" : "Save & select customer")</button>
+        <button id="saveQuickCustomer" type="submit" class="btn btn-primary w-100">@(ar ? "ط­ظپط¸ ظˆط§ط®طھظٹط§ط± ط§ظ„ط¹ظ…ظٹظ„" : "Save & select customer")</button>
     </form>
 </dialog>
 
@@ -244,3 +245,4 @@
 {
     <script src="~/js/pos.js" asp-append-version="true" defer></script>
 }
+

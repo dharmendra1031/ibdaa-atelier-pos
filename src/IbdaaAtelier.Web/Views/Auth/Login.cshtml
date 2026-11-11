@@ -6,7 +6,7 @@
 }
 <section class="auth-wrap">
     <div class="auth-showcase" aria-hidden="true">
-        <span class="auth-showcase-mark">IBDAA <small>ATELIER</small></span>
+        <span class="auth-showcase-mark">IBDAA <small>ATELIER</small><em>Fashion · Tailoring · Alteration</em></span>
         <div class="auth-showcase-content">
             <span class="eyebrow">IBDAA ATELIER · KUWAIT</span>
             <h2>Welcome to<br />IBDAA Atelier</h2>
@@ -37,9 +37,13 @@
                     <input asp-for="Password" class="form-control" autocomplete="current-password" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 auth-submit">@(isArabic ? "تسجيل الدخول" : "Sign in securely")</button>
+                <button type="submit" class="btn btn-primary w-100 auth-submit">@(isArabic ? "تسجيل الدخول" : "Sign In")</button>
             </form>
             <p class="auth-role-note">@(isArabic ? "يتم فتح مساحة العمل المناسبة لصلاحيتك تلقائياً." : "Your role opens the correct workspace automatically.")</p>
+            <form class="auth-language" method="post" asp-controller="Language" asp-action="Set" asp-antiforgery="true">
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                <button class="btn btn-outline-primary" type="submit" name="culture" value="@(isArabic ? "en-US" : "ar-KW")">@(isArabic ? "English" : "العربية / English")</button>
+            </form>
         </div>
     </div>
 </section>

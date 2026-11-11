@@ -921,3 +921,206 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-delivery-field { grid-column: auto; }
     .pos-app-layout .pos-new-customer { justify-self: start; }
 }
+/* Reference composition: full-bleed atelier login, photographic admin hero, compact POS. */
+.auth-page { background: #f7f0eb; }
+.auth-page .site-header,
+.auth-page .site-footer { display: none; }
+.auth-page .page-shell { width: 100%; max-width: none; padding: 0; }
+.auth-wrap {
+    width: 100%; min-height: 100dvh; margin: 0; border-radius: 0;
+    grid-template-columns: 55.5% 44.5%; box-shadow: none;
+}
+.auth-showcase {
+    padding: clamp(32px, 4vw, 72px); justify-content: space-between;
+    background: linear-gradient(90deg, rgb(73 0 26 / 58%), rgb(73 0 26 / 8%)),
+                url('/images/atelier-hero.png') center / cover no-repeat;
+}
+.auth-showcase-mark { width: max-content; font-size: clamp(38px, 4vw, 66px); line-height: .95; color: #fff4eb; }
+.auth-showcase-mark small { margin-top: 12px; text-align: center; font-size: .38em; letter-spacing: .31em; }
+.auth-showcase-mark em { display: block; margin-top: 22px; font: normal 16px system-ui, sans-serif; letter-spacing: normal; }
+.auth-showcase-content { max-width: 470px; margin-bottom: clamp(60px, 12vh, 150px); }
+.auth-showcase-content h2 { border-inline-start: 4px solid #dfac58; padding-inline-start: 22px; font-size: clamp(38px, 3.4vw, 58px); }
+.auth-showcase-content > p { font-size: 18px; color: #fff4eb; }
+.auth-showcase-content > p:not(.auth-showcase-subtitle) { max-width: 400px; }
+.auth-showcase .eyebrow { display: none; }
+.auth-services > span { width: 112px; min-height: 96px; border-color: rgb(255 224 177 / 35%); background: rgb(100 11 43 / 48%); }
+.auth-card { background: #fbf5f1; }
+.auth-card .card-body {
+    width: min(92%, 650px); padding: clamp(28px, 4vw, 64px) !important;
+    border: 1px solid #f0e6df; border-radius: 26px;
+    background: rgb(255 252 250 / 90%); box-shadow: 0 20px 52px rgb(78 32 46 / 12%);
+}
+.auth-card .eyebrow { display: none; }
+.auth-card h1 { margin-top: 0 !important; color: #5f0c2c; font-size: clamp(32px, 2.8vw, 46px); }
+.auth-card .text-secondary { font-size: 17px; }
+.auth-card .form-label { color: #4c2a35; font-weight: 600; }
+.auth-card .form-control { min-height: 58px; border-color: #d9c8c5; background: #fff; font-size: 17px; }
+.auth-submit { min-height: 60px; margin-top: 8px; font-size: 19px; border-radius: 12px; }
+.auth-role-note { margin-top: 32px; font-size: 14px; }
+.auth-language { display: flex; justify-content: center; margin-top: 22px; }
+.auth-language .btn { min-width: 210px; }
+
+.admin-page .site-header { padding-block: 9px; }
+.admin-page .site-header { margin-inline-start: 270px; }
+.admin-page .site-header .brand { display: none !important; }
+.admin-page .site-header > .container-xxl { max-width: none; }
+.admin-page .app-layout {
+    width: auto; max-width: none; gap: 0; padding: 0;
+    margin-inline-start: 270px; grid-template-columns: minmax(0, 1fr);
+}
+.admin-page .app-sidebar {
+    position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 20;
+    width: 270px; min-height: 100dvh; max-height: 100dvh; overflow-y: auto;
+    padding: 26px 16px;
+    border-radius: 0; background: #670626;
+}
+.admin-page .app-sidebar::before {
+    content: 'IBDAA  ATELIER'; padding: 10px 6px 28px;
+    font-size: 25px; color: #f5d7a3;
+}
+.admin-page .workspace-nav-link { font-size: 16px; }
+.admin-page .app-workspace { padding: 0; }
+.admin-page .workspace-breadcrumb { display: none; }
+.admin-page .page-shell { padding: 0 24px 32px; }
+.admin-page .page-shell > form.filter-card { margin-top: -3px; }
+.admin-page .page-shell > form.filter-card .card-body { padding: 8px 14px !important; }
+.admin-page .page-shell > form.filter-card .form-label { display: none; }
+.admin-page .page-shell > form.filter-card .form-control,
+.admin-page .page-shell > form.filter-card .form-select,
+.admin-page .page-shell > form.filter-card .btn { min-height: 34px; padding-block: 4px; font-size: 13px; }
+.admin-page .admin-hero {
+    min-height: 190px; margin-inline: -24px; margin-bottom: 22px !important;
+    padding: 28px 44px; display: flex; flex-direction: column; justify-content: center;
+    border: 0; border-inline-start: 0;
+    border-radius: 0; background: linear-gradient(90deg, #fffaf5 30%, rgb(255 250 245 / 86%) 50%, transparent 77%),
+                             url('/images/atelier-hero.png') 75% 38% / cover no-repeat;
+}
+.admin-page .admin-hero .eyebrow { color: #a16b25; }
+.admin-page .admin-hero .section-title { font: 46px/1.06 Georgia, serif; color: #5f0c2c; }
+.admin-page .admin-hero p { color: #4b2b35; font-size: 17px; }
+.admin-page .feature-card,
+.admin-page .filter-card { border-radius: 15px; background: #fffdfb; }
+.admin-page .admin-kpis .feature-card { min-height: 132px; }
+.admin-page .admin-kpis .feature-card .h4 { font-size: clamp(22px, 2vw, 30px); }
+.admin-page .admin-master-link { min-height: 128px; border-color: #e6d4cc; background: #fcf7f2; font-size: 16px; }
+.admin-page .admin-master-link span { font-size: 31px; }
+.admin-page .dashboard-panel-title { color: #5f0c2c; font-weight: 750; }
+.admin-page .dashboard-main-grid { display: grid; grid-template-columns: minmax(0, 2.25fr) minmax(270px, 1fr); gap: 18px; }
+.admin-page .dashboard-left-stack,
+.admin-page .dashboard-right-stack { display: grid; gap: 16px; align-content: start; }
+.admin-page .dashboard-quick-links { display: grid; gap: 2px; }
+.admin-page .dashboard-quick-links .btn { text-align: start; border: 0; border-bottom: 1px solid #eee2dc; border-radius: 0; background: transparent; color: #4a2430; }
+.admin-page .dashboard-quick-links .btn:hover { background: #fbf2eb; }
+.admin-page .dashboard-glance-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eee2dc; }
+.admin-page .dashboard-glance-row strong { color: #630d2d; font-variant-numeric: tabular-nums; }
+.admin-page .dashboard-recent-table { min-width: 550px; }
+.admin-page .dashboard-recent-table th { background: #f7eee9; color: #4a2732; font-size: 13px; }
+.admin-page .dashboard-recent-table td { font-size: 14px; }
+.admin-page .dashboard-status { display: inline-block; padding: 3px 10px; border-radius: 20px; background: #f8e6bf; }
+
+.pos-page { background: #fbf7f4; }
+.pos-page .site-header { padding-block: 12px; }
+.pos-page .site-footer { display: none; }
+.pos-app-layout { width: 100%; max-width: none; }
+.pos-app-layout .app-workspace { padding: 16px 18px 28px; }
+.pos-app-layout .page-shell { padding: 0; }
+.pos-app-layout .pos-heading { display: none !important; }
+.pos-order-context {
+    display: grid; grid-template-columns: minmax(230px, 1.15fr) auto minmax(210px, .8fr) minmax(180px, .75fr);
+    align-items: center; gap: 16px; margin-bottom: 16px; padding: 18px 20px;
+    border: 1px solid #eee2de; border-radius: 15px; background: #fffdfb;
+    box-shadow: 0 6px 22px rgb(93 23 49 / 5%);
+}
+.pos-order-context .form-label { margin-bottom: 4px; font-weight: 650; }
+.pos-order-context .form-control { background: #fff; }
+.pos-context-customer { position: relative; min-width: 0; }
+.pos-context-customer #customerResults { position: absolute; inset-inline: 0; top: 100%; z-index: 12; max-height: 280px; overflow-y: auto; box-shadow: 0 12px 28px rgb(65 24 38 / 15%); }
+.pos-context-customer #customerResults:empty { display: none; }
+.pos-context-customer #selectedCustomer { margin-top: 3px; min-height: 19px; }
+.pos-new-customer { white-space: nowrap; align-self: center; }
+.pos-order-preview {
+    display: flex; justify-content: center; align-items: center; gap: 12px;
+    min-height: 62px; margin: 0; padding: 10px 14px; border-radius: 12px;
+    background: #f7e9e7; color: #65132e;
+}
+.pos-order-preview strong { font-size: 20px; font-variant-numeric: tabular-nums; }
+.pos-app-layout .pos-shell { --bs-gutter-x: 16px; }
+.pos-app-layout .pos-shell > .col-lg-7 { width: 54%; flex: 0 0 54%; max-width: 54%; }
+.pos-app-layout .pos-shell > .col-lg-5 { width: 46%; flex: 0 0 46%; max-width: 46%; }
+.pos-app-layout #catalogueProducts { grid-template-columns: 155px minmax(0, 1fr); }
+.pos-app-layout .pos-product-grid .product-media { aspect-ratio: 1 / 1.08; }
+.pos-app-layout .pos-product .card-body { padding: 10px !important; }
+.pos-app-layout .pos-product .product-sku { display: none; }
+.pos-app-layout .pos-product .product-title { margin-top: 0 !important; font-size: 14px; }
+.pos-app-layout .pos-product .product-pricing { font-size: 12px; }
+.pos-app-layout .pos-checkout { border-top: 0; }
+.pos-app-layout .pos-checkout .card-body { padding: 18px !important; }
+.pos-app-layout .pos-order-heading { font-size: 22px; color: #5f0c2c; }
+.pos-app-layout .pos-catalogue-tools > form { box-shadow: none; }
+@media (max-width: 1199.98px) {
+    .pos-order-context { grid-template-columns: minmax(230px, 1fr) auto minmax(200px, 1fr); }
+    .pos-order-preview { grid-column: 1 / -1; }
+    .pos-app-layout .pos-shell > .col-lg-7 { width: 55%; flex-basis: 55%; max-width: 55%; }
+    .pos-app-layout .pos-shell > .col-lg-5 { width: 45%; flex-basis: 45%; max-width: 45%; }
+    .pos-app-layout #catalogueProducts { display: block; }
+}
+@media (max-width: 991.98px) {
+    .pos-order-context { grid-template-columns: minmax(0, 1fr) auto; }
+    .pos-context-delivery { grid-column: 1; }
+    .pos-order-preview { grid-column: 2; }
+    .auth-wrap { grid-template-columns: 1fr; }
+    .auth-showcase { min-height: 330px; padding: 35px; background-position: center 38%; }
+    .auth-showcase-content { margin: 28px 0 0; }
+    .auth-services { display: none; }
+    .auth-card { padding: 28px 18px; }
+    .admin-page .site-header { margin-inline-start: 0; }
+    .admin-page .site-header .brand { display: inline-flex !important; }
+    .admin-page .app-layout { display: block; margin-inline-start: 0; }
+    .admin-page .app-sidebar { display: none; }
+    .admin-page .dashboard-main-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 991.98px) {
+    .pos-app-layout .pos-shell > .col-lg-7,
+    .pos-app-layout .pos-shell > .col-lg-5 { width: 100%; flex-basis: 100%; max-width: 100%; }
+}
+@media (max-width: 575.98px) {
+    .pos-order-context { grid-template-columns: 1fr; padding: 12px; }
+    .pos-context-delivery,
+    .pos-order-preview { grid-column: 1; }
+    .pos-new-customer { justify-self: stretch; }
+    .auth-showcase { min-height: 250px; padding: 22px; }
+    .auth-showcase-mark { font-size: 30px; }
+    .auth-showcase-mark em { font-size: 12px; margin-top: 10px; }
+    .auth-showcase-content h2 { font-size: 25px; }
+    .auth-showcase-content > p { display: none; }
+    .auth-card { padding: 0; }
+    .auth-card .card-body { width: 100%; border: 0; border-radius: 0; box-shadow: none; padding: 28px !important; }
+    .admin-page .page-shell { padding: 0 14px 24px; }
+    .admin-page .admin-hero { margin-inline: -14px; min-height: 170px; padding: 20px; background-position: 70% center; }
+    .admin-page .admin-hero .section-title { font-size: 31px; }
+    .pos-app-layout .app-workspace { padding-inline: 10px; }
+    .pos-order-preview { justify-content: space-between; font-size: 13px; }
+}
+@media (min-width: 992px) and (max-width: 1023.98px) {
+    .admin-page .site-header { margin-inline-start: 0; }
+    .admin-page .site-header .brand { display: inline-flex !important; }
+    .admin-page .app-layout { display: block; margin-inline-start: 0; }
+    .admin-page .app-sidebar { display: none; }
+    .admin-page .dashboard-main-grid { grid-template-columns: 1fr; }
+}
+.pos-app-layout .pos-customer-form {
+    grid-template-columns: minmax(230px, 1.6fr) auto minmax(205px, 1fr) minmax(175px, .75fr);
+}
+.pos-app-layout .pos-customer-bar .pos-order-preview { min-width: 0; }
+@media (max-width: 1199.98px) {
+    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr) auto minmax(190px, 1fr); }
+    .pos-app-layout .pos-customer-bar .pos-order-preview { grid-column: 1 / -1; }
+}
+@media (max-width: 991.98px) {
+    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr) auto; }
+}
+@media (max-width: 575.98px) {
+    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr); }
+    .pos-app-layout .pos-customer-bar .pos-order-preview { grid-column: 1; }
+}
+

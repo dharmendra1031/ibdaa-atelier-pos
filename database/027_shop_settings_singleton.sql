@@ -17,8 +17,10 @@ BEGIN TRANSACTION;
 ALTER TABLE dbo.ShopSettings DROP CONSTRAINT CK_ShopSettings_Singleton;
 ALTER TABLE dbo.ShopSettings ADD SingletonFlag BIT NOT NULL
     CONSTRAINT DF_ShopSettings_SingletonFlag DEFAULT (1);
+GO
 ALTER TABLE dbo.ShopSettings ADD CONSTRAINT CK_ShopSettings_SingletonFlag
     CHECK (SingletonFlag = 1);
+GO
 CREATE UNIQUE INDEX UX_ShopSettings_OneRow ON dbo.ShopSettings(SingletonFlag);
 
 COMMIT TRANSACTION;

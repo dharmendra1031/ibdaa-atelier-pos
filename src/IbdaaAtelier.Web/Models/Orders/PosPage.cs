@@ -16,4 +16,5 @@ public sealed class PosPage
     public int ServicePage { get; init; } = 1;
     public int ServiceTotalPages { get; init; } = 1;
     public bool ShowServices { get; init; }
+    public string NextOrderNumber { get; init; } = "";
 }
