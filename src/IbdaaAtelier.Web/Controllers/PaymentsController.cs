@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IbdaaAtelier.Web.Controllers;
 
-[Authorize(Roles = "Admin,Cashier")]
+[Authorize(Roles = "Cashier")]
 public sealed class PaymentsController(PaymentService payments) : Controller
 {
     [HttpGet]
