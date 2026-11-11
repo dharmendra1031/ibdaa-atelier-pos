@@ -14,9 +14,13 @@ public sealed class AdminDashboardPage
     public decimal Refunded { get; init; }
     public decimal Outstanding { get; init; }
     public List<PaymentMethodTotal> PaymentMethods { get; init; } = [];
+    public List<AdminRecentOrder> RecentOrders { get; init; } = [];
 }
 
 public sealed record PaymentMethodTotal(string Method, decimal Received, decimal Refunded)
 {
     public decimal Net => Received - Refunded;
 }
+
+public sealed record AdminRecentOrder(long OrderId, string OrderNumber, string CustomerName,
+    decimal Total, string Status, DateOnly DeliveryDate);
