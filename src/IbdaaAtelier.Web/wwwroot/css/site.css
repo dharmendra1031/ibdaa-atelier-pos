@@ -1,13 +1,13 @@
 :root {
-    --atelier-primary: #154c45;
-    --atelier-primary-dark: #103e38;
-    --atelier-bg: #f8f7f3;
-    --atelier-ink: #24302e;
-    --atelier-muted: #66746f;
-    --atelier-border: #e3e8e3;
-    --atelier-accent: #b7955b;
+    --atelier-primary: #70203d;
+    --atelier-primary-dark: #4c102a;
+    --atelier-bg: #faf6f2;
+    --atelier-ink: #40242e;
+    --atelier-muted: #806e73;
+    --atelier-border: #ecded9;
+    --atelier-accent: #ca9953;
     --bs-primary: var(--atelier-primary);
-    --bs-primary-rgb: 21, 76, 69;
+    --bs-primary-rgb: 112, 32, 61;
     --bs-body-bg: var(--atelier-bg);
     --bs-body-color: var(--atelier-ink);
     --bs-secondary-color: var(--atelier-muted);
@@ -37,7 +37,7 @@ h1, h2, h3 { color: var(--atelier-ink); }
     --bs-btn-hover-border-color: var(--atelier-primary-dark);
     --bs-btn-active-bg: var(--atelier-primary-dark);
     --bs-btn-active-border-color: var(--atelier-primary-dark);
-    --bs-btn-focus-shadow-rgb: 21,76,69;
+    --bs-btn-focus-shadow-rgb: 112,32,61;
 }
 
 .btn-outline-primary {
@@ -47,13 +47,13 @@ h1, h2, h3 { color: var(--atelier-ink); }
     --bs-btn-hover-border-color: var(--atelier-primary);
     --bs-btn-active-bg: var(--atelier-primary-dark);
     --bs-btn-active-border-color: var(--atelier-primary-dark);
-    --bs-btn-focus-shadow-rgb: 21,76,69;
+    --bs-btn-focus-shadow-rgb: 112,32,61;
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #5b988e;
-    box-shadow: 0 0 0 .2rem rgb(21 76 69 / 13%);
+    border-color: #a6627b;
+    box-shadow: 0 0 0 .2rem rgb(112 32 61 / 13%);
 }
 
 a:focus-visible, button:focus-visible {
@@ -365,8 +365,8 @@ a:focus-visible, button:focus-visible {
 .pos-product { cursor: pointer; min-height: 100%; color: var(--atelier-ink); }
 .pos-product:hover { border-color: #8eafa5; box-shadow: 0 9px 26px rgb(21 54 46 / 9%); }
 .pos-product:focus-visible { outline: 3px solid var(--atelier-accent); outline-offset: 2px; }
-.pos-checkout { position: sticky; top: 14px; max-height: calc(100dvh - 28px); overflow-y: auto; }
-.pos-cart { max-height: 230px; overflow-y: auto; }
+.pos-checkout { position: sticky; top: 14px; overflow: visible; }
+.pos-cart { max-height: none; overflow: visible; }
 .pos-cart-item { font-size: .88rem; }
 .pos-service { min-height: 50px; }
 .pos-dialog { width: min(520px, calc(100% - 24px)); max-height: 86dvh; overflow: auto;
@@ -374,7 +374,7 @@ a:focus-visible, button:focus-visible {
 .pos-dialog::backdrop { background: rgb(19 39 35 / 58%); }
 @media (max-width: 991.98px) {
     .pos-checkout { position: static; max-height: none; overflow: visible; }
-    .pos-cart { max-height: 350px; }
+    .pos-cart { max-height: none; }
 }
 
 /* Product photo management */
@@ -559,3 +559,160 @@ a:focus-visible, button:focus-visible {
 .pos-toast .btn-close,
 .order-feedback .btn-close { flex: 0 0 auto; }
 .pos-product.is-loading { opacity: .55; cursor: progress; }
+
+
+/* Approved IBDAA Atelier visual direction. Uses the existing Bootstrap controls. */
+body { background: var(--atelier-bg); }
+h1, h2, h3, .section-title { color: var(--atelier-ink); }
+.site-header { background: #fffdfb; box-shadow: 0 2px 18px rgb(72 26 43 / 5%); }
+.brand-copy { font-family: Georgia, "Times New Roman", serif; color: var(--atelier-primary); }
+.brand-copy small { font-family: system-ui, sans-serif; letter-spacing: .04em; }
+.brand-mark { background: var(--atelier-primary); color: #f0cd8b; }
+.feature-card, .filter-card, .product-card {
+    border-color: var(--atelier-border);
+    box-shadow: 0 8px 24px rgb(69 24 40 / 5%);
+}
+.btn-primary { font-weight: 650; }
+.btn-outline-primary { font-weight: 600; }
+.form-control:focus, .form-select:focus { border-color: #b9788b; }
+.site-footer { background: #fffdfb; }
+
+/* Management shell: elegant full-height burgundy navigation. */
+.admin-page .app-layout { gap: 22px; grid-template-columns: 232px minmax(0, 1fr); }
+.admin-page .app-sidebar {
+    background: linear-gradient(165deg, #781337, #4b102b 80%);
+    color: #fff;
+    border: 0;
+    border-radius: 0 0 14px 14px;
+    padding: 27px 12px;
+    margin-block: 0;
+    min-height: calc(100dvh - 78px);
+    box-shadow: 5px 0 24px rgb(75 16 43 / 12%);
+}
+.admin-page .app-sidebar::before {
+    content: "IBDAA ATELIER";
+    display: block;
+    padding: 8px 12px 26px;
+    color: #f4d49a;
+    font: 22px Georgia, "Times New Roman", serif;
+    letter-spacing: .055em;
+    text-align: center;
+}
+.admin-page .workspace-nav-label { color: #d5afbd; }
+.admin-page .workspace-nav-link { color: #fceff2; padding-block: 11px; }
+.admin-page .workspace-nav-link:hover,
+.admin-page .workspace-nav-link:focus-visible { color: #fff; background: rgb(255 255 255 / 14%); }
+.admin-page .workspace-nav-link.active { color: #4c102a; background: #f7dfb8; }
+.admin-page .app-workspace { padding-top: 20px; }
+.admin-page .workspace-breadcrumb { color: #97787f; }
+.admin-hero {
+    padding: clamp(22px, 3.2vw, 42px);
+    border: 1px solid #e9dad4;
+    border-radius: 15px;
+    background: radial-gradient(circle at 86% 28%, #d9b99e 0, transparent 27%),
+                linear-gradient(110deg, #fffaf5 25%, #f5e7dd 70%, #ead2c6);
+}
+.admin-hero .section-title { font-size: clamp(2rem, 3vw, 3rem); }
+.admin-hero p { color: #765965; max-width: 520px; }
+.admin-kpis .feature-card { min-height: 120px; }
+.admin-kpis .col-6:first-child .feature-card {
+    background: linear-gradient(120deg, #921b42, #661530);
+}
+.admin-kpis .col-6:first-child .feature-card,
+.admin-kpis .col-6:first-child .feature-card small { color: #fff !important; }
+.admin-kpis .feature-card .h4 { font-weight: 750; font-variant-numeric: tabular-nums; }
+.admin-master-link {
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 9px;
+    min-height: 125px; padding: 14px; text-align: center;
+    background: #fffcfa; border: 1px solid var(--atelier-border);
+    border-radius: 12px; color: var(--atelier-ink); text-decoration: none; font-weight: 650;
+}
+.admin-master-link span { color: var(--atelier-primary); font-size: 28px; line-height: 1; }
+.admin-master-link:hover, .admin-master-link:focus-visible { border-color: #b77c91; color: var(--atelier-primary); }
+
+/* Cashier billing: two clear working areas, compact cart, no nested cart scrollbar. */
+.pos-page .site-header { background: #fffaf7; border-bottom-color: #eadbd6; }
+.pos-page .site-header .brand, .pos-page .site-header .workspace-user { color: var(--atelier-primary); }
+.pos-page .site-header .brand-copy small { color: #8b6c73; }
+.pos-page .site-header .language-button,
+.pos-page .site-header .btn-outline-secondary {
+    color: var(--atelier-primary); border-color: #dcc1c9; background: #fff;
+}
+.pos-app-layout .pos-heading .section-title { font-family: system-ui, sans-serif; font-weight: 750; }
+.pos-app-layout .pos-heading .eyebrow { color: #a77d5b; }
+.pos-app-layout .pos-checkout {
+    background: #fffdfb; border: 1px solid #eadbd6; border-top: 3px solid var(--atelier-primary);
+}
+.pos-app-layout .pos-checkout .card-body { padding: 16px !important; }
+.pos-app-layout .pos-checkout .form-label { margin-bottom: 5px; }
+.pos-app-layout .pos-checkout hr { margin-block: 10px; }
+.pos-app-layout .pos-checkout #selectedCustomer { margin-top: 4px !important; }
+.pos-app-layout .pos-checkout .mt-3 { margin-top: 10px !important; }
+.pos-app-layout .pos-checkout .pos-cart { max-height: none; overflow: visible; }
+.pos-app-layout .pos-checkout-actions {
+    position: sticky; bottom: 0; z-index: 3;
+    margin-top: 12px; padding-top: 10px; padding-bottom: 2px;
+    background: #fffdfb; border-top: 1px solid var(--atelier-border);
+}
+.pos-app-layout .pos-checkout-actions [hidden] { display: none !important; }
+.pos-app-layout .pos-product { transition: box-shadow .15s, border-color .15s; }
+.pos-app-layout .pos-product:hover { border-color: #cb9a63; box-shadow: 0 9px 25px rgb(100 30 55 / 12%); }
+.pos-app-layout .pos-product-grid .product-media { aspect-ratio: 4 / 4.4; }
+.pos-app-layout .pos-product .product-pricing { color: #862344; font-weight: 750; }
+.pos-app-layout .pos-category.active { background: #802044; border-color: #802044; }
+.pos-app-layout .pos-cart-item + .pos-cart-item { border-top: 1px solid #f0e7e1; }
+.pos-app-layout #saveOrderButton { font-weight: 700; }
+.pos-dialog::backdrop { background: rgb(49 17 29 / 60%); }
+
+/* Login: no fake role switch, branch picker or unsupported login features. */
+.auth-page .site-header { background: #fffaf7; }
+.auth-page .page-shell { padding-block: 25px 40px; }
+.auth-wrap {
+    display: grid; grid-template-columns: 1fr minmax(360px, .8fr);
+    width: min(1100px, 100%); margin: 0 auto;
+    min-height: min(720px, calc(100dvh - 180px));
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 26px 64px rgb(72 24 42 / 13%);
+}
+.auth-showcase {
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 42px; color: #fff6ef;
+    background: radial-gradient(circle at 65% 25%, #9d4e65 0, transparent 37%),
+                linear-gradient(155deg, #811d41, #420d28);
+}
+.auth-showcase-mark { font: 37px Georgia, serif; letter-spacing: .06em; color: #edc383; }
+.auth-showcase-mark small { display: block; font-size: 16px; letter-spacing: .3em; }
+.auth-showcase-content h2 { font: clamp(2rem, 3vw, 3.4rem)/1.2 Georgia, serif; color: #fff8f0; }
+.auth-showcase-content p { color: #e2b9c9; }
+.auth-showcase .eyebrow { color: #f1ca8b; }
+.auth-card {
+    align-self: stretch; width: 100%; max-width: none;
+    display: flex; align-items: center; justify-content: center;
+    border: 0 !important; border-radius: 0;
+    background: #fffcfa; box-shadow: none;
+}
+.auth-card .card-body { width: min(100%, 470px); }
+.auth-card h1 { font-family: Georgia, serif; font-size: clamp(2rem, 3vw, 2.6rem); }
+.auth-submit { min-height: 50px; }
+
+@media (max-width: 1023.98px) {
+    .admin-page .app-layout { display: block; }
+    .admin-page .app-sidebar { display: none; }
+}
+@media (max-width: 991.98px) {
+    .pos-app-layout .pos-checkout { position: static; }
+    .auth-wrap { grid-template-columns: 1fr; }
+    .auth-showcase { min-height: 230px; padding: 28px; }
+    .auth-showcase-content h2 { font-size: 2rem; }
+}
+@media (max-width: 575.98px) {
+    .auth-page .page-shell { padding: 0 0 30px; }
+    .auth-wrap { border-radius: 0; box-shadow: none; }
+    .auth-showcase { min-height: 175px; padding: 20px; }
+    .auth-showcase-mark { font-size: 26px; }
+    .auth-showcase-content h2 { font-size: 1.5rem; }
+    .auth-card .card-body { padding: 24px !important; }
+    .admin-hero { padding: 20px; }
+    .admin-master-link { min-height: 100px; }
+    .pos-app-layout .pos-checkout-actions { padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
