@@ -122,6 +122,7 @@
     }
     productsTab.addEventListener("click", () => switchCatalogue(false));
     servicesTab.addEventListener("click", () => switchCatalogue(true));
+    if (shell.dataset.showServices === "true") switchCatalogue(true);
 
     function renderCart() {
         cartView.replaceChildren();
