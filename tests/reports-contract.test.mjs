@@ -27,12 +27,17 @@ test("report data derives from saved orders, payment ledger and refunds", () => 
     assert.match(controller, /OrderItems\.AsNoTracking\(\)/);
 });
 
-test("bilingual report explicitly labels global outstanding and partial export coverage", () => {
+test("bilingual report labels outstanding and exposes bounded CSV sales export", () => {
     assert.match(view, /name="period"/);
     assert.match(view, /name="from"/);
     assert.match(view, /name="to"/);
     assert.match(view, /all active orders/);
-    assert.match(view, /Detailed reports and exports are not yet available/);
+    assert.match(view, /Additional detailed reports and PDF\/Excel export remain pending/);
+    assert.match(view, /asp-action="ExportSales"/);
+    assert.match(controller, /public async Task ExportSales/);
+    assert.match(controller, /Take\(250\)/);
+    assert.match(controller, /CsvCell/);
+    assert.match(controller, /Response\.Headers\.CacheControl = "no-store"/);
     assert.match(view, /CultureInfo\.InvariantCulture/);
-    assert.doesNotMatch(view, /asp-action="Export"|asp-action="Pdf"/);
+    assert.doesNotMatch(view, /asp-action="Pdf"/);
 });

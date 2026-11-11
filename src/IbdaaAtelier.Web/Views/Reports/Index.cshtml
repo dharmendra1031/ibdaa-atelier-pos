@@ -10,7 +10,14 @@
         <h1 class="section-title mt-2 mb-1">@(ar ? "المبيعات والتحصيل" : "Sales & collection")</h1>
         <p class="text-secondary mb-0">@(ar ? "تقارير مبنية على الطلبات والمدفوعات الفعلية." : "Read-only figures from saved orders, receipts and refunds.")</p>
     </div>
-    <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Index">@(ar ? "لوحة التحكم" : "Dashboard")</a>
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-outline-primary" asp-controller="Reports" asp-action="ExportSales"
+           asp-route-period="@Model.Period" asp-route-from="@Model.From.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+           asp-route-to="@Model.To.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+            @(ar ? "تصدير المبيعات CSV" : "Export sales CSV")
+        </a>
+        <a class="btn btn-outline-secondary" asp-controller="Admin" asp-action="Index">@(ar ? "لوحة التحكم" : "Dashboard")</a>
+    </div>
 </section>
 <form asp-action="Index" method="get" class="card filter-card mb-4">
     <div class="card-body p-3 d-flex flex-wrap align-items-end gap-2">
@@ -122,5 +129,5 @@
 </div>
 <div class="small text-secondary mt-3">
     @(ar ? "عدد الطلبات في الفترة" : "Orders in period"): @Model.Orders.
-    @(ar ? "التقارير التفصيلية والتصدير ما زالا قيد التطوير." : "Detailed reports and exports are not yet available.")
+    @(ar ? "التقارير التفصيلية والتصدير ما زالا قيد التطوير." : "Additional detailed reports and PDF/Excel export remain pending.")
 </div>

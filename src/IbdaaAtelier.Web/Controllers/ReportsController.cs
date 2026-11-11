@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Reports;
 using Microsoft.AspNetCore.Authorization;
@@ -13,33 +15,8 @@ public sealed class ReportsController(AtelierDbContext db) : Controller
     public async Task<IActionResult> Index(string period = "today",
         DateOnly? from = null, DateOnly? to = null, CancellationToken ct = default)
     {
-        var today = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3));
-        DateOnly start;
-        DateOnly end;
-        switch (period)
-        {
-            case "yesterday":
-                start = end = today.AddDays(-1);
-                break;
-            case "week":
-                start = today.AddDays(-(((int)today.DayOfWeek + 6) % 7));
-                end = today;
-                break;
-            case "month":
-                start = new DateOnly(today.Year, today.Month, 1);
-                end = today;
-                break;
-            case "custom" when from.HasValue && to.HasValue &&
-                from.Value <= to.Value && to.Value <= today &&
-                to.Value.DayNumber - from.Value.DayNumber <= 366:
-                start = from.Value;
-                end = to.Value;
-                break;
-            default:
-                period = "today";
-                start = end = today;
-                break;
-        }
+        var (selectedPeriod, start, end) = SelectRange(period, from, to);
+        period = selectedPeriod;
 
         var startUtc = start.ToDateTime(TimeOnly.MinValue).AddHours(-3);
         var endUtc = end.AddDays(1).ToDateTime(TimeOnly.MinValue).AddHours(-3);
@@ -99,4 +76,125 @@ public sealed class ReportsController(AtelierDbContext db) : Controller
             Items = items
         });
     }
+
+    // Both the screen and export use the same Kuwait-local reporting window.
+    private static (string Period, DateOnly Start, DateOnly End) SelectRange(
+        string period, DateOnly? from, DateOnly? to)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3));
+        DateOnly start;
+        DateOnly end;
+        switch (period)
+        {
+            case "yesterday":
+                start = end = today.AddDays(-1);
+                break;
+            case "week":
+                start = today.AddDays(-(((int)today.DayOfWeek + 6) % 7));
+                end = today;
+                break;
+            case "month":
+                start = new DateOnly(today.Year, today.Month, 1);
+                end = today;
+                break;
+            case "custom" when from.HasValue && to.HasValue &&
+                from.Value <= to.Value && to.Value <= today &&
+                to.Value.DayNumber - from.Value.DayNumber <= 366:
+                start = from.Value;
+                end = to.Value;
+                break;
+            default:
+                period = "today";
+                start = end = today;
+                break;
+        }
+
+
+        return (period, start, end);
+    }
+
+    [HttpGet]
+    public async Task ExportSales(string period = "today",
+        DateOnly? from = null, DateOnly? to = null, CancellationToken ct = default)
+    {
+        var (_, start, end) = SelectRange(period, from, to);
+        var startUtc = start.ToDateTime(TimeOnly.MinValue).AddHours(-3);
+        var endUtc = end.AddDays(1).ToDateTime(TimeOnly.MinValue).AddHours(-3);
+
+        Response.ContentType = "text/csv; charset=utf-8";
+        Response.Headers.CacheControl = "no-store";
+        Response.Headers.ContentDisposition = "attachment; filename=\"IBDAA-sales-" +
+            start.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + "-" +
+            end.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + ".csv\"";
+
+        await using var writer = new StreamWriter(Response.Body,
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), bufferSize: 8192, leaveOpen: true);
+        await writer.WriteLineAsync("Order ID,Order Number,Order Date (Kuwait),Customer,Mobile,Status,Total KWD,Net Paid KWD,Refunded KWD,Balance KWD");
+
+        var sales = db.Orders.AsNoTracking().Where(order =>
+            order.CreatedAtUtc >= startUtc && order.CreatedAtUtc < endUtc &&
+            order.Status != "Cancelled");
+
+        long lastOrderId = 0;
+        while (true)
+        {
+            var page = await sales.Where(order => order.OrderId > lastOrderId)
+                .OrderBy(order => order.OrderId)
+                .Take(250)
+                .Select(order => new
+                {
+                    order.OrderId,
+                    order.OrderNumber,
+                    order.CreatedAtUtc,
+                    order.CustomerName,
+                    order.CustomerMobile,
+                    order.Status,
+                    order.Total,
+                    Received = db.OrderPayments.Where(p => p.OrderId == order.OrderId)
+                        .Sum(p => (decimal?)p.Amount) ?? 0m,
+                    Returned = db.OrderRefunds.Where(p => p.OrderId == order.OrderId)
+                        .Sum(p => (decimal?)p.Amount) ?? 0m
+                })
+                .ToListAsync(ct);
+
+            if (page.Count == 0)
+                break;
+
+            foreach (var order in page)
+            {
+                var paid = order.Received - order.Returned;
+                var fields = new[]
+                {
+                    order.OrderId.ToString(CultureInfo.InvariantCulture),
+                    order.OrderNumber,
+                    order.CreatedAtUtc.AddHours(3).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+                    order.CustomerName,
+                    order.CustomerMobile,
+                    order.Status,
+                    Money(order.Total),
+                    Money(paid),
+                    Money(order.Returned),
+                    Money(Math.Max(0m, order.Total - paid))
+                };
+
+                await writer.WriteLineAsync(string.Join(",", fields.Select(CsvCell)).AsMemory(), ct);
+            }
+
+            lastOrderId = page[^1].OrderId;
+            await writer.FlushAsync(ct);
+        }
+    }
+
+    private static string Money(decimal value) => value.ToString("0.000", CultureInfo.InvariantCulture);
+
+    private static string CsvCell(string? value)
+    {
+        value ??= "";
+        // Spreadsheet applications may evaluate user-supplied names as formulae.
+        if (value.TrimStart().StartsWith('=') || value.TrimStart().StartsWith('+') ||
+            value.TrimStart().StartsWith('-') || value.TrimStart().StartsWith('@'))
+            value = "'" + value;
+        return "\"" + value.Replace("\"", "\"\"") + "\"";
+    }
+
 }
