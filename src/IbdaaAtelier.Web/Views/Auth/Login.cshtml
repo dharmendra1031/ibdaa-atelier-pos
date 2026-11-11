@@ -5,11 +5,19 @@
     var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
 <section class="auth-wrap">
+    <div class="auth-showcase" aria-hidden="true">
+        <span class="auth-showcase-mark">IBDAA <small>ATELIER</small></span>
+        <div class="auth-showcase-content">
+            <span class="eyebrow">IBDAA ATELIER · KUWAIT</span>
+            <h2>Crafted with care.<br />Managed with elegance.</h2>
+            <p>Fashion · Tailoring · Alteration</p>
+        </div>
+    </div>
     <div class="card border-0 auth-card">
         <div class="card-body p-4 p-md-5">
-            <span class="eyebrow">IBDAA ATELIER</span>
+            <span class="eyebrow">IBDAA ATELIER · SECURE ACCESS</span>
             <h1 class="h2 mt-3 mb-2">@(isArabic ? "تسجيل الدخول" : "Welcome back")</h1>
-            <p class="text-secondary mb-4">@(isArabic ? "أدخل بيانات حساب الموظف." : "Sign in with your shop account.")</p>
+            <p class="text-secondary mb-4">@(isArabic ? "سجّل الدخول للوصول إلى مساحة العمل المخصصة لك." : "Sign in to open your assigned workspace.")</p>
             <form asp-controller="Auth" asp-action="Login" method="post" asp-antiforgery="true">
                 <input asp-for="ReturnUrl" type="hidden" />
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
@@ -23,7 +31,7 @@
                     <input asp-for="Password" class="form-control" autocomplete="current-password" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">@(isArabic ? "دخول" : "Sign in")</button>
+                <button type="submit" class="btn btn-primary w-100 auth-submit">@(isArabic ? "تسجيل الدخول" : "Sign in securely")</button>
             </form>
         </div>
     </div>
