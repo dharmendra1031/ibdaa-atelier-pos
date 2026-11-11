@@ -53,4 +53,5 @@ public sealed class ShopSettingsForm
     public string? AddressAr { get; set; }
 
     public string? LogoPath { get; set; }
+    public bool RequireRegisterOpen { get; set; }
 }
