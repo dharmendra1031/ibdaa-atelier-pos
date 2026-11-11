@@ -20,6 +20,8 @@ public sealed class OrderDetailsPage
 public sealed class OrderListPage
 {
     public List<Order> Orders { get; init; } = [];
+    public Dictionary<long, decimal> PaidByOrder { get; init; } = [];
+    public Dictionary<long, decimal> BalanceByOrder { get; init; } = [];
     public string Search { get; init; } = "";
     public int Page { get; init; } = 1;
     public int TotalPages { get; init; } = 1;

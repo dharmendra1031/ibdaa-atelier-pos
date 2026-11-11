@@ -8,6 +8,8 @@
     const total = document.getElementById("paymentTotal");
     const change = document.getElementById("cashChange");
     const save = document.getElementById("savePayment");
+    const fill = document.getElementById("fillPaymentBalance");
+    const method = document.getElementById("quickPaymentMethod");
     const value = element => Number(element?.value) || 0;
 
     function update() {
@@ -19,6 +21,19 @@
     [...amounts, tendered].filter(Boolean).forEach(input =>
         input.addEventListener("input", update));
 
-    form.addEventListener("submit", () => { save.disabled = true; });
+    fill?.addEventListener("click", () => {
+        const balance = Number(form.dataset.balance);
+        if (!Number.isFinite(balance) || balance <= 0) return;
+        amounts.forEach(input => {
+            input.value = input.dataset.method === method.value ? balance.toFixed(3) : "0.000";
+        });
+        if (tendered) tendered.value = "";
+        update();
+    });
+
+    form.addEventListener("submit", () => {
+        if (!form.checkValidity()) return;
+        save.disabled = true;
+    });
     update();
 })();

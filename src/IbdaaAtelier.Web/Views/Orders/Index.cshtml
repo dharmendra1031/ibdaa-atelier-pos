@@ -24,6 +24,8 @@
                 <th scope="col">@(ar ? "الطلب" : "Order")</th>
                 <th scope="col">@(ar ? "العميل" : "Customer")</th>
                 <th scope="col">@(ar ? "الإجمالي" : "Total (KWD)")</th>
+                <th scope="col">@(ar ? "المدفوع" : "Paid")</th>
+                <th scope="col">@(ar ? "المتبقي" : "Balance")</th>
                 <th scope="col">@(ar ? "التسليم" : "Delivery")</th>
                 <th scope="col">@(ar ? "الحالة" : "Status")</th>
                 <th scope="col" class="text-end">@(ar ? "الإجراء" : "Actions")</th>
@@ -34,17 +36,19 @@
                 <tr>
                     <td><strong>@order.OrderNumber</strong><small class="d-block text-secondary">@order.CreatedAtUtc.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</small></td>
                     <td>@(ar ? order.CustomerNameAr : order.CustomerName)<small class="d-block text-secondary">@order.CustomerMobile</small></td>
-                    <td>@order.Total.ToString("0.000", CultureInfo.InvariantCulture)</td>
-                    <td>@order.DeliveryDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
-                    <td>@order.Status</td>
+                    <td class="text-nowrap">@order.Total.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                    <td class="text-nowrap">@Model.PaidByOrder.GetValueOrDefault(order.OrderId).ToString("0.000", CultureInfo.InvariantCulture)</td>
+                    <td class="text-nowrap fw-semibold">@Model.BalanceByOrder.GetValueOrDefault(order.OrderId).ToString("0.000", CultureInfo.InvariantCulture)</td>
+                    <td class="text-nowrap">@order.DeliveryDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                    <td><span class="badge @(order.Status == "Delivered" ? "text-bg-success" : order.Status == "Cancelled" ? "text-bg-secondary" : "text-bg-light border text-dark")">@order.Status</span></td>
                     <td class="text-end">
-                        <a asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-outline-primary btn-sm">@(ar ? "عرض" : "View")</a>
+                        <a asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-outline-primary btn-sm">@(ar ? "إدارة" : "Manage")</a>
                     </td>
                 </tr>
             }
             @if (Model.Orders.Count == 0)
             {
-                <tr><td colspan="6" class="text-center py-5 text-secondary">@(ar ? "لا توجد طلبات." : "No orders found.")</td></tr>
+                <tr><td colspan="8" class="text-center py-5 text-secondary">@(ar ? "لا توجد طلبات." : "No orders found.")</td></tr>
             }
             </tbody>
         </table>

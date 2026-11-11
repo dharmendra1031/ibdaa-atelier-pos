@@ -17,12 +17,6 @@
                 @(ar ? "استلام دفعة" : "Take payment")
             </a>
         }
-        @if (User.IsInRole("Admin") && Model.Paid > 0)
-        {
-            <a asp-controller="Refunds" asp-action="Issue" asp-route-id="@Model.Order.OrderId" class="btn btn-outline-primary">
-                @(ar ? "رد مبلغ" : "Refund")
-            </a>
-        }
         <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "الطلبات" : "Orders")</a>
     </div>
 </section>
@@ -152,10 +146,18 @@
     </div></section>
 }
 
-@if (User.IsInRole("Admin") && Model.NextStatuses.Length > 0)
+@if (User.IsInRole("Admin") && (Model.NextStatuses.Length > 0 || Model.Paid > 0))
 {
     <section class="card filter-card mt-4"><div class="card-body p-4">
-        <h2 class="h5">@(ar ? "تغيير حالة الطلب" : "Change order status")</h2>
+        <h2 class="h5">@(ar ? "إجراءات المدير" : "Manager actions")</h2>
+        @if (Model.Paid > 0)
+        {
+            <a asp-controller="Refunds" asp-action="Issue" asp-route-id="@Model.Order.OrderId"
+               class="btn btn-outline-danger mb-3">@(ar ? "تسجيل رد مبلغ" : "Record a refund")</a>
+        }
+        @if (Model.NextStatuses.Length > 0)
+        {
+        <h3 class="h6">@(ar ? "تغيير حالة الطلب" : "Change order status")</h3>
         <p class="small text-secondary">
             @(ar ? "الإلغاء يتطلب سبباً واضحاً واسترداد المبلغ المدفوع بالكامل أولاً." :
                 "Cancellation requires a reason and all payments must be refunded first.")
@@ -180,6 +182,7 @@
                 <button type="submit" class="btn btn-primary">@(ar ? "تحديث" : "Update")</button>
             </div>
         </form>
+        }
     </div></section>
 }
 <section class="card filter-card mt-4"><div class="card-body p-4">

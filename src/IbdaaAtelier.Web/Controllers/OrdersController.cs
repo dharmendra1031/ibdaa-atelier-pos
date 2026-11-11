@@ -27,13 +27,34 @@ public sealed class OrdersController(AtelierDbContext db) : Controller
         var totalPages = Math.Max(1, (count + 24) / 25);
         page = Math.Clamp(page, 1, totalPages);
 
+        var orders = await query.OrderByDescending(o => o.OrderId)
+            .Skip((page - 1) * 25).Take(25).ToListAsync(ct);
+        var orderIds = orders.Select(o => o.OrderId).ToArray();
+
+        var received = await db.OrderPayments.AsNoTracking()
+            .Where(p => orderIds.Contains(p.OrderId))
+            .GroupBy(p => p.OrderId)
+            .Select(g => new { OrderId = g.Key, Amount = g.Sum(x => x.Amount) })
+            .ToDictionaryAsync(x => x.OrderId, x => x.Amount, ct);
+        var refunded = await db.OrderRefunds.AsNoTracking()
+            .Where(r => orderIds.Contains(r.OrderId))
+            .GroupBy(r => r.OrderId)
+            .Select(g => new { OrderId = g.Key, Amount = g.Sum(x => x.Amount) })
+            .ToDictionaryAsync(x => x.OrderId, x => x.Amount, ct);
+
+        var paid = orders.ToDictionary(o => o.OrderId, o =>
+            received.GetValueOrDefault(o.OrderId) - refunded.GetValueOrDefault(o.OrderId));
+        var balances = orders.ToDictionary(o => o.OrderId, o =>
+            o.Status == "Cancelled" ? 0m : Math.Max(0m, o.Total - paid[o.OrderId]));
+
         return View(new OrderListPage
         {
             Search = search,
             Page = page,
             TotalPages = totalPages,
-            Orders = await query.OrderByDescending(o => o.OrderId)
-                .Skip((page - 1) * 25).Take(25).ToListAsync(ct)
+            Orders = orders,
+            PaidByOrder = paid,
+            BalanceByOrder = balances
         });
     }
 

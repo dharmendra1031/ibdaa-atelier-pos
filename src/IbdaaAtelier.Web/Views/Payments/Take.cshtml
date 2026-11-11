@@ -22,13 +22,30 @@
     <div class="col-lg-7">
         <div class="card filter-card">
             <div class="card-body p-4">
-                <h2 class="h5 mb-3">@(ar ? "طريقة الدفع" : "Split / partial payment")</h2>
+                <h2 class="h5 mb-3">@(ar ? "طرق الدفع" : "Payment methods")</h2>
                 <p class="text-secondary small mb-4">
                     @(ar ? "أدخل مبلغ كل طريقة مستخدمة فقط. يمكن ترك الطرق الأخرى بقيمة صفر." :
-                        "Enter amounts for the methods used; leave unused methods at zero. Cash received is optional and determines change.")
+                        "For full payment, choose a method below and click Fill balance. For an advance or split payment, enter only the amounts received.")
                 </p>
                 <form id="receivePaymentForm" method="post" asp-controller="Payments" asp-action="Take"
+                      data-balance="@Model.Balance.ToString("0.000", CultureInfo.InvariantCulture)"
                       asp-antiforgery="true">
+                    <div class="row g-2 align-items-end mb-4">
+                        <div class="col-sm-7">
+                            <label for="quickPaymentMethod" class="form-label">@(ar ? "طريقة الدفع الكامل" : "Full payment method")</label>
+                            <select id="quickPaymentMethod" class="form-select">
+                                @foreach (var method in Model.Form.Lines)
+                                {
+                                    <option value="@method.Method">@method.Method</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-sm-5 d-grid">
+                            <button id="fillPaymentBalance" type="button" class="btn btn-outline-primary">
+                                @(ar ? "ملء المبلغ المتبقي" : "Fill balance")
+                            </button>
+                        </div>
+                    </div>
                     <input type="hidden" name="RequestId" value="@Model.Form.RequestId" />
                     <input type="hidden" name="OrderId" value="@Model.Form.OrderId" />
                     <div class="row g-3">
@@ -44,7 +61,7 @@
                                                 line.Method == "Other" ? (ar ? "أخرى" : "Other") :
                                                 line.Method)
                                         </label>
-                                        <input id="amount_@i" name="Lines[@i].Amount" type="number" class="form-control payment-amount"
+                                        <input id="amount_@i" name="Lines[@i].Amount" type="number" class="form-control payment-amount" data-method="@line.Method"
                                                min="0" step=".001" max="@Model.Balance.ToString("0.000", CultureInfo.InvariantCulture)"
                                                value="0.000" inputmode="decimal" />
                                     </div>
