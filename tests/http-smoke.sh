@@ -53,6 +53,7 @@ echo "HTTP smoke: Arabic RTL response"
 curl --fail --silent --show-error \
     -H 'Cookie: .AspNetCore.Culture=c%3Dar-KW%7Cuic%3Dar-KW' \
     "$base_url/Auth/Login" -o "$output_dir/arabic.html"
+grep -o '<html[^>]*>' "$output_dir/arabic.html" || true
 grep -q '<html lang="ar" dir="rtl">' "$output_dir/arabic.html"
 grep -q 'تسجيل الدخول' "$output_dir/arabic.html"
 
