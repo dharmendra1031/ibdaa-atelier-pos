@@ -13,7 +13,7 @@
         <div class="card feature-card h-100"><div class="card-body p-4">
             <h2 class="h5">@(isArabic ? "فئات المنتجات" : "Product categories")</h2>
             <p class="text-secondary">@(isArabic ? "إدارة الفئات والفئات الفرعية." : "Manage categories and subcategories.")</p>
-            <span class="small text-secondary">@(isArabic ? "قيد التنفيذ" : "Next implementation slice")</span>
+            <a class="btn btn-outline-primary" asp-controller="Categories" asp-action="Index">@(isArabic ? "إدارة الفئات" : "Manage categories")</a>
         </div></div>
     </div>
     <div class="col-md-6">
