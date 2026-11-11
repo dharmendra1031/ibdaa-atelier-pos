@@ -11,6 +11,7 @@
     const total = document.getElementById("paymentTotal");
     const change = document.getElementById("cashChange");
     const save = document.getElementById("savePayment");
+    const error = document.getElementById("paymentError");
     const fill = document.getElementById("fillPaymentBalance");
     const method = document.getElementById("quickPaymentMethod");
     const value = element => Number(element?.value) || 0;
@@ -22,7 +23,10 @@
     }
 
     [...amounts, tendered].filter(Boolean).forEach(input =>
-        input.addEventListener("input", update));
+        input.addEventListener("input", () => {
+            error.hidden = true;
+            update();
+        }));
 
     fill?.addEventListener("click", () => {
         const balance = Number(form.dataset.balance);
@@ -44,6 +48,18 @@
             event.preventDefault();
             return;
         }
+        const amount = amounts.reduce((sum, input) => sum + value(input), 0);
+        const balance = Number(form.dataset.balance);
+        if (!Number.isFinite(balance) || amount <= 0 || amount > balance + 0.000001) {
+            event.preventDefault();
+            error.textContent = document.documentElement.lang === "ar"
+                ? "يجب أن يكون المبلغ أكبر من صفر ولا يتجاوز الرصيد المتبقي."
+                : "Payment must be greater than zero and cannot exceed the balance.";
+            error.hidden = false;
+            amounts.find(input => value(input) > 0)?.focus();
+            return;
+        }
+        error.hidden = true;
         save.disabled = true;
         save.setAttribute("aria-busy", "true");
         const spinner = document.createElement("span");
