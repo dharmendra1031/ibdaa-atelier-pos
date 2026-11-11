@@ -1,5 +1,10 @@
 using System.Globalization;
+using System.Security.Claims;
 using IbdaaAtelier.Web.Data;
+using IbdaaAtelier.Web.Models.Security;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +13,70 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AtelierDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AtelierDb")));
+builder.Services.AddScoped<IPasswordHasher<ShopUser>, PasswordHasher<ShopUser>>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/Denied";
+        options.Cookie.Name = "IbdaaAtelier.Session";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+        options.Events.OnValidatePrincipal = async context =>
+        {
+            var identity = context.Principal;
+            var id = identity?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(id, out var userId) || userId <= 0)
+            {
+                context.RejectPrincipal();
+                return;
+            }
+
+            var db = context.HttpContext.RequestServices.GetRequiredService<AtelierDbContext>();
+            var user = await db.Users.AsNoTracking()
+                .Where(item => item.UserId == userId)
+                .Select(item => new { item.IsActive, item.Role, item.UserName })
+                .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+
+            if (user is null || !user.IsActive ||
+                user.Role != identity!.FindFirstValue(ClaimTypes.Role) ||
+                user.UserName != identity.FindFirstValue(ClaimTypes.Name))
+            {
+                context.RejectPrincipal();
+                await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+        };
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+if (args.Contains("--bootstrap-admin", StringComparer.OrdinalIgnoreCase))
+{
+    var userName = app.Configuration["Bootstrap:AdminUser"]?.Trim();
+    var password = app.Configuration["Bootstrap:AdminPassword"];
+
+    if (string.IsNullOrWhiteSpace(userName) || userName.Length > 60 ||
+        string.IsNullOrWhiteSpace(password) || password.Length < 12)
+        throw new InvalidOperationException("Configure Bootstrap:AdminUser and a password of at least 12 characters using local user-secrets.");
+
+    await using var scope = app.Services.CreateAsyncScope();
+    var db = scope.ServiceProvider.GetRequiredService<AtelierDbContext>();
+    if (await db.Users.AnyAsync())
+        throw new InvalidOperationException("User records already exist. The one-time admin bootstrap is disabled.");
+
+    var admin = new ShopUser { UserName = userName, Role = "Admin" };
+    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<ShopUser>>();
+    admin.PasswordHash = hasher.HashPassword(admin, password);
+    db.Users.Add(admin);
+    await db.SaveChangesAsync();
+    Console.WriteLine("Initial administrator created. Remove the bootstrap password from user-secrets.");
+    return;
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -31,6 +98,8 @@ app.UseRequestLocalization(localization);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

@@ -32,7 +32,21 @@
                 <nav class="app-nav d-flex align-items-center gap-1" aria-label="@(isArabic ? "القائمة الرئيسية" : "Main navigation")">
                     <a class="nav-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index" aria-current="@(controller == "Home" ? "page" : null)">@(isArabic ? "الرئيسية" : "Overview")</a>
                     <a class="nav-link @(controller == "Catalog" ? "active" : "")" asp-controller="Catalog" asp-action="Index" aria-current="@(controller == "Catalog" ? "page" : null)">@(isArabic ? "المنتجات" : "Catalogue")</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="nav-link @(controller == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index" aria-current="@(controller == "Admin" ? "page" : null)">@(isArabic ? "الإدارة" : "Admin")</a>
+                    }
                 </nav>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form class="m-0" method="post" asp-controller="Auth" asp-action="Logout" asp-antiforgery="true">
+                        <button class="btn btn-outline-primary btn-sm" type="submit">@(isArabic ? "خروج" : "Sign out")</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-outline-primary btn-sm" asp-controller="Auth" asp-action="Login">@(isArabic ? "دخول" : "Sign in")</a>
+                }
                 <form class="m-0" method="post" asp-controller="Language" asp-action="Set" asp-antiforgery="true">
                     <input type="hidden" name="returnUrl" value="@currentUrl" />
                     <button class="btn language-button" type="submit" name="culture" value="@(isArabic ? "en-US" : "ar-KW")" aria-label="@(isArabic ? "Switch to English" : "التبديل إلى العربية")">

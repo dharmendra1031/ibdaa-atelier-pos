@@ -1,0 +1,26 @@
+@using System.Globalization
+@{
+    ViewData["Title"] = "Administration";
+    var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="page-heading mb-4">
+    <span class="eyebrow">IBDAA ATELIER · ADMIN</span>
+    <h1 class="section-title mt-2">@(isArabic ? "إدارة المتجر" : "Shop administration")</h1>
+    <p class="text-secondary">@(isArabic ? "تتوفر الإعدادات والأقسام حسب صلاحيات المستخدم." : "Manage shop records securely with your administrator account.")</p>
+</section>
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card feature-card h-100"><div class="card-body p-4">
+            <h2 class="h5">@(isArabic ? "فئات المنتجات" : "Product categories")</h2>
+            <p class="text-secondary">@(isArabic ? "إدارة الفئات والفئات الفرعية." : "Manage categories and subcategories.")</p>
+            <span class="small text-secondary">@(isArabic ? "قيد التنفيذ" : "Next implementation slice")</span>
+        </div></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card feature-card h-100"><div class="card-body p-4">
+            <h2 class="h5">@(isArabic ? "كتالوج المنتجات" : "Product catalogue")</h2>
+            <p class="text-secondary">@(isArabic ? "إدارة المنتجات والأسعار." : "Manage products, availability and prices.")</p>
+            <span class="small text-secondary">@(isArabic ? "قيد التنفيذ" : "Next implementation slice")</span>
+        </div></div>
+    </div>
+</div>

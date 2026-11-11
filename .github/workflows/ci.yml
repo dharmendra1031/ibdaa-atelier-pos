@@ -1,0 +1,24 @@
+name: Build and source checks
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development, main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore
+        run: dotnet restore src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj
+      - name: Build
+        run: dotnet build src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj --configuration Release --no-restore
+      - name: Source contract tests
+        run: node --test tests/*.test.mjs

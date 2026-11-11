@@ -1,0 +1,12 @@
+@using System.Globalization
+@{
+    ViewData["Title"] = "Access denied";
+    var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="empty-state card border-0 text-center py-5">
+    <div class="card-body">
+        <h1 class="h3">@(isArabic ? "لا تملك الصلاحية" : "Access denied")</h1>
+        <p class="text-secondary">@(isArabic ? "ليس لديك إذن للوصول إلى هذه الصفحة." : "Your account does not have permission to access this page.")</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary">@(isArabic ? "الرئيسية" : "Back to overview")</a>
+    </div>
+</section>
