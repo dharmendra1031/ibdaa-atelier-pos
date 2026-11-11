@@ -15,7 +15,7 @@ test("one shared menu powers desktop sidebar and responsive mobile navigation", 
     assert.match(layout, /class="mobile-menu/);
     assert.match(layout, /href="#mainContent"/);
     assert.match(css, /max-width: 1023\.98px/);
-    assert.match(css, /\.app-layout \{ display: grid/);
+    assert.match(css, /\.app-layout \{[^}]*display: grid/);
     assert.match(css, /\.mobile-menu \{ display: block/);
 });
 
