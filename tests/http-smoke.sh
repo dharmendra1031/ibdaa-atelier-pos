@@ -38,21 +38,25 @@ if [ "$ready" -ne 1 ]; then
     exit 1
 fi
 
+echo "HTTP smoke: login markup"
 grep -q 'Sign In to IBDAA Atelier' "$output_dir/login.html"
 grep -q 'name="__RequestVerificationToken"' "$output_dir/login.html"
 grep -q 'name="Password"' "$output_dir/login.html"
 
+echo "HTTP smoke: static CSS headers"
 curl --fail --silent --show-error -D "$output_dir/css.headers" \
     "$base_url/css/site.css" -o "$output_dir/site.css"
 grep -q -- '--atelier-primary:' "$output_dir/site.css"
 grep -iq 'x-content-type-options: nosniff' "$output_dir/css.headers"
 
+echo "HTTP smoke: Arabic RTL response"
 curl --fail --silent --show-error \
     -H 'Cookie: .AspNetCore.Culture=c%3Dar-KW%7Cuic%3Dar-KW' \
     "$base_url/Auth/Login" -o "$output_dir/arabic.html"
 grep -q '<html lang="ar" dir="rtl">' "$output_dir/arabic.html"
 grep -q 'تسجيل الدخول' "$output_dir/arabic.html"
 
+echo "HTTP smoke: protected routes"
 for path in /Admin /Pos /Payments/Take /Refunds/Issue; do
     status="$(curl --silent -o /dev/null -w '%{http_code}' "$base_url$path")"
     if [ "$status" != 302 ]; then
@@ -61,6 +65,7 @@ for path in /Admin /Pos /Payments/Take /Refunds/Issue; do
     fi
 done
 
+echo "HTTP smoke: antiforgery enforcement"
 status="$(curl --silent -o /dev/null -w '%{http_code}' \
     -X POST -d 'UserName=test&Password=test' "$base_url/Auth/Login")"
 if [ "$status" != 400 ]; then
