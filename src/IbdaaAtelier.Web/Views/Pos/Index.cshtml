@@ -29,7 +29,8 @@
      data-reserve-url="@Url.Action("Reserve", "Pos")"
      data-save-url="@Url.Action("Save", "Pos")"
      data-order-url="@Url.Action("Details", "Orders")"
-     data-arabic="@(ar ? "true" : "false")">
+     data-arabic="@(ar ? "true" : "false")"
+     data-show-services="@(Model.ShowServices ? "true" : "false")">
     <div class="col-lg-7">
         <div class="d-flex gap-2 mb-3" role="group" aria-label="@(ar ? "نوع العنصر" : "Catalogue type")">
             <button type="button" class="btn btn-primary flex-fill" id="showProducts" aria-controls="catalogueProducts" aria-pressed="true">@(ar ? "المنتجات" : "Products")</button>
@@ -107,7 +108,16 @@
         }
         </div>
         <section id="catalogueServices" class="mt-3" hidden>
-            <h2 class="h5 mb-3">@(ar ? "خدمات التعديل" : "Alteration services")</h2>
+            <form asp-action="Index" method="get" class="d-flex gap-2 mb-3" role="search">
+                <input type="hidden" name="services" value="true" />
+                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                <input type="hidden" name="search" value="@Model.Search" />
+                <label class="visually-hidden" for="serviceSearch">@(ar ? "البحث عن خدمة" : "Search alterations")</label>
+                <input id="serviceSearch" name="serviceSearch" type="search" maxlength="100"
+                       class="form-control" value="@Model.ServiceSearch"
+                       placeholder="@(ar ? "اسم خدمة التعديل" : "Find alteration service")" />
+                <button class="btn btn-primary" type="submit">@(ar ? "بحث" : "Search")</button>
+            </form>
             <div class="row row-cols-1 row-cols-sm-2 g-2">
                 @foreach (var service in Model.Services)
                 {
@@ -124,6 +134,30 @@
                     </div>
                 }
             </div>
+            @if (Model.Services.Count == 0)
+            {
+                <p class="text-secondary text-center py-4">@(ar ? "لا توجد خدمات مطابقة." : "No matching alterations.")</p>
+            }
+            @if (Model.ServiceTotalPages > 1)
+            {
+                <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="@(ar ? "صفحات الخدمات" : "Alteration pages")">
+                    <span class="small text-secondary">@Model.ServicePage / @Model.ServiceTotalPages</span>
+                    <div class="d-flex gap-2">
+                        @if (Model.ServicePage > 1)
+                        {
+                            <a asp-action="Index" asp-route-services="true" asp-route-serviceSearch="@Model.ServiceSearch"
+                               asp-route-servicePage="@(Model.ServicePage - 1)" asp-route-search="@Model.Search"
+                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "السابق" : "Previous")</a>
+                        }
+                        @if (Model.ServicePage < Model.ServiceTotalPages)
+                        {
+                            <a asp-action="Index" asp-route-services="true" asp-route-serviceSearch="@Model.ServiceSearch"
+                               asp-route-servicePage="@(Model.ServicePage + 1)" asp-route-search="@Model.Search"
+                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "التالي" : "Next")</a>
+                        }
+                    </div>
+                </nav>
+            }
         </section>
     </div>
 
