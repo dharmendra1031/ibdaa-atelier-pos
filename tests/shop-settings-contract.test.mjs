@@ -9,6 +9,8 @@ const singletonMigration = read("database/027_shop_settings_singleton.sql");
 const context = read("src/IbdaaAtelier.Web/Data/AtelierDbContext.cs");
 const view = read("src/IbdaaAtelier.Web/Views/ShopSettings/Index.cshtml");
 const runner = read("tests/sql/run-smoke.sh");
+const settingsVerifier = read("database/022_verify_shop_settings.sql");
+const singletonVerifier = read("database/028_verify_shop_settings_singleton.sql");
 
 test("settings use a single numeric identity row with no client seed data", () => {
     assert.match(schema, /SettingsId INT IDENTITY\(1,1\)/);
@@ -34,6 +36,9 @@ test("settings edits enforce Admin permissions, CSRF and audited transaction", (
 test("isolated SQL CI includes guarded settings scripts and smoke test", () => {
     assert.match(runner, /021_shop_settings\.sql/);
     assert.match(runner, /022_verify_shop_settings\.sql/);
+    assert.match(settingsVerifier, /CK_ShopSettings_Names/);
+    assert.doesNotMatch(settingsVerifier, /CK_ShopSettings_Singleton'/);
+    assert.match(singletonVerifier, /UX_ShopSettings_OneRow/);
     assert.match(runner, /shop-settings-smoke\.sql/);
 });
 

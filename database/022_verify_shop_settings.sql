@@ -6,7 +6,7 @@ IF @ExpectedDatabase = N'__SET_TEST_DATABASE_NAME__' OR DB_NAME() <> @ExpectedDa
 IF COLUMNPROPERTY(OBJECT_ID(N'dbo.ShopSettings'), 'SettingsId', 'IsIdentity') <> 1
     THROW 51083, 'SettingsId must be numeric IDENTITY.', 1;
 IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
-    WHERE parent_object_id = OBJECT_ID(N'dbo.ShopSettings') AND name = N'CK_ShopSettings_Singleton')
-    THROW 51084, 'Shop settings singleton constraint missing.', 1;
+    WHERE parent_object_id = OBJECT_ID(N'dbo.ShopSettings') AND name = N'CK_ShopSettings_Names')
+    THROW 51084, 'Shop settings bilingual-name constraint missing.', 1;
 
 SELECT COUNT_BIG(*) AS SettingsRowCount FROM dbo.ShopSettings;
