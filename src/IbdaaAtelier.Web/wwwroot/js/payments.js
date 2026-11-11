@@ -31,9 +31,28 @@
         update();
     });
 
-    form.addEventListener("submit", () => {
-        if (!form.checkValidity()) return;
+    const saveLabel = save.textContent.trim();
+    form.addEventListener("submit", event => {
+        if (save.disabled) {
+            event.preventDefault();
+            return;
+        }
+        if (!form.reportValidity()) {
+            event.preventDefault();
+            return;
+        }
         save.disabled = true;
+        save.setAttribute("aria-busy", "true");
+        const spinner = document.createElement("span");
+        spinner.className = "spinner-border spinner-border-sm me-2";
+        spinner.setAttribute("aria-hidden", "true");
+        save.replaceChildren(spinner, document.createTextNode(
+            document.documentElement.lang === "ar" ? "جار حفظ الدفعة..." : "Processing payment..."));
+    });
+    window.addEventListener("pageshow", () => {
+        save.disabled = false;
+        save.setAttribute("aria-busy", "false");
+        save.textContent = saveLabel;
     });
     update();
 })();
