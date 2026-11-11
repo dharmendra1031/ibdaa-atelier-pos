@@ -1,0 +1,78 @@
+@model ProductForm
+@using System.Globalization
+@{
+    var editing = Model.ProductId > 0;
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    ViewData["Title"] = editing ? "Edit product" : "Add product";
+    var categories = (IEnumerable<ProductCategory>)(ViewBag.Categories ?? Array.Empty<ProductCategory>());
+}
+<section class="mb-4">
+    <span class="eyebrow">IBDAA · ADMIN</span>
+    <h1 class="section-title mt-2">@(editing ? (ar ? "تعديل المنتج" : "Edit product") : (ar ? "منتج جديد" : "Add product"))</h1>
+    <p class="text-secondary">@(ar ? "أدخل تفاصيل المنتج وأسعاره." : "Enter the product details and KWD prices.")</p>
+</section>
+<div class="card filter-card">
+    <div class="card-body p-4 p-lg-5">
+        <form asp-controller="Products" asp-action="@(editing ? "Edit" : "Create")" method="post" asp-antiforgery="true">
+            <input asp-for="ProductId" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="CategoryId" class="form-label">@(ar ? "الفئة" : "Category") *</label>
+                    <select asp-for="CategoryId" class="form-select" required>
+                        <option value="0">@(ar ? "اختر الفئة" : "Select category")</option>
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category.CategoryId">@(ar ? category.NameAr ?? category.Name : category.Name)</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ProductType" class="form-label">@(ar ? "نوع المنتج" : "Product type") *</label>
+                    <input asp-for="ProductType" class="form-control" maxlength="60" required />
+                    <span asp-validation-for="ProductType" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label">English name *</label>
+                    <input asp-for="Name" class="form-control" maxlength="150" required />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NameAr" class="form-label">الاسم بالعربية *</label>
+                    <input asp-for="NameAr" class="form-control" dir="rtl" lang="ar" maxlength="150" required />
+                    <span asp-validation-for="NameAr" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="RegularPrice" class="form-label">@(ar ? "السعر الأساسي (د.ك)" : "Regular price (KWD)") *</label>
+                    <input asp-for="RegularPrice" class="form-control" type="number" min="0" step=".001" />
+                    <span asp-validation-for="RegularPrice" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DiscountPrice" class="form-label">@(ar ? "سعر الخصم (د.ك)" : "Discount price (KWD)")</label>
+                    <input asp-for="DiscountPrice" class="form-control" type="number" min="0" step=".001" />
+                    <span asp-validation-for="DiscountPrice" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Description" class="form-label">@(ar ? "الوصف بالإنجليزية" : "English description")</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" maxlength="2000"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DescriptionAr" class="form-label">@(ar ? "الوصف بالعربية" : "Arabic description")</label>
+                    <textarea asp-for="DescriptionAr" class="form-control" rows="3" maxlength="2000" dir="rtl" lang="ar"></textarea>
+                    <span asp-validation-for="DescriptionAr" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DisplayOrder" class="form-label">@(ar ? "الترتيب" : "Display order")</label>
+                    <input asp-for="DisplayOrder" class="form-control" type="number" min="0" max="100000" />
+                    <span asp-validation-for="DisplayOrder" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save product")</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</a>
+            </div>
+        </form>
+    </div>
+</div>

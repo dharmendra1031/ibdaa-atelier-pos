@@ -20,7 +20,7 @@
         <div class="card feature-card h-100"><div class="card-body p-4">
             <h2 class="h5">@(isArabic ? "كتالوج المنتجات" : "Product catalogue")</h2>
             <p class="text-secondary">@(isArabic ? "إدارة المنتجات والأسعار." : "Manage products, availability and prices.")</p>
-            <span class="small text-secondary">@(isArabic ? "قيد التنفيذ" : "Next implementation slice")</span>
+            <a class="btn btn-outline-primary" asp-controller="Products" asp-action="Index">@(isArabic ? "إدارة المنتجات" : "Manage products")</a>
         </div></div>
     </div>
 </div>
