@@ -818,3 +818,47 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .auth-services { gap: 6px; }
     .auth-role-note { margin-top: 16px; }
 }
+
+/* Desktop reference: categories stay inside the catalogue area, not a third POS column. */
+.workspace-header-title {
+    margin-inline-end: auto; font-weight: 750; font-size: 1.25rem;
+    color: var(--atelier-primary);
+}
+.pos-page .workspace-header-title { color: #fff7f1; font-size: 1.5rem; }
+.pos-page .workspace-header-title::before { content: "▣"; color: #f0d0a4; margin-inline-end: 12px; }
+.admin-page .workspace-header-title { font-size: 1.1rem; }
+@media (min-width: 1200px) {
+    .pos-app-layout #catalogueProducts {
+        display: grid; grid-template-columns: 150px minmax(0, 1fr);
+        gap: 14px; align-items: start;
+    }
+    .pos-app-layout #catalogueProducts > .pos-catalogue-tools { display: contents; }
+    .pos-app-layout #catalogueProducts .pos-catalogue-tools > form {
+        grid-column: 2; grid-row: 1; margin-bottom: 0 !important;
+        padding: 10px; background: #fff;
+        border: 1px solid var(--atelier-border); border-radius: 12px;
+    }
+    .pos-app-layout #catalogueProducts .pos-categories {
+        grid-column: 1; grid-row: 1 / span 3;
+        display: flex; flex-direction: column; overflow: visible;
+        gap: 7px !important; padding: 0;
+    }
+    .pos-app-layout #catalogueProducts .pos-category {
+        white-space: normal; padding: 13px 11px; text-align: start;
+        font-weight: 600; border: 1px solid #efe4df;
+        background: #fff; border-radius: 12px;
+    }
+    .pos-app-layout #catalogueProducts .pos-category.active {
+        background: #830c35; color: #fff; border-color: #830c35;
+    }
+    .pos-app-layout #catalogueProducts > .pos-product-grid,
+    .pos-app-layout #catalogueProducts > nav,
+    .pos-app-layout #catalogueProducts > p {
+        grid-column: 2; min-width: 0;
+    }
+    .pos-app-layout .pos-heading { margin-top: 0; }
+}
+@media (max-width: 767.98px) {
+    .workspace-header-title { display: none; }
+    .pos-page .site-header .brand-copy { font-size: .78rem; }
+}
