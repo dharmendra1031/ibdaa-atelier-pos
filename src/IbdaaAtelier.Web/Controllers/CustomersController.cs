@@ -58,17 +58,9 @@ public sealed class CustomersController(AtelierDbContext db) : Controller
         if (!ModelState.IsValid)
             return View("Editor", form);
 
-        var customer = new Customer();
-        CopyValues(form, customer);
-        db.Customers.Add(customer);
-
-        await using var transaction = await db.Database.BeginTransactionAsync(ct);
         try
         {
-            await db.SaveChangesAsync(ct);
-            AddAudit("Customer.Create", customer.CustomerId);
-            await db.SaveChangesAsync(ct);
-            await transaction.CommitAsync(ct);
+            await CreateCustomerAsync(form, ct);
         }
         catch (DbUpdateException)
         {
@@ -78,6 +70,42 @@ public sealed class CustomersController(AtelierDbContext db) : Controller
 
         TempData["Message"] = "Customer created.";
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> QuickCreate(CustomerForm form, CancellationToken ct)
+    {
+        await ValidateAsync(form, ct);
+        if (!ModelState.IsValid)
+        {
+            var error = ModelState.Values.SelectMany(value => value.Errors)
+                .Select(item => item.ErrorMessage).FirstOrDefault(message => message.Length > 0);
+            return BadRequest(new { error = error ?? "Enter valid customer details." });
+        }
+
+        try
+        {
+            var customer = await CreateCustomerAsync(form, ct);
+            return Ok(new { customer.CustomerId, customer.Name, customer.NameAr, customer.Mobile });
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict(new { error = "Could not save customer. Mobile number may already exist." });
+        }
+    }
+
+    private async Task<Customer> CreateCustomerAsync(CustomerForm form, CancellationToken ct)
+    {
+        var customer = new Customer();
+        CopyValues(form, customer);
+        db.Customers.Add(customer);
+
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
+        await db.SaveChangesAsync(ct);
+        AddAudit("Customer.Create", customer.CustomerId);
+        await db.SaveChangesAsync(ct);
+        await transaction.CommitAsync(ct);
+        return customer;
     }
 
     [HttpGet]
