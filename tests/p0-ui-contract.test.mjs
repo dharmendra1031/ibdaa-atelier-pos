@@ -43,7 +43,7 @@ test("English/Arabic switching uses a validated POST and local return URL", () =
 });
 
 test("The shell has visible, real navigation and no fake billing button", () => {
-    assert.match(layout, /asp-controller="Home"/);
+    assert.match(layout, /asp-controller="@\(User\.IsInRole\("Admin"\) \? "Admin" : User\.IsInRole\("Cashier"\) \? "Pos" : "Home"\)"/);
     assert.match(layout, /partial name="_Navigation"/);
     assert.match(read("src/IbdaaAtelier.Web/Views/Shared/_Navigation.cshtml"), /asp-controller="Products"/);
     assert.match(layout, /href="#mainContent"/);

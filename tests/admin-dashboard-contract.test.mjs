@@ -34,5 +34,5 @@ test("bilingual compact dashboard has bounded period filters and KWD precision",
     assert.match(view, /name="from"/);
     assert.match(view, /name="to"/);
     assert.match(view, /ToString\("0\.000", CultureInfo\.InvariantCulture\)/);
-    assert.match(view, /isArabic/);
+    assert.match(view, /var ar = CultureInfo\.CurrentUICulture\.TwoLetterISOLanguageName == "ar"/);
 });

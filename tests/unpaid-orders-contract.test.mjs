@@ -40,8 +40,8 @@ test("server uses database row locking, request fingerprint and an atomic order 
     assert.match(service, /CustomerName = customer\.Name/);
 });
 
-test("POS is customer-first and only saves an unpaid order at this stage", () => {
-    assert.match(controller, /Authorize\(Roles = "Admin,Cashier"\)/);
+test("Cashier POS is customer-first and safely saves unpaid orders", () => {
+    assert.match(controller, /Authorize\(Roles = "Cashier"\)/);
     assert.equal((controller.match(/ValidateAntiForgeryToken/g) || []).length, 2);
     assert.match(pos, /col-lg-7/);
     assert.match(pos, /col-lg-5/);

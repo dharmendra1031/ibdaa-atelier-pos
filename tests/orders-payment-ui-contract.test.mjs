@@ -39,5 +39,5 @@ test("one-click full payment fills the selected method without altering server t
     assert.match(payment, /data-method="@line.Method"/);
     assert.match(js, /input\.dataset\.method === method\.value/);
     assert.match(js, /if \(tendered\) tendered\.value = ""/);
-    assert.match(js, /if \(!form\.checkValidity\(\)\) return/);
+    assert.match(js, /if \(!form\.reportValidity\(\)\)/);
 });

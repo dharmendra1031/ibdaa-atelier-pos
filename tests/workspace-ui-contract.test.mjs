@@ -33,7 +33,7 @@ test("dashboard has real financial KPIs with focused quick actions", () => {
     assert.match(dashboard, /Model\.Collected/);
     assert.match(dashboard, /Model\.Outstanding/);
     assert.match(dashboard, /Model\.PendingDeliveries/);
-    assert.match(dashboard, /dashboard-actions/);
+    assert.match(dashboard, /dashboard-quick-links/);
     assert.doesNotMatch(dashboard, /Manage categories|Manage services|Manage users|Manage products/);
 });
 

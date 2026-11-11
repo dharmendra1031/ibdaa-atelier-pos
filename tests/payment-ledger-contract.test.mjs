@@ -36,8 +36,8 @@ test("KWD three-decimal amounts and cash change are server-calculated", () => {
     assert.match(service, /Payment\.Receive/);
 });
 
-test("admin or cashier can record payments, but posts require antiforgery", () => {
-    assert.match(controller, /Authorize\(Roles = "Admin,Cashier"\)/);
+test("cashier-only payment collection requires antiforgery", () => {
+    assert.match(controller, /Authorize\(Roles = "Cashier"\)/);
     assert.match(controller, /ValidateAntiForgeryToken/);
     assert.match(page, /asp-antiforgery="true"/);
     assert.match(page, /Lines\[@i\]\.Method/);
