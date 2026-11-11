@@ -15,6 +15,12 @@
     const saveButton = document.getElementById("saveOrderButton");
     const newButton = document.getElementById("newOrderButton");
     const savedOrderLink = document.getElementById("savedOrderLink");
+    const viewSavedOrderLink = document.getElementById("viewSavedOrderLink");
+    const deliveryDate = document.getElementById("deliveryDate");
+    const quickCustomerDialog = document.getElementById("quickCustomerDialog");
+    const quickCustomerForm = document.getElementById("quickCustomerForm");
+    const quickCustomerError = document.getElementById("quickCustomerError");
+    const quickCustomerSave = document.getElementById("saveQuickCustomer");
     const dialog = document.getElementById("productDialog");
     const dialogFields = document.getElementById("dialogFields");
     const arabic = shell.dataset.arabic === "true";
@@ -40,6 +46,8 @@
             items = saved.items;
             customerId = saved.customerId || 0;
             customerName = saved.customerName || "";
+            if (saved.deliveryDate && saved.deliveryDate >= deliveryDate.min)
+                deliveryDate.value = saved.deliveryDate;
             if (customerId) {
                 customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
                 customerSearch.value = customerName;
@@ -68,7 +76,9 @@
     }
 
     function persistCart() {
-        try { sessionStorage.setItem(cartKey, JSON.stringify({ items, customerId, customerName })); }
+        try { sessionStorage.setItem(cartKey, JSON.stringify({
+            items, customerId, customerName, deliveryDate: deliveryDate.value
+        })); }
         catch { /* Keep the current in-memory order. */ }
     }
 
@@ -128,6 +138,49 @@
         saveButton.disabled = saving || completed || !customerId || items.length === 0;
         persistCart();
     }
+
+    deliveryDate.addEventListener("change", persistCart);
+
+    document.getElementById("openQuickCustomer").addEventListener("click", () => {
+        if (saving || completed) return;
+        if (customerId && items.length > 0 && !window.confirm(text(
+            "Changing customer clears the cart. Continue?",
+            "تغيير العميل يمسح عناصر الطلب. متابعة?"))) return;
+        quickCustomerError.textContent = "";
+        quickCustomerForm.reset();
+        const typed = customerSearch.value.trim();
+        if (/^[+\d\s()-]{8,20}$/.test(typed))
+            document.getElementById("quickCustomerMobile").value = typed;
+        quickCustomerDialog.showModal();
+        document.getElementById("quickCustomerName").focus();
+    });
+
+    quickCustomerForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (saving || completed || !quickCustomerForm.reportValidity()) return;
+        quickCustomerSave.disabled = true;
+        quickCustomerError.textContent = "";
+        try {
+            const customer = await getJson(shell.dataset.customerCreateUrl, {
+                method: "POST",
+                headers: { RequestVerificationToken: token },
+                body: new FormData(quickCustomerForm)
+            });
+            items = [];
+            customerId = customer.customerId;
+            customerName = arabic ? customer.nameAr || customer.name : customer.name;
+            customerSearch.value = customerName + " · " + customer.mobile;
+            customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
+            customerResults.replaceChildren();
+            quickCustomerDialog.close();
+            renderCart();
+            notice("");
+        } catch (error) {
+            quickCustomerError.textContent = error.message;
+        } finally {
+            quickCustomerSave.disabled = false;
+        }
+    });
 
     customerSearch.addEventListener("input", async () => {
         if (saving || completed) return;
@@ -349,7 +402,7 @@
     form.addEventListener("submit", async event => {
         event.preventDefault();
         if (saving || completed) return;
-        const date = document.getElementById("deliveryDate").value;
+        const date = deliveryDate.value;
         if (!customerId || items.length < 1 || !date) {
             notice(text("Select a customer, delivery date and at least one item.", "اختر العميل وتاريخ التسليم وأضف عنصراً."), true);
             return;
@@ -378,8 +431,11 @@
             } catch { /* Ignore storage restrictions. */ }
             notice(text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
                 data.orderNumber + " · " + money(data.total));
-            savedOrderLink.href = shell.dataset.orderUrl + "?id=" + encodeURIComponent(data.orderId);
+            const savedId = "?id=" + encodeURIComponent(data.orderId);
+            savedOrderLink.href = shell.dataset.paymentUrl + savedId;
+            viewSavedOrderLink.href = shell.dataset.orderUrl + savedId;
             savedOrderLink.hidden = false;
+            viewSavedOrderLink.hidden = false;
             newButton.hidden = false;
         } catch (error) {
             notice(error.message, true);
