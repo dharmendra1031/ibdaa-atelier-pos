@@ -17,6 +17,7 @@ public sealed class AtelierDbContext(DbContextOptions<AtelierDbContext> options)
     public DbSet<SizeChartValue> SizeChartValues => Set<SizeChartValue>();
 
     public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<ShopSettings> ShopSettings => Set<ShopSettings>();
     public DbSet<ServiceCategory> ServiceCategories => Set<ServiceCategory>();
     public DbSet<AlterationService> AlterationServices => Set<AlterationService>();
 

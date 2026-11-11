@@ -37,4 +37,11 @@
             <a class="btn btn-outline-primary" asp-controller="Users" asp-action="Index">@(isArabic ? "إدارة المستخدمين" : "Manage users")</a>
         </div></div>
     </div>
+    <div class="col-md-6">
+        <div class="card feature-card h-100"><div class="card-body p-4">
+            <h2 class="h5">@(isArabic ? "إعدادات المتجر" : "Shop settings")</h2>
+            <p class="text-secondary">@(isArabic ? "إدارة بيانات النشاط التجاري للفاتورة." : "Manage bilingual business and invoice header details.")</p>
+            <a class="btn btn-outline-primary" asp-controller="ShopSettings" asp-action="Index">@(isArabic ? "إدارة الإعدادات" : "Manage settings")</a>
+        </div></div>
+    </div>
 </div>
