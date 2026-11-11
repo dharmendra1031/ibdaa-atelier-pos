@@ -11,11 +11,21 @@
         <h1 class="section-title mt-2 mb-1">@(ar ? "طلب جديد" : "New tailoring order")</h1>
         <p class="text-secondary mb-0">@(ar ? "اختر العميل أولاً، ثم أضف المنتجات أو الخدمات." : "Select a customer first, then add products or alteration services.")</p>
     </div>
-    <a asp-controller="Customers" asp-action="Create" class="btn btn-outline-primary">@(ar ? "عميل جديد" : "Add customer")</a>
+    <nav class="d-flex flex-wrap gap-2 pos-shortcuts" aria-label="@(ar ? "روابط سريعة" : "Quick links")">
+        <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الطلبات" : "Orders")</a>
+        <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-primary">@(ar ? "العملاء" : "Customers")</a>
+        <a asp-controller="Register" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الصندوق" : "Register")</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">@(ar ? "لوحة التحكم" : "Dashboard")</a>
+        }
+    </nav>
 </section>
 <div class="pos-shell row g-4" id="posShell"
      data-product-url="@Url.Action("Product", "Pos")"
      data-customer-url="@Url.Action("FindCustomers", "Pos")"
+     data-customer-create-url="@Url.Action("QuickCreate", "Customers")"
+     data-payment-url="@Url.Action("Take", "Payments")"
      data-reserve-url="@Url.Action("Reserve", "Pos")"
      data-save-url="@Url.Action("Save", "Pos")"
      data-order-url="@Url.Action("Details", "Orders")"
@@ -26,30 +36,28 @@
             <button type="button" class="btn btn-outline-primary flex-fill" id="showServices" aria-controls="catalogueServices" aria-pressed="false">@(ar ? "خدمات التعديل" : "Alterations")</button>
         </div>
         <div id="catalogueProducts">
-        <section class="card filter-card mb-4">
-            <div class="card-body p-3 p-md-4">
-                <h2 class="h6 mb-2">@(ar ? "ابحث واختر المنتج" : "Find a product")</h2>
-                <form method="get" asp-action="Index" class="row g-2 align-items-end">
-                    <div class="col-md-5">
-                        <label for="catalogCategory" class="form-label">@(ar ? "الفئة" : "Category")</label>
-                        <select id="catalogCategory" name="categoryId" class="form-select">
-                            <option value="">@(ar ? "كل الفئات" : "All categories")</option>
-                            @foreach (var category in Model.Categories)
-                            {
-                                <option value="@category.CategoryId" selected="@(category.CategoryId == Model.CategoryId)">@(ar ? category.NameAr ?? category.Name : category.Name)</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="col-md-5">
-                        <label for="catalogSearch" class="form-label">@(ar ? "بحث" : "Search")</label>
-                        <input id="catalogSearch" type="search" class="form-control" name="search" maxlength="100" value="@Model.Search" placeholder="@(ar ? "اسم المنتج أو الرمز" : "Product name or code")" />
-                    </div>
-                    <div class="col-md-2 d-grid">
-                        <button type="submit" class="btn btn-primary">@(ar ? "بحث" : "Search")</button>
-                    </div>
+            <section class="pos-catalogue-tools mb-3">
+                <form method="get" asp-action="Index" class="d-flex gap-2 mb-3" role="search">
+                    <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                    <label class="visually-hidden" for="catalogSearch">@(ar ? "بحث عن منتج" : "Search products")</label>
+                    <input id="catalogSearch" type="search" class="form-control" name="search" maxlength="100"
+                           value="@Model.Search" placeholder="@(ar ? "اسم المنتج أو الرمز" : "Find products by name or code")" />
+                    <button type="submit" class="btn btn-primary">@(ar ? "بحث" : "Search")</button>
                 </form>
-            </div>
-        </section>
+                <nav class="pos-categories d-flex gap-2" aria-label="@(ar ? "فئات المنتجات" : "Product categories")">
+                    <a asp-action="Index" asp-route-search="@Model.Search"
+                       class="pos-category @(Model.CategoryId == null ? "active" : "")"
+                       aria-current="@(Model.CategoryId == null ? "page" : null)">@(ar ? "الكل" : "All")</a>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <a asp-action="Index" asp-route-categoryId="@category.CategoryId" asp-route-search="@Model.Search"
+                           class="pos-category @(Model.CategoryId == category.CategoryId ? "active" : "")"
+                           aria-current="@(Model.CategoryId == category.CategoryId ? "page" : null)">
+                            @(ar ? category.NameAr ?? category.Name : category.Name)
+                        </a>
+                    }
+                </nav>
+            </section>
         <div class="row row-cols-2 row-cols-md-3 row-cols-xxl-4 g-2 g-md-3 pos-product-grid">
             @foreach (var product in Model.Products)
             {
@@ -123,9 +131,12 @@
         <section class="card filter-card pos-checkout">
             <div class="card-body p-3 p-md-4">
                 <h2 class="h5 mb-3">@(ar ? "الطلب الحالي" : "Current order")</h2>
-                <p class="small text-secondary mb-3">@(ar ? "١. العميل ← ٢. العناصر ← ٣. الحفظ والدفع" : "1. Customer → 2. Cart → 3. Save & payment")</p>
+
                 <form id="posCheckoutForm" asp-controller="Pos" asp-action="Save" method="post" asp-antiforgery="true">
-                    <label for="customerSearch" class="form-label">@(ar ? "ابحث عن العميل" : "Find customer") *</label>
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <label for="customerSearch" class="form-label">@(ar ? "ابحث عن العميل" : "Find customer") *</label>
+                        <button id="openQuickCustomer" type="button" class="btn btn-link btn-sm text-decoration-none">+ @(ar ? "عميل جديد" : "New customer")</button>
+                    </div>
                     <input id="customerSearch" class="form-control" type="search" autocomplete="off"
                            placeholder="@(ar ? "الاسم أو رقم الهاتف" : "Name or mobile number")" />
                     <div id="customerResults" class="list-group mt-2" role="listbox" aria-label="@(ar ? "نتائج العملاء" : "Matching customers")"></div>
@@ -147,11 +158,14 @@
                         <span>@(ar ? "المجموع" : "Total")</span>
                         <strong id="cartTotal" class="h4 mb-0">0.000 KWD</strong>
                     </div>
-                    <p class="small text-secondary mt-2">@(ar ? "يُحسب السعر النهائي في الخادم. سيتم حفظ الطلب دون دفع." : "Prices are checked when saving. To take full, advance or split payment, open the saved order.")</p>
+                    <p class="small text-secondary mt-2">@(ar ? "يمكن الدفع بعد الحفظ أو ترك الطلب غير مدفوع." : "Save first, then take full, advance or split payment—or leave unpaid.")</p>
                     <div id="posMessage" class="small mb-3" role="status" aria-live="polite"></div>
                     <button type="submit" id="saveOrderButton" class="btn btn-primary w-100" disabled>@(ar ? "حفظ طلب غير مدفوع" : "Save unpaid order")</button>
                     <a id="savedOrderLink" class="btn btn-outline-primary w-100 mt-2" hidden>
-                        @(ar ? "عرض الطلب واستلام الدفعة" : "View order / receive payment")
+                        @(ar ? "استلام الدفعة" : "Take payment")
+                    </a>
+                    <a id="viewSavedOrderLink" class="btn btn-outline-secondary w-100 mt-2" hidden>
+                        @(ar ? "عرض الطلب والطباعة" : "View order / Print")
                     </a>
                     <button type="button" id="newOrderButton" class="btn btn-outline-secondary w-100 mt-2" hidden>@(ar ? "طلب جديد" : "Start another order")</button>
                 </form>
@@ -169,6 +183,24 @@
         <button type="button" id="addProductButton" class="btn btn-primary">@(ar ? "إضافة للطلب" : "Add to order")</button>
         <button type="button" id="cancelProductButton" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</button>
     </div>
+</dialog>
+
+
+<dialog id="quickCustomerDialog" class="pos-dialog" aria-labelledby="quickCustomerTitle">
+    <form method="dialog" class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <h2 id="quickCustomerTitle" class="h5 mb-0">@(ar ? "عميل جديد" : "New customer")</h2>
+        <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="@(ar ? "إغلاق" : "Close")">×</button>
+    </form>
+    <form id="quickCustomerForm">
+        <label for="quickCustomerName" class="form-label">@(ar ? "الاسم بالإنجليزية" : "English name") *</label>
+        <input id="quickCustomerName" name="Name" class="form-control mb-3" maxlength="120" required />
+        <label for="quickCustomerNameAr" class="form-label">@(ar ? "الاسم بالعربية" : "Arabic name") *</label>
+        <input id="quickCustomerNameAr" name="NameAr" class="form-control mb-3" maxlength="120" dir="rtl" lang="ar" required />
+        <label for="quickCustomerMobile" class="form-label">@(ar ? "رقم الجوال" : "Mobile number") *</label>
+        <input id="quickCustomerMobile" name="Mobile" class="form-control mb-3" type="tel" maxlength="20" required />
+        <p id="quickCustomerError" class="small text-danger" role="alert" aria-live="polite"></p>
+        <button id="saveQuickCustomer" type="submit" class="btn btn-primary w-100">@(ar ? "حفظ واختيار العميل" : "Save & select customer")</button>
+    </form>
 </dialog>
 
 @section Scripts
