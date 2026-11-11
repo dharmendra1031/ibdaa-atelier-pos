@@ -24,3 +24,13 @@ jobs:
         run: node --check src/IbdaaAtelier.Web/wwwroot/js/pos.js
       - name: Source contract tests
         run: node --test tests/*.test.mjs
+
+  sql-schema:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: SQL Server 2022 migrations and constraints
+        run: bash tests/sql/run-smoke.sh
