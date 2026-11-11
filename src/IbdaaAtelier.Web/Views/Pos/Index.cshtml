@@ -15,10 +15,6 @@
         <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الطلبات" : "Orders")</a>
         <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-primary">@(ar ? "العملاء" : "Customers")</a>
         <a asp-controller="Register" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الصندوق" : "Register")</a>
-        @if (User.IsInRole("Admin"))
-        {
-            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">@(ar ? "لوحة التحكم" : "Dashboard")</a>
-        }
     </nav>
 </section>
 <div class="pos-shell row g-4" id="posShell"
