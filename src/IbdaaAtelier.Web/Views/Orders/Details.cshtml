@@ -11,7 +11,7 @@
         <p class="text-secondary mb-0">@(ar ? Model.Order.CustomerNameAr : Model.Order.CustomerName) · @Model.Order.CustomerMobile</p>
     </div>
     <div class="d-flex gap-2">
-        @if (Model.Balance > 0 && Model.Order.Status != "Cancelled")
+        @if (User.IsInRole("Cashier") && Model.Balance > 0 && Model.Order.Status != "Cancelled")
         {
             <a asp-controller="Payments" asp-action="Take" asp-route-id="@Model.Order.OrderId" class="btn btn-primary">
                 @(ar ? "استلام دفعة" : "Take payment")
