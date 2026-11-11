@@ -35,8 +35,18 @@ docker exec "$container_name" "$sqlcmd" -S localhost -U sa -P "$ci_password" -C 
 run_script() {
     local file="$1"
     echo "Running $file on isolated IBDAA_CI"
-    sed '0,/__SET_TEST_DATABASE_NAME__/s/__SET_TEST_DATABASE_NAME__/IBDAA_CI/' "$file" | \
-        docker exec -i "$container_name" "$sqlcmd" -S localhost -U sa \
+    {
+        # SQL Server requires these session flags for indexed computed columns.
+        printf '%s\n' \
+            'SET QUOTED_IDENTIFIER ON;' \
+            'SET ANSI_NULLS ON;' \
+            'SET ANSI_PADDING ON;' \
+            'SET ANSI_WARNINGS ON;' \
+            'SET ARITHABORT ON;' \
+            'SET CONCAT_NULL_YIELDS_NULL ON;' \
+            'SET NUMERIC_ROUNDABORT OFF;'
+        sed '0,/__SET_TEST_DATABASE_NAME__/s/__SET_TEST_DATABASE_NAME__/IBDAA_CI/' "$file"
+    } | docker exec -i "$container_name" "$sqlcmd" -S localhost -U sa \
         -P "$ci_password" -C -b -d IBDAA_CI
 }
 
