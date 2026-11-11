@@ -22,7 +22,7 @@ test("cart lines are editable and edit preserves relevant size and measurements"
     assert.match(js, /function editService\(index\)/);
     assert.match(js, /openProduct\(line\.itemId, index\)/);
     assert.match(js, /const current = index >= 0 \? items\[index\] : null/);
-    assert.match(js, /current\.measurements\?\.find/);
+    assert.match(js, /current\?\.measurements\?\.find/);
     assert.match(js, /items\[editingIndex\] = nextItem/);
     assert.match(js, /items\[editingIndex\] = \{/);
     assert.match(js, /input\.value = String\(previous\.value\)/);

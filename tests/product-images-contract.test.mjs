@@ -34,7 +34,8 @@ test("gallery supports multiple pictures, primary, replacement and deletion", ()
     assert.match(controller, /ProductImage\.MakePrimary/);
     assert.match(gallery, /gallery-photo/);
     assert.match(gallery, /image-upload-input/);
-    assert.match(editor, /asp-controller="ProductImages"/);
+    assert.match(editor, /partial name="_ProductTabs"/);
+    assert.match(read("src/IbdaaAtelier.Web/Views/Shared/_ProductTabs.cshtml"), /asp-controller="ProductImages"/);
 });
 
 test("database and disk operations keep image rows and paths consistent", () => {

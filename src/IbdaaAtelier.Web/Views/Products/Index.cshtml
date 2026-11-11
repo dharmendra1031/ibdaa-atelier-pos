@@ -49,9 +49,7 @@
                     <td><span class="badge @(product.IsActive ? "text-bg-success" : "text-bg-secondary")">@(product.IsActive ? "Active" : "Inactive")</span></td>
                     <td class="text-end">
                         <div class="d-inline-flex flex-wrap gap-2">
-                            <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-primary">@(ar ? "تعديل" : "Edit")</a>
-                            <a asp-controller="ProductSetup" asp-action="Index" asp-route-productId="@product.ProductId" class="btn btn-sm btn-outline-primary">@(ar ? "المقاسات" : "Sizes")</a>
-                            <a asp-controller="ProductImages" asp-action="Index" asp-route-productId="@product.ProductId" class="btn btn-sm btn-outline-primary">@(ar ? "الصور" : "Photos")</a>
+                            <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-primary">@(ar ? "إدارة" : "Manage")</a>
                             <form asp-action="Toggle" asp-route-id="@product.ProductId" method="post" asp-antiforgery="true">
                                 <button class="btn btn-sm btn-outline-secondary" type="submit">@(product.IsActive ? (ar ? "تعطيل" : "Deactivate") : (ar ? "تفعيل" : "Activate"))</button>
                             </form>

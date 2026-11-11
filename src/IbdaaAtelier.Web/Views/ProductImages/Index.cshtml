@@ -2,6 +2,7 @@
 @using System.Globalization
 @{
     ViewData["Title"] = "Product gallery";
+    ViewData["ProductTab"] = "photos";
     var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
 <section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
@@ -14,6 +15,7 @@
         @(ar ? "العودة للمنتج" : "Back to product")
     </a>
 </section>
+<partial name="_ProductTabs" model="Model.Product.ProductId" />
 @if (TempData["Message"] is string message)
 {
     <div class="alert alert-success" role="status">@message</div>

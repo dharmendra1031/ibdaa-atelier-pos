@@ -432,3 +432,11 @@ a:focus-visible, button:focus-visible {
     .pos-shell .product-media { aspect-ratio: 1 / 1; }
     .pos-checkout .card-body { padding: 16px !important; }
 }
+
+/* Product editing stays in one clear Details / Photos / Sizing workflow. */
+.product-workspace-nav { border-bottom: 1px solid var(--atelier-border); padding-bottom: 12px; }
+.product-workspace-nav .btn { flex: 0 1 auto; white-space: normal; font-weight: 650; }
+#productSizes, #productMeasurements, #sizeChart { scroll-margin-top: 22px; }
+@media (max-width: 575.98px) {
+    .product-workspace-nav .btn { flex: 1 1 100%; text-align: start; }
+}

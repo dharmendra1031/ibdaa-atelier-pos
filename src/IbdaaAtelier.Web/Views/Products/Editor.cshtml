@@ -4,6 +4,7 @@
     var editing = Model.ProductId > 0;
     var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
     ViewData["Title"] = editing ? "Edit product" : "Add product";
+    ViewData["ProductTab"] = "details";
     var categories = (IEnumerable<ProductCategory>)(ViewBag.Categories ?? Array.Empty<ProductCategory>());
 }
 <section class="mb-4">
@@ -11,6 +12,14 @@
     <h1 class="section-title mt-2">@(editing ? (ar ? "تعديل المنتج" : "Edit product") : (ar ? "منتج جديد" : "Add product"))</h1>
     <p class="text-secondary">@(ar ? "أدخل تفاصيل المنتج وأسعاره." : "Enter the product details and KWD prices.")</p>
 </section>
+@if (editing)
+{
+    <partial name="_ProductTabs" model="Model.ProductId" />
+}
+else
+{
+    <p class="small text-secondary">@(ar ? "احفظ المنتج أولاً لإضافة الصور والمقاسات." : "Save the product first, then add photos and measurements.")</p>
+}
 <div class="card filter-card">
     <div class="card-body p-4 p-lg-5">
         <form asp-controller="Products" asp-action="@(editing ? "Edit" : "Create")" method="post" asp-antiforgery="true">
@@ -72,11 +81,7 @@
             <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save product")</button>
                 <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</a>
-                @if (editing)
-                {
-                    <a asp-controller="ProductSetup" asp-action="Index" asp-route-productId="@Model.ProductId" class="btn btn-outline-primary">@(ar ? "المقاسات والقياسات" : "Sizes & measurements")</a>
-                    <a asp-controller="ProductImages" asp-action="Index" asp-route-productId="@Model.ProductId" class="btn btn-outline-primary">@(ar ? "معرض الصور" : "Photo gallery")</a>
-                }
+
             </div>
         </form>
     </div>

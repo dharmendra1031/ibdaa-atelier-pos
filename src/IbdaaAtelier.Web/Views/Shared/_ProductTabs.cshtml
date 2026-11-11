@@ -1,0 +1,17 @@
+@model int
+@using System.Globalization
+@{
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var active = ViewData["ProductTab"]?.ToString() ?? "details";
+}
+<nav class="product-workspace-nav d-flex flex-wrap gap-2 mb-4" aria-label="@(ar ? "إعدادات المنتج" : "Product setup")">
+    <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model"
+       class="btn @(active == "details" ? "btn-primary" : "btn-outline-primary")"
+       aria-current="@(active == "details" ? "page" : null)">@(ar ? "١. التفاصيل والأسعار" : "1. Details & prices")</a>
+    <a asp-controller="ProductImages" asp-action="Index" asp-route-productId="@Model"
+       class="btn @(active == "photos" ? "btn-primary" : "btn-outline-primary")"
+       aria-current="@(active == "photos" ? "page" : null)">@(ar ? "٢. الصور" : "2. Photos")</a>
+    <a asp-controller="ProductSetup" asp-action="Index" asp-route-productId="@Model"
+       class="btn @(active == "sizing" ? "btn-primary" : "btn-outline-primary")"
+       aria-current="@(active == "sizing" ? "page" : null)">@(ar ? "٣. المقاسات والقياسات" : "3. Sizes & measurements")</a>
+</nav>

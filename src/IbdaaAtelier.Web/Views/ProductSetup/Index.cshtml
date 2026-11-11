@@ -2,6 +2,7 @@
 @using System.Globalization
 @{
     ViewData["Title"] = "Product sizing";
+    ViewData["ProductTab"] = "sizing";
     var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
 <section class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
@@ -12,6 +13,12 @@
     </div>
     <a class="btn btn-outline-secondary" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Product.ProductId">@(ar ? "العودة للمنتج" : "Back to product")</a>
 </section>
+<partial name="_ProductTabs" model="Model.Product.ProductId" />
+<nav aria-label="@(ar ? "أقسام المقاسات" : "Sizing sections")" class="d-flex gap-2 flex-wrap mb-3">
+    <a class="btn btn-outline-secondary btn-sm" href="#productSizes">@(ar ? "المقاسات" : "Sizes")</a>
+    <a class="btn btn-outline-secondary btn-sm" href="#productMeasurements">@(ar ? "القياسات" : "Measurements")</a>
+    <a class="btn btn-outline-secondary btn-sm" href="#sizeChart">@(ar ? "جدول المقاسات" : "Size chart")</a>
+</nav>
 @if (TempData["Message"] is string notice)
 {
     <div class="alert alert-success" role="status">@notice</div>
@@ -25,7 +32,7 @@
     <div class="col-lg-5">
         <div class="card filter-card mb-4">
             <div class="card-body p-4">
-                <h2 class="h5">@(ar ? "مقاسات المنتج" : "Available sizes")</h2>
+                <h2 id="productSizes" class="h5">@(ar ? "مقاسات المنتج" : "Available sizes")</h2>
                 <form asp-action="AddSize" method="post" asp-antiforgery="true" class="row g-2 align-items-end mb-3">
                     <input type="hidden" name="productId" value="@Model.Product.ProductId" />
                     <div class="col-6">
@@ -61,7 +68,7 @@
         </div>
         <div class="card filter-card">
             <div class="card-body p-4">
-                <h2 class="h5">@(ar ? "حقول القياسات" : "Measurement fields")</h2>
+                <h2 id="productMeasurements" class="h5">@(ar ? "حقول القياسات" : "Measurement fields")</h2>
                 <p class="small text-secondary">@(ar ? "تُطبق حقول الفئة والمنتج معاً." : "Product and category definitions are both applied.")</p>
                 <form asp-action="AddMeasurement" method="post" asp-antiforgery="true" class="row g-2">
                     <input type="hidden" name="productId" value="@Model.Product.ProductId" />
@@ -114,7 +121,7 @@
     <div class="col-lg-7">
         <div class="card filter-card">
             <div class="card-body p-4">
-                <h2 class="h5">@(ar ? "جدول المقاسات" : "Size chart values")</h2>
+                <h2 id="sizeChart" class="h5">@(ar ? "جدول المقاسات" : "Size chart values")</h2>
                 <p class="small text-secondary">@(ar ? "أدخل قيمة كل قياس بحسب المقاس. دقة رقمين عشريين." : "Enter numeric values for each applicable size and measurement (up to two decimals).")</p>
                 @foreach (var size in Model.Sizes.Where(s => s.IsActive))
                 {
