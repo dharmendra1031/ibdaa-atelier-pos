@@ -14,7 +14,7 @@ foreach (System.Data.DataColumn column in data.Header.Columns)
     else header[column] = column.ColumnName switch
     {
         "OrderNumber" => "IA-123",
-        "BusinessName" => "IBDAA Atelier",
+        "BusinessName" => "TEST REPORT - IBDAA Atelier",
         "BusinessNameAr" => "إبداع أتيليه",
         "CustomerName" => "Arabic and English Customer",
         "CustomerNameAr" => "عميل عربي",
@@ -26,6 +26,9 @@ foreach (System.Data.DataColumn column in data.Header.Columns)
         _ => "11-11-2026"
     };
 }
+// Small in-memory test logo; no client image or live filesystem is used.
+header["Logo"] = Convert.FromBase64String(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7+RwAAAABJRU5ErkJggg==");
 data.Header.Rows.Add(header);
 data.Lines.Rows.Add(1, "Long dress alteration with custom sleeves", "تعديل فستان بأكمام مخصصة",
     "Size: XL\nChest / الصدر: 100 cm\nWaist / الخصر: 85 cm", 2, "40.000", "80.000");
@@ -43,4 +46,11 @@ foreach (var name in new[] { "InvoiceA4.rdlc", "Invoice80mm.rdlc" })
     if (pdf.Length < 500 || System.Text.Encoding.ASCII.GetString(pdf.AsSpan(0, 4)) != "%PDF")
         throw new Exception(name + " did not render a PDF.");
     Console.WriteLine($"{name}: rendered {pdf.Length} PDF bytes.");
+    var outputDirectory = Environment.GetEnvironmentVariable("INVOICE_SMOKE_OUTPUT");
+    if (!string.IsNullOrWhiteSpace(outputDirectory))
+    {
+        Directory.CreateDirectory(outputDirectory);
+        await File.WriteAllBytesAsync(Path.Combine(outputDirectory,
+            Path.GetFileNameWithoutExtension(name) + "-TEST.pdf"), pdf);
+    }
 }

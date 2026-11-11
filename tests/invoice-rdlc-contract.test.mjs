@@ -39,6 +39,8 @@ test("invoice is mapped from saved item measurements, ledger transactions and sh
 test("Windows CI attempts real RDLC PDF rendering, not just source checks", () => {
     assert.match(ci, /invoice-render:/);
     assert.match(ci, /runs-on: windows-latest/);
+    assert.match(ci, /invoice-rdlc-test-pdfs/);
+    assert.match(ci, /INVOICE_SMOKE_OUTPUT/);
     assert.match(ci, /dotnet run --project tests\/InvoiceSmoke\/InvoiceSmoke.csproj/);
     assert.match(read("tests/InvoiceSmoke/Program.cs"), /%PDF/);
 });
