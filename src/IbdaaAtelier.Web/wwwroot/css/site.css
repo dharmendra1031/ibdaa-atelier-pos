@@ -459,3 +459,69 @@ a:focus-visible, button:focus-visible {
     .pos-shell .pos-product .card-body { padding: 10px !important; }
     .pos-shell .pos-product .product-title { font-size: .8rem; }
 }
+
+
+/* IBDAA POS counter workspace: keep the admin shell unchanged. */
+.pos-page {
+    --atelier-primary: #68243d;
+    --atelier-primary-dark: #4f172c;
+    --atelier-bg: #fbf8f4;
+    --atelier-ink: #35252c;
+    --atelier-muted: #7a6a70;
+    --atelier-border: #e9ded9;
+    --bs-primary: var(--atelier-primary);
+    --bs-primary-rgb: 104, 36, 61;
+    --bs-body-bg: var(--atelier-bg);
+    --bs-body-color: var(--atelier-ink);
+    --bs-secondary-color: var(--atelier-muted);
+    --bs-border-color: var(--atelier-border);
+    background: var(--atelier-bg);
+}
+.pos-page .site-header { background: #511b30; border-bottom-color: #713b4f; }
+.pos-page .site-header .brand,
+.pos-page .site-header .workspace-user { color: #fff; }
+.pos-page .site-header .brand-copy small { color: #e5c9d0; }
+.pos-page .site-header .brand-mark { background: #7b3751; color: #fff; }
+.pos-page .site-header .language-button,
+.pos-page .site-header .btn-outline-secondary { color: #fff; border-color: #ae8494; background: transparent; }
+.pos-page .site-header .language-button:hover,
+.pos-page .site-header .btn-outline-secondary:hover { background: #6a2c44; }
+.app-layout.pos-app-layout { max-width: 1700px; grid-template-columns: minmax(0, 1fr); }
+.pos-app-layout .app-sidebar,
+.pos-app-layout .mobile-menu,
+.pos-app-layout .workspace-breadcrumb { display: none; }
+.pos-app-layout .app-workspace { padding-block: 18px 32px; }
+.pos-app-layout .pos-heading .section-title { font-size: 1.75rem; }
+.pos-app-layout .pos-heading p { font-size: .86rem; }
+.pos-app-layout .pos-shortcuts .btn { min-height: 38px; padding: 7px 13px; font-size: .85rem; }
+.pos-app-layout .pos-catalogue-tools { background: #fff; padding: 14px; border: 1px solid var(--atelier-border); border-radius: 12px; }
+.pos-app-layout .pos-categories { overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
+.pos-app-layout .pos-category {
+    flex: 0 0 auto; text-decoration: none; white-space: nowrap;
+    padding: 9px 15px; border: 1px solid var(--atelier-border);
+    border-radius: 30px; color: var(--atelier-ink); font-size: .84rem;
+}
+.pos-app-layout .pos-category:hover { border-color: var(--atelier-primary); color: var(--atelier-primary); }
+.pos-app-layout .pos-category.active { background: var(--atelier-primary); color: #fff; border-color: var(--atelier-primary); }
+.pos-app-layout .pos-category:focus-visible { outline: 3px solid var(--atelier-accent); outline-offset: 2px; }
+.pos-app-layout .pos-product { border-radius: 12px; }
+.pos-app-layout .pos-checkout { border-top: 3px solid var(--atelier-primary); }
+.pos-app-layout .pos-empty-cart { background: #fcf9f6; border-color: #e5d6d9; }
+.pos-app-layout .pos-missing-photo { color: #86737b; }
+.pos-app-layout .pos-photo-outline { border-color: #d6bbc5; }
+.pos-app-layout .pos-product-grid .product-media { background: #f2ebe8; }
+.pos-dialog-gallery { display: grid; gap: 9px; margin-bottom: 16px; }
+.pos-dialog-image { display: block; width: 100%; max-height: 250px; object-fit: contain; background: #faf5f2; border-radius: 9px; }
+.pos-dialog-thumbnails { display: flex; gap: 8px; overflow-x: auto; }
+.pos-dialog-thumbnail { padding: 3px; border: 2px solid transparent; border-radius: 8px; background: #fff; flex: 0 0 auto; }
+.pos-dialog-thumbnail.active { border-color: var(--atelier-primary); }
+.pos-dialog-thumbnail img { display: block; width: 54px; height: 60px; object-fit: cover; border-radius: 5px; }
+@media (min-width: 992px) {
+    .pos-app-layout .pos-shell > .col-lg-7 { width: 62%; flex: 0 0 62%; max-width: 62%; }
+    .pos-app-layout .pos-shell > .col-lg-5 { width: 38%; flex: 0 0 38%; max-width: 38%; }
+}
+@media (max-width: 575.98px) {
+    .pos-app-layout .pos-shortcuts { max-width: 100%; }
+    .pos-app-layout .pos-shortcuts .btn { padding: 6px 10px; }
+    .pos-app-layout .pos-catalogue-tools { padding: 10px; }
+}
