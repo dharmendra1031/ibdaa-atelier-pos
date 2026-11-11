@@ -80,6 +80,9 @@ test("payment and order status submissions show processing without changing fina
     assert.match(payment, /if \(save\.disabled\)/);
     assert.match(payment, /save\.setAttribute\("aria-busy", "true"\)/);
     assert.match(payment, /window\.addEventListener\("pageshow"/);
+    assert.match(payment, /\.order-feedback \.btn-close/);
+    assert.match(read("src/IbdaaAtelier.Web/Views/Payments/Take.cshtml"),
+        /class="order-feedback order-feedback-error"/);
     assert.match(details, /class="order-feedback"/);
     assert.match(details, /class="order-feedback order-feedback-error"/);
     assert.match(details, /id="orderStatusForm"/);
