@@ -10,6 +10,12 @@
 - Prefer a compact top navigation in the dedicated POS experience; avoid a permanent sidebar eating into the product area.
 - Existing ASP.NET Core 10 MVC/Razor, local Bootstrap 5.3 and scoped plain JavaScript remain the technology baseline. No new frontend framework.
 
+## Role-separated workspaces (confirmed 11 November 2026)
+- **Admin** signs into the Admin Dashboard. No POS Billing, New Order, or Receive Payment action in the Admin workspace; direct POS billing endpoints are Cashier-only.
+- **Cashier** signs into the POS Billing workspace and handles order creation and payment collection.
+- Admin retains SRS-required management and oversight: product/service/customer setup, order review and authorized status/refund controls, cash-register oversight and approvals. Do not confuse reviewing transaction history with performing cashier billing.
+- Keep distinct Admin and Cashier UI navigation and enforce roles server-side, not only by hiding links.
+
 ## POS main working layout
 - Exactly **two persistent areas**: left ~60–65% product/service catalogue, right ~35–40% customer/cart/checkout. Tablet stacks them appropriately.
 - Left: product/service switch, search, category chips, photo grid with bilingual names and verified price; show active products only.
