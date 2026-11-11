@@ -6,6 +6,7 @@ ci_password="CiOnly_$(openssl rand -hex 12)_A1!"
 trap 'docker rm -f "$container_name" >/dev/null 2>&1 || true' EXIT
 
 docker run --name "$container_name" --detach \
+    --publish 127.0.0.1:14333:1433 \
     --env ACCEPT_EULA=Y --env MSSQL_SA_PASSWORD="$ci_password" \
     mcr.microsoft.com/mssql/server:2022-latest >/dev/null
 
@@ -89,4 +90,7 @@ run_script tests/sql/refunds-smoke.sql
 run_script tests/sql/status-smoke.sql
 run_script tests/sql/user-access-smoke.sql
 run_script tests/sql/shop-settings-smoke.sql
-echo "SQL migrations, identity keys and constraint smoke test passed."
+echo "SQL migrations and constraints passed. Running real EF Core order/payment/refund integration..."
+IBDAA_CI_CONNECTION="Server=127.0.0.1,14333;Database=IBDAA_CI;User Id=sa;Password=$ci_password;Encrypt=True;TrustServerCertificate=True" \
+    dotnet run --project tests/DomainSmoke/DomainSmoke.csproj --configuration Release
+echo "SQL and EF Core domain integration tests passed."
