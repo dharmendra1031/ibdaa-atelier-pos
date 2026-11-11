@@ -53,9 +53,16 @@ echo "HTTP smoke: Arabic RTL response"
 curl --fail --silent --show-error \
     -H 'Cookie: .AspNetCore.Culture=c%3Dar-KW%7Cuic%3Dar-KW' \
     "$base_url/Auth/Login" -o "$output_dir/arabic.html"
-grep -o '<html[^>]*>' "$output_dir/arabic.html" || true
 grep -q '<html lang="ar" dir="rtl">' "$output_dir/arabic.html"
-grep -q 'تسجيل الدخول' "$output_dir/arabic.html"
+python3 - "$output_dir/arabic.html" <<'PY'
+import html
+import sys
+from pathlib import Path
+
+content = html.unescape(Path(sys.argv[1]).read_text())
+if "تسجيل الدخول" not in content:
+    raise SystemExit("Arabic login heading is missing.")
+PY
 
 echo "HTTP smoke: protected routes"
 for path in /Admin /Pos /Payments/Take /Refunds/Issue; do
