@@ -57,6 +57,10 @@
             <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save category")</button>
                 <a class="btn btn-outline-secondary" asp-action="Index">@(ar ? "إلغاء" : "Cancel")</a>
+                @if (editing)
+                {
+                    <a class="btn btn-outline-primary" asp-controller="ProductSetup" asp-action="Category" asp-route-categoryId="@Model.CategoryId">@(ar ? "قياسات الفئة" : "Category measurements")</a>
+                }
             </div>
         </form>
     </div>

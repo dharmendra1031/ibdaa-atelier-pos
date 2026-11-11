@@ -1,0 +1,150 @@
+@model ProductSetupPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Product sizing";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div>
+        <span class="eyebrow">IBDAA · PRODUCT CONFIGURATION</span>
+        <h1 class="section-title mt-2">@(ar ? "المقاسات والقياسات" : "Sizes & measurements")</h1>
+        <p class="text-secondary mb-0">@Model.Product.Name · @Model.Product.ProductCode</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Product.ProductId">@(ar ? "العودة للمنتج" : "Back to product")</a>
+</section>
+@if (TempData["Message"] is string notice)
+{
+    <div class="alert alert-success" role="status">@notice</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-warning" role="alert">@error</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card filter-card mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "مقاسات المنتج" : "Available sizes")</h2>
+                <form asp-action="AddSize" method="post" asp-antiforgery="true" class="row g-2 align-items-end mb-3">
+                    <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                    <div class="col-6">
+                        <label for="sizeName" class="form-label">@(ar ? "اسم المقاس" : "Size name")</label>
+                        <input id="sizeName" type="text" name="name" maxlength="30" class="form-control" placeholder="S, M, XL, Custom" required />
+                    </div>
+                    <div class="col-3">
+                        <label for="sizeOrder" class="form-label">@(ar ? "الترتيب" : "Order")</label>
+                        <input id="sizeOrder" type="number" name="displayOrder" min="0" max="100000" value="0" class="form-control" />
+                    </div>
+                    <div class="col-3 d-grid">
+                        <button type="submit" class="btn btn-primary">@(ar ? "إضافة" : "Add")</button>
+                    </div>
+                </form>
+                <div class="list-group list-group-flush">
+                @foreach (var size in Model.Sizes)
+                {
+                    <div class="list-group-item px-0 d-flex align-items-center justify-content-between gap-2">
+                        <span><strong>@size.Name</strong> <small class="text-secondary">@(size.IsActive ? "Active" : "Inactive")</small></span>
+                        <form asp-action="ToggleSize" method="post" asp-antiforgery="true">
+                            <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                            <input type="hidden" name="sizeId" value="@size.SizeId" />
+                            <button class="btn btn-sm btn-outline-secondary" type="submit">@(size.IsActive ? (ar ? "تعطيل" : "Deactivate") : (ar ? "تفعيل" : "Activate"))</button>
+                        </form>
+                    </div>
+                }
+                @if (Model.Sizes.Count == 0)
+                {
+                    <p class="text-secondary mb-0">@(ar ? "لم يتم إعداد مقاسات." : "No sizes configured.")</p>
+                }
+                </div>
+            </div>
+        </div>
+        <div class="card filter-card">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "حقول القياسات" : "Measurement fields")</h2>
+                <p class="small text-secondary">@(ar ? "تُطبق حقول الفئة والمنتج معاً." : "Product and category definitions are both applied.")</p>
+                <form asp-action="AddMeasurement" method="post" asp-antiforgery="true" class="row g-2">
+                    <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                    <div class="col-sm-6">
+                        <label for="measurementName" class="form-label">English name *</label>
+                        <input id="measurementName" name="name" required maxlength="100" class="form-control" placeholder="Chest" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="measurementNameAr" class="form-label">الاسم بالعربية *</label>
+                        <input id="measurementNameAr" name="nameAr" required maxlength="100" dir="rtl" lang="ar" class="form-control" />
+                    </div>
+                    <div class="col-5">
+                        <label for="measurementUnit" class="form-label">@(ar ? "الوحدة" : "Unit")</label>
+                        <select id="measurementUnit" name="unit" class="form-select"><option value="cm">cm</option><option value="in">in</option></select>
+                    </div>
+                    <div class="col-4">
+                        <label for="measurementOrder" class="form-label">@(ar ? "الترتيب" : "Order")</label>
+                        <input id="measurementOrder" name="displayOrder" type="number" min="0" value="0" class="form-control" />
+                    </div>
+                    <div class="col-3 d-flex align-items-end">
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" name="isRequired" value="true" />
+                            <span class="form-check-label">@(ar ? "مطلوب" : "Required")</span>
+                        </label>
+                    </div>
+                    <div class="col-12 d-grid mt-2">
+                        <button class="btn btn-primary" type="submit">@(ar ? "إضافة قياس" : "Add measurement")</button>
+                    </div>
+                </form>
+                <div class="list-group list-group-flush mt-3">
+                @foreach (var measurement in Model.Measurements)
+                {
+                    <div class="list-group-item px-0 d-flex justify-content-between align-items-center gap-2">
+                        <span><strong>@measurement.Name</strong><small class="d-block text-secondary" lang="ar">@measurement.NameAr · @measurement.Unit · @(measurement.IsRequired ? "Required" : "Optional") · @(measurement.ProductId.HasValue ? "Product" : "Category") · @(measurement.IsActive ? "Active" : "Inactive")</small></span>
+                        @if (measurement.ProductId == Model.Product.ProductId)
+                        {
+                            <form asp-action="ToggleMeasurement" method="post" asp-antiforgery="true">
+                                <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                <input type="hidden" name="measurementId" value="@measurement.MeasurementId" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">@(measurement.IsActive ? (ar ? "تعطيل" : "Deactivate") : (ar ? "تفعيل" : "Activate"))</button>
+                            </form>
+                        }
+                    </div>
+                }
+                </div>
+                <a class="btn btn-link px-0 mt-2" asp-action="Category" asp-route-categoryId="@Model.Product.CategoryId">@(ar ? "قياسات الفئة" : "Manage category fields")</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card filter-card">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "جدول المقاسات" : "Size chart values")</h2>
+                <p class="small text-secondary">@(ar ? "أدخل قيمة كل قياس بحسب المقاس. دقة رقمين عشريين." : "Enter numeric values for each applicable size and measurement (up to two decimals).")</p>
+                @foreach (var size in Model.Sizes.Where(s => s.IsActive))
+                {
+                    <div class="border-top pt-3 mt-3">
+                        <h3 class="h6">@size.Name</h3>
+                        <div class="row g-2">
+                        @foreach (var measurement in Model.Measurements.Where(m => m.IsActive))
+                        {
+                            var existing = Model.ChartValues.FirstOrDefault(v => v.SizeId == size.SizeId && v.MeasurementId == measurement.MeasurementId);
+                            <div class="col-sm-6">
+                                <form asp-action="SaveChart" method="post" asp-antiforgery="true" class="border rounded-3 p-2">
+                                    <input type="hidden" name="productId" value="@Model.Product.ProductId" />
+                                    <input type="hidden" name="sizeId" value="@size.SizeId" />
+                                    <input type="hidden" name="measurementId" value="@measurement.MeasurementId" />
+                                    <label class="form-label small" for="chart_@(size.SizeId)_@(measurement.MeasurementId)">@measurement.Name (@measurement.Unit)</label>
+                                    <div class="input-group">
+                                        <input id="chart_@(size.SizeId)_@(measurement.MeasurementId)" type="number" name="value" min="0" max="9999999.99" step=".01" value="@(existing?.Value.ToString("0.##", CultureInfo.InvariantCulture) ?? "")" class="form-control" required />
+                                        <button type="submit" class="btn btn-outline-primary">@(ar ? "حفظ" : "Save")</button>
+                                    </div>
+                                </form>
+                            </div>
+                        }
+                        </div>
+                    </div>
+                }
+                @if (Model.Sizes.All(s => !s.IsActive) || Model.Measurements.All(m => !m.IsActive))
+                {
+                    <p class="text-secondary">@(ar ? "أضف مقاسات وقياسات فعالة أولاً." : "Create active sizes and measurement fields to edit the chart.")</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

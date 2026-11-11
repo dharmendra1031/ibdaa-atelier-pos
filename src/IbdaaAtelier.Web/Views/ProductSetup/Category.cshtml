@@ -1,0 +1,57 @@
+@model CategoryMeasurementPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Category measurements";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="mb-4">
+    <span class="eyebrow">IBDAA · MEASUREMENTS</span>
+    <h1 class="section-title mt-2">@(ar ? "قياسات الفئة" : "Category measurement fields")</h1>
+    <p class="text-secondary">@Model.Category.Name · @Model.Category.NameAr</p>
+    <a class="btn btn-outline-secondary" asp-controller="Categories" asp-action="Edit" asp-route-id="@Model.Category.CategoryId">@(ar ? "العودة للفئة" : "Back to category")</a>
+</section>
+@if (TempData["Message"] is string notice) { <div class="alert alert-success">@notice</div> }
+@if (TempData["Error"] is string error) { <div class="alert alert-warning">@error</div> }
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card filter-card">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "إضافة حقل قياس" : "Add measurement definition")</h2>
+                <form asp-action="AddMeasurement" method="post" asp-antiforgery="true" class="row g-3">
+                    <input type="hidden" name="categoryId" value="@Model.Category.CategoryId" />
+                    <div class="col-sm-6"><label for="name" class="form-label">English label *</label><input id="name" name="name" class="form-control" required maxlength="100" /></div>
+                    <div class="col-sm-6"><label for="nameAr" class="form-label">الاسم بالعربية *</label><input id="nameAr" name="nameAr" class="form-control" required maxlength="100" dir="rtl" lang="ar" /></div>
+                    <div class="col-sm-5"><label for="unit" class="form-label">@(ar ? "الوحدة" : "Unit")</label><select id="unit" name="unit" class="form-select"><option value="cm">cm</option><option value="in">in</option></select></div>
+                    <div class="col-sm-4"><label for="displayOrder" class="form-label">@(ar ? "الترتيب" : "Order")</label><input id="displayOrder" name="displayOrder" type="number" value="0" min="0" class="form-control" /></div>
+                    <div class="col-sm-3 d-flex align-items-end"><label class="form-check"><input name="isRequired" value="true" type="checkbox" class="form-check-input" /><span class="form-check-label">@(ar ? "مطلوب" : "Required")</span></label></div>
+                    <div class="col-12"><button class="btn btn-primary" type="submit">@(ar ? "حفظ القياس" : "Add measurement")</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card filter-card">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "القياسات" : "Configured fields")</h2>
+                <div class="list-group list-group-flush">
+                    @foreach (var item in Model.Measurements)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center gap-2 px-0">
+                            <span><strong>@item.Name</strong><small class="d-block text-secondary">@item.NameAr · @item.Unit · @(item.IsRequired ? "Required" : "Optional") · @(item.IsActive ? "Active" : "Inactive")</small></span>
+                            <form asp-action="ToggleMeasurement" method="post" asp-antiforgery="true">
+                                <input type="hidden" name="categoryId" value="@Model.Category.CategoryId" />
+                                <input type="hidden" name="measurementId" value="@item.MeasurementId" />
+                                <button class="btn btn-outline-secondary btn-sm" type="submit">@(item.IsActive ? (ar ? "تعطيل" : "Deactivate") : (ar ? "تفعيل" : "Activate"))</button>
+                            </form>
+                        </div>
+                    }
+                    @if (Model.Measurements.Count == 0)
+                    {
+                        <p class="text-secondary mb-0">@(ar ? "لا توجد قياسات." : "No fields configured.")</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

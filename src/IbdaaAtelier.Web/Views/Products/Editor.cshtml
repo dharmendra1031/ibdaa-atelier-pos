@@ -72,6 +72,10 @@
             <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save product")</button>
                 <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</a>
+                @if (editing)
+                {
+                    <a asp-controller="ProductSetup" asp-action="Index" asp-route-productId="@Model.ProductId" class="btn btn-outline-primary">@(ar ? "المقاسات والقياسات" : "Sizes & measurements")</a>
+                }
             </div>
         </form>
     </div>
