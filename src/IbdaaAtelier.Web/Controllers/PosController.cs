@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IbdaaAtelier.Web.Controllers;
 
-[Authorize(Roles = "Admin,Cashier")]
+[Authorize(Roles = "Cashier")]
 public sealed class PosController(AtelierDbContext db, PosOrderService orders) : Controller
 {
     [HttpGet]
