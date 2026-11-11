@@ -1,0 +1,64 @@
+@model IbdaaAtelier.Web.Models.Masters.AlterationServiceForm
+@using System.Globalization
+@{
+    ViewData["Title"] = "Alteration service";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var categories = (IEnumerable<IbdaaAtelier.Web.Models.Masters.ServiceCategory>)(ViewBag.Categories ?? Array.Empty<IbdaaAtelier.Web.Models.Masters.ServiceCategory>());
+}
+<section class="mb-4">
+    <span class="eyebrow">IBDAA ATELIER · ALTERATIONS</span>
+    <h1 class="section-title mt-2">@(Model.ServiceId == 0 ? (ar ? "خدمة جديدة" : "Add service") : (ar ? "تعديل الخدمة" : "Edit service"))</h1>
+</section>
+<div class="card filter-card"><div class="card-body p-4">
+    <form method="post" asp-action="Save" asp-antiforgery="true">
+        <input asp-for="ServiceId" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="ServiceCategoryId" class="form-label">@(ar ? "فئة الخدمة" : "Service category") *</label>
+                <select asp-for="ServiceCategoryId" class="form-select" required>
+                    <option value="0">@(ar ? "اختر فئة" : "Select a category")</option>
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.ServiceCategoryId">@(ar ? category.NameAr : category.Name)</option>
+                    }
+                </select>
+                <span asp-validation-for="ServiceCategoryId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Price" class="form-label">@(ar ? "السعر (د.ك)" : "Price (KWD)") *</label>
+                <input asp-for="Price" class="form-control" type="number" step=".001" min="0" required />
+                <span asp-validation-for="Price" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label">English name *</label>
+                <input asp-for="Name" class="form-control" required maxlength="120" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="NameAr" class="form-label">الاسم بالعربية *</label>
+                <input asp-for="NameAr" class="form-control" required maxlength="120" lang="ar" dir="rtl" />
+                <span asp-validation-for="NameAr" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Description" class="form-label">English description</label>
+                <textarea asp-for="Description" class="form-control" maxlength="1000" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DescriptionAr" class="form-label">الوصف بالعربية</label>
+                <textarea asp-for="DescriptionAr" class="form-control" maxlength="1000" rows="3" dir="rtl" lang="ar"></textarea>
+                <span asp-validation-for="DescriptionAr" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="EstimatedMinutes" class="form-label">@(ar ? "المدة المتوقعة بالدقائق" : "Estimated minutes")</label>
+                <input asp-for="EstimatedMinutes" class="form-control" min="1" type="number" />
+                <span asp-validation-for="EstimatedMinutes" class="text-danger small"></span>
+            </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">@(ar ? "حفظ الخدمة" : "Save service")</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</a>
+        </div>
+    </form>
+</div></div>

@@ -23,4 +23,11 @@
             <a class="btn btn-outline-primary" asp-controller="Products" asp-action="Index">@(isArabic ? "إدارة المنتجات" : "Manage products")</a>
         </div></div>
     </div>
+    <div class="col-md-6">
+        <div class="card feature-card h-100"><div class="card-body p-4">
+            <h2 class="h5">@(isArabic ? "خدمات التعديل" : "Alteration services")</h2>
+            <p class="text-secondary">@(isArabic ? "إدارة فئات الخدمات والأسعار." : "Manage tailoring services, categories and KWD rates.")</p>
+            <a class="btn btn-outline-primary" asp-controller="Services" asp-action="Index">@(isArabic ? "إدارة الخدمات" : "Manage services")</a>
+        </div></div>
+    </div>
 </div>
