@@ -53,3 +53,10 @@ test("approved mockup images are retained as reference files", () => {
         assert.match(references, new RegExp(file.replace(".", "\\.")));
     }
 });
+
+test("POS Arabic labels are readable and retired customer layout styles stay removed", () => {
+    assert.match(pos, /نقطة البيع/);
+    assert.match(pos, /حفظ واختيار العميل/);
+    assert.doesNotMatch(pos, /ط§|ظ„|ظ†|آ·|أ—/);
+    assert.doesNotMatch(css, /\.pos-order-context|\.pos-context-customer|\.pos-context-delivery/);
+});
