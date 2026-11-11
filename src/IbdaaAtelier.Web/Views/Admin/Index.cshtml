@@ -4,10 +4,10 @@
     ViewData["Title"] = "Administration";
     var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
-<section class="page-heading mb-4">
+<section class="admin-hero mb-4">
     <span class="eyebrow">IBDAA ATELIER · ADMIN</span>
-    <h1 class="section-title mt-2">@(isArabic ? "إدارة المتجر" : "Shop administration")</h1>
-    <p class="text-secondary">@(isArabic ? "تتوفر الإعدادات والأقسام حسب صلاحيات المستخدم." : "Manage shop records securely with your administrator account.")</p>
+    <h1 class="section-title mt-2 mb-2">@(isArabic ? "مرحباً، المسؤول" : "Welcome, Admin")</h1>
+    <p class="mb-0">@(isArabic ? "إدارة المنتجات والطلبات والعملاء وإعدادات المتجر." : "Manage products, orders, customers and shop settings.")</p>
 </section>
 <form method="get" asp-action="Index" class="card filter-card mb-4">
     <div class="card-body p-3 d-flex flex-wrap gap-2 align-items-end">
@@ -32,7 +32,7 @@
         <button class="btn btn-primary" type="submit">@(isArabic ? "تطبيق" : "Apply")</button>
     </div>
 </form>
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4 admin-kpis">
     <div class="col-6 col-xl-3"><div class="card feature-card h-100"><div class="card-body p-3">
         <small class="text-secondary">@(isArabic ? "المبيعات" : "Sales")</small>
         <div class="h4 mt-2 mb-0">@Model.Sales.ToString("0.000", CultureInfo.InvariantCulture) KWD</div>
@@ -87,15 +87,24 @@
         </table></div>
     </div></section>
 }
+<section class="card filter-card admin-master-links mb-4">
+    <div class="card-body p-3 p-md-4">
+        <h2 class="h5 mb-3">@(isArabic ? "إدارة البيانات" : "Manage masters")</h2>
+        <div class="row row-cols-2 row-cols-lg-4 g-3">
+            <div class="col"><a class="admin-master-link" asp-controller="Products" asp-action="Index"><span aria-hidden="true">◇</span>@(isArabic ? "المنتجات" : "Products")</a></div>
+            <div class="col"><a class="admin-master-link" asp-controller="Categories" asp-action="Index"><span aria-hidden="true">▤</span>@(isArabic ? "الفئات" : "Categories")</a></div>
+            <div class="col"><a class="admin-master-link" asp-controller="Services" asp-action="Index"><span aria-hidden="true">✂</span>@(isArabic ? "خدمات التعديل" : "Alterations")</a></div>
+            <div class="col"><a class="admin-master-link" asp-controller="Users" asp-action="Index"><span aria-hidden="true">♙</span>@(isArabic ? "المستخدمون" : "Users & access")</a></div>
+        </div>
+    </div>
+</section>
 <section class="card filter-card">
     <div class="card-body p-3 p-md-4">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-            <h2 class="h5 mb-0">@(isArabic ? "إجراءات سريعة" : "Quick actions")</h2>
-            <span class="small text-secondary">@(isArabic ? "الإعدادات والمنتجات من القائمة الجانبية" : "Use the menu for products and settings")</span>
-        </div>
+        <h2 class="h5 mb-3">@(isArabic ? "روابط سريعة" : "Quick links")</h2>
         <div class="dashboard-actions">
-            <a class="btn btn-outline-primary" asp-controller="Orders" asp-action="Index">@(isArabic ? "عرض الطلبات" : "View orders")</a>
+            <a class="btn btn-outline-primary" asp-controller="Orders" asp-action="Index">@(isArabic ? "الطلبات والتسليم" : "Orders & delivery")</a>
             <a class="btn btn-outline-primary" asp-controller="Customers" asp-action="Index">@(isArabic ? "العملاء" : "Customers")</a>
+            <a class="btn btn-outline-primary" asp-controller="Register" asp-action="Index">@(isArabic ? "الصندوق" : "Cash register")</a>
         </div>
     </div>
 </section>
