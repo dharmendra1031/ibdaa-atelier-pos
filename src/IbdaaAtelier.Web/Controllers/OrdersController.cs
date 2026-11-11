@@ -1,5 +1,6 @@
 using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Orders;
+using IbdaaAtelier.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +58,9 @@ public sealed class OrdersController(AtelierDbContext db) : Controller
         var grossPaid = receipts.Sum(p => p.Amount);
         var refunded = refunds.Sum(r => r.Amount);
         var paid = grossPaid - refunded;
+        var statusHistory = await db.OrderStatusHistory.AsNoTracking()
+            .Where(h => h.OrderId == id)
+            .OrderBy(h => h.HistoryId).ToListAsync(ct);
 
         return View(new OrderDetailsPage
         {
@@ -65,6 +69,8 @@ public sealed class OrdersController(AtelierDbContext db) : Controller
             Measurements = measurements,
             Payments = receipts,
             Refunds = refunds,
+            StatusHistory = statusHistory,
+            NextStatuses = User.IsInRole("Admin") ? OrderStatusService.Next(order.Status) : [],
             GrossPaid = grossPaid,
             Refunded = refunded,
             Paid = paid,

@@ -11,5 +11,6 @@ public sealed class OrderStatusChange
     public int UserId { get; set; }
     [MaxLength(30)] public string? OldStatus { get; set; }
     [Required, MaxLength(30)] public string NewStatus { get; set; } = "";
+    [MaxLength(500)] public string? Remarks { get; set; }
     public DateTime ChangedAtUtc { get; set; } = DateTime.UtcNow;
 }

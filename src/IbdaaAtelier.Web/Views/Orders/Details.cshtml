@@ -151,3 +151,58 @@
         </table></div>
     </div></section>
 }
+
+@if (User.IsInRole("Admin") && Model.NextStatuses.Length > 0)
+{
+    <section class="card filter-card mt-4"><div class="card-body p-4">
+        <h2 class="h5">@(ar ? "تغيير حالة الطلب" : "Change order status")</h2>
+        <p class="small text-secondary">
+            @(ar ? "الإلغاء يتطلب سبباً واضحاً واسترداد المبلغ المدفوع بالكامل أولاً." :
+                "Cancellation requires a reason and all payments must be refunded first.")
+        </p>
+        <form asp-controller="OrderStatus" asp-action="Change" method="post" asp-antiforgery="true"
+              class="row g-3 align-items-end">
+            <input type="hidden" name="OrderId" value="@Model.Order.OrderId" />
+            <div class="col-md-4">
+                <label for="nextStatus" class="form-label">@(ar ? "الحالة التالية" : "Next status")</label>
+                <select id="nextStatus" name="Status" class="form-select" required>
+                    @foreach (var status in Model.NextStatuses)
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="statusRemarks" class="form-label">@(ar ? "ملاحظات" : "Remarks / cancellation reason")</label>
+                <input id="statusRemarks" name="Remarks" class="form-control" maxlength="500" />
+            </div>
+            <div class="col-md-3 d-grid">
+                <button type="submit" class="btn btn-primary">@(ar ? "تحديث" : "Update")</button>
+            </div>
+        </form>
+    </div></section>
+}
+<section class="card filter-card mt-4"><div class="card-body p-4">
+    <h2 class="h5">@(ar ? "سجل الحالات" : "Status history")</h2>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead><tr>
+                <th scope="col">@(ar ? "التاريخ" : "Date")</th>
+                <th scope="col">@(ar ? "السابق" : "Previous")</th>
+                <th scope="col">@(ar ? "الجديد" : "New")</th>
+                <th scope="col">@(ar ? "الملاحظات" : "Remarks")</th>
+            </tr></thead>
+            <tbody>
+            @foreach (var step in Model.StatusHistory)
+            {
+                <tr>
+                    <td>@step.ChangedAtUtc.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+                    <td>@(step.OldStatus ?? "—")</td>
+                    <td>@step.NewStatus</td>
+                    <td>@(step.Remarks ?? "—")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div></section>
