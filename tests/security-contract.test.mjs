@@ -45,3 +45,12 @@ test("login and logout reject CSRF and safe redirect prevents open redirect", ()
     assert.match(admin, /Authorize\(Roles = "Admin"\)/);
     assert.match(layout, /asp-antiforgery="true"/);
 });
+
+test("login endpoint is rate-limited without a custom dependency", () => {
+    assert.match(program, /AddRateLimiter\(options =>/);
+    assert.match(program, /AddPolicy\("login"/);
+    assert.match(program, /PermitLimit = 10/);
+    assert.match(program, /UseRateLimiter\(\)/);
+    assert.match(auth, /EnableRateLimiting\("login"\)/);
+    assert.match(program, /Status429TooManyRequests/);
+});

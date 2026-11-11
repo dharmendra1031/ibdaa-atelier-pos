@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace IbdaaAtelier.Web.Controllers;
@@ -22,7 +23,7 @@ public sealed class AuthController(AtelierDbContext db, IPasswordHasher<ShopUser
         return View(new LoginForm { ReturnUrl = returnUrl });
     }
 
-    [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
+    [HttpPost, AllowAnonymous, ValidateAntiForgeryToken, EnableRateLimiting("login")]
     public async Task<IActionResult> Login(LoginForm form, CancellationToken ct)
     {
         if (!ModelState.IsValid)
