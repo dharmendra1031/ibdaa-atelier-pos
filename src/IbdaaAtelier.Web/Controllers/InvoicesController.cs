@@ -1,0 +1,25 @@
+using IbdaaAtelier.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace IbdaaAtelier.Web.Controllers;
+
+[Authorize(Roles = "Admin,Cashier")]
+public sealed class InvoicesController(InvoiceReportService invoices) : Controller
+{
+    [HttpGet]
+    public async Task<IActionResult> Print(long id, string paper = "a4", CancellationToken ct = default)
+    {
+        if (id <= 0 || paper is not ("a4" or "80mm"))
+            return BadRequest();
+
+        var data = await invoices.PrepareAsync(id, ct);
+        if (data is null)
+            return NotFound();
+
+        var pdf = invoices.RenderPdf(data, paper);
+        Response.Headers.CacheControl = "no-store";
+        var fileName = paper == "80mm" ? $"Invoice-{id}-80mm.pdf" : $"Invoice-{id}-A4.pdf";
+        return File(pdf, "application/pdf", fileName);
+    }
+}

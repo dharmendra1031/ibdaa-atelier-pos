@@ -21,6 +21,7 @@ builder.Services.AddScoped<ProductImageFiles>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<RefundService>();
 builder.Services.AddScoped<OrderStatusService>();
+builder.Services.AddScoped<InvoiceReportService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

@@ -38,3 +38,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: SQL Server 2022 migrations and constraints
         run: bash tests/sql/run-smoke.sh
+
+  invoice-render:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Render bilingual invoice A4 and 80mm PDF
+        run: dotnet run --project tests/InvoiceSmoke/InvoiceSmoke.csproj --configuration Release

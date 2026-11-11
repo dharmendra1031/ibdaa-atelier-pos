@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="InvoiceDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="InvoiceDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="false">
+    <xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="InvoiceHeader"><xs:complexType><xs:sequence>
+        <xs:element name="OrderNumber" type="xs:string" minOccurs="1" />
+        <xs:element name="OrderDate" type="xs:string" minOccurs="1" />
+        <xs:element name="DeliveryDate" type="xs:string" minOccurs="1" />
+        <xs:element name="BusinessName" type="xs:string" minOccurs="1" />
+        <xs:element name="BusinessNameAr" type="xs:string" minOccurs="1" />
+        <xs:element name="ShopAddress" type="xs:string" minOccurs="1" />
+        <xs:element name="ShopAddressAr" type="xs:string" minOccurs="1" />
+        <xs:element name="ShopMobile" type="xs:string" minOccurs="1" />
+        <xs:element name="CustomerName" type="xs:string" minOccurs="1" />
+        <xs:element name="CustomerNameAr" type="xs:string" minOccurs="1" />
+        <xs:element name="CustomerMobile" type="xs:string" minOccurs="1" />
+        <xs:element name="Total" type="xs:string" minOccurs="1" />
+        <xs:element name="Paid" type="xs:string" minOccurs="1" />
+        <xs:element name="Refunded" type="xs:string" minOccurs="1" />
+        <xs:element name="Balance" type="xs:string" minOccurs="1" />
+        <xs:element name="Logo" type="xs:base64Binary" minOccurs="0" />
+        <xs:element name="LogoMime" type="xs:string" minOccurs="1" />
+      </xs:sequence></xs:complexType></xs:element>
+      <xs:element name="InvoiceLines"><xs:complexType><xs:sequence>
+        <xs:element name="LineNumber" type="xs:int" minOccurs="1" />
+        <xs:element name="Name" type="xs:string" minOccurs="1" />
+        <xs:element name="NameAr" type="xs:string" minOccurs="1" />
+        <xs:element name="Details" type="xs:string" minOccurs="1" />
+        <xs:element name="Quantity" type="xs:int" minOccurs="1" />
+        <xs:element name="UnitPrice" type="xs:string" minOccurs="1" />
+        <xs:element name="LineTotal" type="xs:string" minOccurs="1" />
+      </xs:sequence></xs:complexType></xs:element>
+      <xs:element name="InvoicePayments"><xs:complexType><xs:sequence>
+        <xs:element name="Method" type="xs:string" minOccurs="1" />
+        <xs:element name="Paid" type="xs:string" minOccurs="1" />
+        <xs:element name="PaymentDate" type="xs:string" minOccurs="1" />
+      </xs:sequence></xs:complexType></xs:element>
+    </xs:choice></xs:complexType>
+  </xs:element>
+</xs:schema>
