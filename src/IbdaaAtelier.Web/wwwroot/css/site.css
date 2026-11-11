@@ -739,16 +739,13 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 @media (min-width: 992px) {
     .pos-app-layout .pos-shell > .col-lg-5 { align-self: stretch; }
     .pos-app-layout .pos-checkout { min-height: min(680px, calc(100dvh - 170px)); }
-    .pos-app-layout .pos-checkout .card-body,
-    .pos-app-layout #posCheckoutForm { display: flex; flex-direction: column; }
-    .pos-app-layout #posCheckoutForm { flex: 1; }
+    .pos-app-layout .pos-checkout .card-body { display: flex; flex-direction: column; }
     .pos-app-layout .pos-cart { flex: 1 0 auto; }
     .pos-app-layout .pos-checkout-actions { margin-top: auto; }
 }
 @media (max-width: 991.98px) {
     .pos-app-layout .pos-checkout { min-height: 0; }
-    .pos-app-layout .pos-checkout .card-body,
-    .pos-app-layout #posCheckoutForm { display: block; }
+    .pos-app-layout .pos-checkout .card-body { display: block; }
 }
 @media (max-width: 575.98px) {
     .admin-kpis .feature-card { min-height: 104px; }
@@ -893,4 +890,34 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .admin-page .site-header { margin-inline-start: 0; }
     .admin-page .site-header .brand { display: inline-flex !important; }
     .admin-page .app-layout { margin-inline-start: 0; }
+}
+
+/* Customer strip is above the two POS working columns, like the approved reference. */
+.pos-app-layout .pos-customer-bar {
+    background: #fffdfb; border: 1px solid var(--atelier-border);
+    border-radius: 14px; padding: 14px 18px;
+    box-shadow: 0 5px 20px rgb(84 22 43 / 5%);
+}
+.pos-app-layout .pos-customer-form {
+    display: grid; grid-template-columns: minmax(0, 1.7fr) auto minmax(210px, 1fr);
+    align-items: center; gap: 15px;
+}
+.pos-app-layout .pos-customer-form .form-label { display: block; margin-bottom: 6px; font-weight: 650; }
+.pos-app-layout .pos-new-customer { white-space: nowrap; align-self: center; }
+.pos-app-layout .pos-customer-field, .pos-app-layout .pos-delivery-field { min-width: 0; }
+.pos-app-layout .pos-customer-field #selectedCustomer { min-height: 18px; }
+.pos-app-layout .pos-checkout { min-height: min(650px, calc(100dvh - 290px)); }
+.pos-app-layout .pos-checkout .card-body { height: 100%; }
+.pos-app-layout .pos-checkout-actions { margin-top: auto; }
+.pos-app-layout .pos-checkout-actions .btn-primary { min-height: 50px; }
+@media (max-width: 991.98px) {
+    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr) auto; }
+    .pos-app-layout .pos-delivery-field { grid-column: 1 / -1; }
+    .pos-app-layout .pos-checkout { min-height: 0; }
+}
+@media (max-width: 575.98px) {
+    .pos-app-layout .pos-customer-bar { padding: 12px; }
+    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr); gap: 9px; }
+    .pos-app-layout .pos-delivery-field { grid-column: auto; }
+    .pos-app-layout .pos-new-customer { justify-self: start; }
 }
