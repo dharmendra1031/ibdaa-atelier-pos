@@ -75,6 +75,7 @@
                 @if (editing)
                 {
                     <a asp-controller="ProductSetup" asp-action="Index" asp-route-productId="@Model.ProductId" class="btn btn-outline-primary">@(ar ? "المقاسات والقياسات" : "Sizes & measurements")</a>
+                    <a asp-controller="ProductImages" asp-action="Index" asp-route-productId="@Model.ProductId" class="btn btn-outline-primary">@(ar ? "معرض الصور" : "Photo gallery")</a>
                 }
             </div>
         </form>

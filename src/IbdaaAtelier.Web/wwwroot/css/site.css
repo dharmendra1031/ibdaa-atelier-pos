@@ -393,3 +393,8 @@ a:focus-visible, button:focus-visible {
     .pos-checkout { position: static; max-height: none; overflow: visible; }
     .pos-cart { max-height: 350px; }
 }
+
+/* Product photo management */
+.gallery-photo { display: block; width: 100%; aspect-ratio: 6 / 7; object-fit: cover; background: #f3f5f2; }
+.image-preview { display: block; width: 120px; height: 138px; object-fit: cover; }
+.image-preview[hidden] { display: none; }

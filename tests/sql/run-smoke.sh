@@ -71,4 +71,5 @@ for file in \
 done
 
 run_script tests/sql/order-schema-smoke.sql
+run_script tests/sql/product-gallery-smoke.sql
 echo "SQL migrations, identity keys and constraint smoke test passed."

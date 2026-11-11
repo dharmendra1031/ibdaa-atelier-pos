@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AtelierDbContext>(options =>
 builder.Services.AddScoped<IPasswordHasher<ShopUser>, PasswordHasher<ShopUser>>();
 builder.Services.AddScoped<OrderLineBuilder>();
 builder.Services.AddScoped<PosOrderService>();
+builder.Services.AddScoped<ProductImageFiles>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -100,7 +101,11 @@ localization.RequestCultureProviders.Add(new CookieRequestCultureProvider());
 
 app.UseRequestLocalization(localization);
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = context =>
+        context.Context.Response.Headers["X-Content-Type-Options"] = "nosniff"
+});
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
