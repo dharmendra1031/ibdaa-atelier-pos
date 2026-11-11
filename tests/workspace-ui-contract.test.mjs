@@ -26,7 +26,7 @@ test("cashier has sales links, administration links require Admin role", () => {
     assert.match(menu, /asp-controller="Customers"/);
     assert.match(menu, /asp-controller="Products"/);
     assert.match(menu, /asp-controller="ShopSettings"/);
-    assert.doesNotMatch(menu, /asp-controller="Reports"/);
+    assert.match(menu, /asp-controller="Reports"/);
 });
 
 test("dashboard has real financial KPIs with focused quick actions", () => {

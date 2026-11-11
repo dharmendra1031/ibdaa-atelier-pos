@@ -27,6 +27,7 @@
         </div>
         <div class="workspace-nav-group">
             <span class="workspace-nav-label">@(ar ? "الإدارة" : "ADMINISTRATION")</span>
+            <a class="workspace-nav-link @(current == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index" aria-current="@(current == "Reports" ? "page" : null)">@(ar ? "التقارير" : "Reports")</a>
             <a class="workspace-nav-link @(current == "Users" ? "active" : "")" asp-controller="Users" asp-action="Index" aria-current="@(current == "Users" ? "page" : null)">@(ar ? "المستخدمون والصلاحيات" : "Users & access")</a>
             <a class="workspace-nav-link @(current == "ShopSettings" ? "active" : "")" asp-controller="ShopSettings" asp-action="Index" aria-current="@(current == "ShopSettings" ? "page" : null)">@(ar ? "إعدادات المتجر" : "Shop settings")</a>
         </div>
