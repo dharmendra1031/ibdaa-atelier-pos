@@ -1,0 +1,54 @@
+@model IbdaaAtelier.Web.Models.Masters.CustomerListPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Customers";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="d-flex justify-content-between flex-wrap align-items-end gap-3 mb-4">
+    <div>
+        <span class="eyebrow">IBDAA ATELIER · CUSTOMER MASTER</span>
+        <h1 class="section-title mt-2">@(ar ? "العملاء" : "Customers")</h1>
+        <p class="text-secondary mb-0">@(ar ? "ابحث بالاسم أو رقم الجوال أو رقم العميل." : "Search by mobile, name or customer ID.")</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Create">@(ar ? "عميل جديد" : "Add customer")</a>
+</section>
+@if (TempData["Message"] is string notice) { <div class="alert alert-success" role="status">@notice</div> }
+<form method="get" role="search" class="d-flex gap-2 mb-4">
+    <input type="search" name="search" maxlength="100" value="@Model.Search" class="form-control" placeholder="@(ar ? "البحث عن عميل" : "Name, mobile or customer ID")" aria-label="@(ar ? "بحث" : "Search customers")" />
+    <button class="btn btn-primary" type="submit">@(ar ? "بحث" : "Search")</button>
+</form>
+<div class="card filter-card overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th scope="col">ID</th><th scope="col">@(ar ? "الاسم" : "Name")</th><th scope="col">@(ar ? "الجوال" : "Mobile")</th><th scope="col">@(ar ? "التسجيل" : "Registered")</th><th scope="col" class="text-end">@(ar ? "إجراء" : "Actions")</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var customer in Model.Customers)
+            {
+                <tr>
+                    <td>@customer.CustomerId</td>
+                    <td><strong>@customer.Name</strong><span class="d-block text-secondary" dir="rtl" lang="ar">@customer.NameAr</span></td>
+                    <td>@customer.Mobile</td>
+                    <td class="text-secondary">@customer.RegisteredAtUtc.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                    <td class="text-end"><a asp-action="Edit" asp-route-id="@customer.CustomerId" class="btn btn-outline-primary btn-sm">@(ar ? "تعديل" : "Edit")</a></td>
+                </tr>
+            }
+            @if (Model.Customers.Count == 0)
+            {
+                <tr><td colspan="5" class="py-5 text-center text-secondary">@(ar ? "لم يتم العثور على عملاء." : "No customers found.")</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Customer pages" class="d-flex justify-content-between align-items-center mt-3">
+        <span class="small text-secondary">@(ar ? "صفحة" : "Page") @Model.Page / @Model.TotalPages</span>
+        <div class="d-flex gap-2">
+            @if (Model.Page > 1) { <a asp-route-search="@Model.Search" asp-route-page="@(Model.Page - 1)" class="btn btn-outline-primary btn-sm">@(ar ? "السابق" : "Previous")</a> }
+            @if (Model.Page < Model.TotalPages) { <a asp-route-search="@Model.Search" asp-route-page="@(Model.Page + 1)" class="btn btn-outline-primary btn-sm">@(ar ? "التالي" : "Next")</a> }
+        </div>
+    </nav>
+}

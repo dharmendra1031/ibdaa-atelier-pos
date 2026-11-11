@@ -16,6 +16,6 @@ public sealed class AuditLog
     [Required, MaxLength(60)]
     public string EntityName { get; set; } = "";
 
-    public int? EntityId { get; set; }
+    public long? EntityId { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }

@@ -1,0 +1,56 @@
+@model IbdaaAtelier.Web.Models.Masters.CustomerForm
+@using System.Globalization
+@{
+    var editing = Model.CustomerId > 0;
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    ViewData["Title"] = editing ? "Edit customer" : "Add customer";
+}
+<section class="mb-4">
+    <span class="eyebrow">IBDAA ATELIER · CUSTOMER MASTER</span>
+    <h1 class="section-title mt-2">@(editing ? (ar ? "تعديل العميل" : "Edit customer") : (ar ? "عميل جديد" : "Add customer"))</h1>
+    <p class="text-secondary">@(ar ? "أدخل بيانات العميل باللغتين." : "Store English and Arabic details separately.")</p>
+</section>
+<div class="card filter-card">
+    <div class="card-body p-4 p-lg-5">
+        <form asp-controller="Customers" asp-action="@(editing ? "Edit" : "Create")" method="post" asp-antiforgery="true">
+            <input asp-for="CustomerId" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label">English name *</label>
+                    <input asp-for="Name" class="form-control" maxlength="120" required />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NameAr" class="form-label">الاسم بالعربية *</label>
+                    <input asp-for="NameAr" class="form-control" dir="rtl" lang="ar" maxlength="120" required />
+                    <span asp-validation-for="NameAr" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Mobile" class="form-label">@(ar ? "رقم الجوال" : "Mobile number") *</label>
+                    <input asp-for="Mobile" class="form-control" type="tel" autocomplete="tel" maxlength="20" required />
+                    <span asp-validation-for="Mobile" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="AlternateMobile" class="form-label">@(ar ? "الجوال البديل" : "Alternate mobile")</label>
+                    <input asp-for="AlternateMobile" class="form-control" type="tel" maxlength="20" />
+                    <span asp-validation-for="AlternateMobile" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Address" class="form-label">@(ar ? "العنوان" : "Address")</label>
+                    <textarea asp-for="Address" class="form-control" maxlength="500" rows="3"></textarea>
+                    <span asp-validation-for="Address" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Notes" class="form-label">@(ar ? "ملاحظات" : "Notes")</label>
+                    <textarea asp-for="Notes" class="form-control" maxlength="1000" rows="3"></textarea>
+                    <span asp-validation-for="Notes" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">@(ar ? "حفظ" : "Save customer")</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</a>
+            </div>
+        </form>
+    </div>
+</div>

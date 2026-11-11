@@ -34,7 +34,7 @@ CREATE TABLE dbo.AuditLogs
     UserId INT NULL,
     Action NVARCHAR(80) NOT NULL,
     EntityName NVARCHAR(60) NOT NULL,
-    EntityId INT NULL,
+    EntityId BIGINT NULL,
     CreatedAtUtc DATETIME2 NOT NULL CONSTRAINT DF_AuditLogs_Created DEFAULT(SYSUTCDATETIME()),
     CONSTRAINT FK_AuditLogs_User FOREIGN KEY (UserId) REFERENCES dbo.Users(UserId)
 );
