@@ -25,11 +25,13 @@
     let customerName = "";
     let items = [];
     let selectedProduct = null;
+    let editingIndex = -1;
     let saving = false;
     let completed = false;
     let requestId = 0;
     let customerAbort = null;
     let productAbort = null;
+    const text = (en, ar) => arabic ? ar : en;
 
     try {
         requestId = Number(sessionStorage.getItem(pendingKey)) || 0;
@@ -45,7 +47,6 @@
         }
     } catch { /* In-memory fallback when browser storage is unavailable. */ }
 
-    const text = (en, ar) => arabic ? ar : en;
     const money = amount => Number(amount).toFixed(3) + " KWD";
     const notice = (value, error = false) => {
         message.textContent = value;
@@ -71,6 +72,22 @@
         catch { /* Keep the current in-memory order. */ }
     }
 
+    const productPanel = document.getElementById("catalogueProducts");
+    const servicePanel = document.getElementById("catalogueServices");
+    const productsTab = document.getElementById("showProducts");
+    const servicesTab = document.getElementById("showServices");
+
+    function switchCatalogue(showServices) {
+        productPanel.hidden = showServices;
+        servicePanel.hidden = !showServices;
+        productsTab.className = showServices ? "btn btn-outline-primary flex-fill" : "btn btn-primary flex-fill";
+        servicesTab.className = showServices ? "btn btn-primary flex-fill" : "btn btn-outline-primary flex-fill";
+        productsTab.setAttribute("aria-pressed", String(!showServices));
+        servicesTab.setAttribute("aria-pressed", String(showServices));
+    }
+    productsTab.addEventListener("click", () => switchCatalogue(false));
+    servicesTab.addEventListener("click", () => switchCatalogue(true));
+
     function renderCart() {
         cartView.replaceChildren();
         cartCount.textContent = String(items.length);
@@ -81,6 +98,15 @@
             const row = element("div", "pos-cart-item border-bottom py-2");
             const title = element("div", "d-flex justify-content-between gap-2");
             title.append(element("strong", "", (arabic ? line.nameAr || line.name : line.name) + " × " + line.quantity));
+            const actions = element("div", "d-inline-flex gap-1");
+            const edit = element("button", "btn btn-sm btn-outline-primary", text("Edit", "تعديل"));
+            edit.type = "button";
+            edit.addEventListener("click", () => {
+                if (saving || completed) return;
+                if (line.itemType === "Product") openProduct(line.itemId, index);
+                else editService(index);
+            });
+            actions.append(edit);
             const remove = element("button", "btn btn-sm btn-outline-secondary", text("Remove", "حذف"));
             remove.type = "button";
             remove.addEventListener("click", () => {
@@ -88,7 +114,8 @@
                 items.splice(index, 1);
                 renderCart();
             });
-            title.append(remove);
+            actions.append(remove);
+            title.append(actions);
             row.append(title);
             const details = [line.sizeName, ...line.measurementLabels].filter(Boolean).join(" · ");
             if (details) row.append(element("small", "d-block text-secondary", details));
@@ -146,7 +173,7 @@
         }
     });
 
-    document.querySelectorAll(".pos-product").forEach(button => button.addEventListener("click", async () => {
+    async function openProduct(productId, index = -1) {
         if (saving || completed) return;
         if (!customerId) {
             notice(text("Select a customer before adding an item.", "اختر العميل أولاً."), true);
@@ -157,17 +184,21 @@
         const controller = new AbortController();
         productAbort = controller;
         try {
-            const product = await getJson(shell.dataset.productUrl + "?id=" + button.dataset.productId,
+            const product = await getJson(shell.dataset.productUrl + "?id=" + encodeURIComponent(productId),
                 { signal: controller.signal });
             if (controller.signal.aborted) return;
             selectedProduct = product;
+            editingIndex = index;
+            const current = index >= 0 ? items[index] : null;
+            document.getElementById("addProductButton").textContent =
+                current ? text("Update item", "تحديث العنصر") : text("Add to order", "إضافة للطلب");
             document.getElementById("dialogTitle").textContent = arabic ? product.nameAr || product.name : product.name;
             dialogFields.replaceChildren();
 
             const quantityLabel = element("label", "form-label", text("Quantity", "الكمية"));
             const quantity = element("input", "form-control mb-3");
             quantity.type = "number"; quantity.min = "1"; quantity.max = "100";
-            quantity.value = "1"; quantity.id = "posQuantity"; quantity.required = true;
+            quantity.value = String(current?.quantity ?? 1); quantity.id = "posQuantity"; quantity.required = true;
             quantityLabel.htmlFor = quantity.id;
             dialogFields.append(quantityLabel, quantity);
 
@@ -179,6 +210,7 @@
                 select.required = true;
                 select.append(new Option(text("Select a size", "اختر المقاس"), ""));
                 product.sizes.forEach(size => select.append(new Option(size.name, String(size.sizeId))));
+                if (current?.sizeId) select.value = String(current.sizeId);
                 dialogFields.append(label, select);
             }
 
@@ -191,6 +223,8 @@
                 input.dataset.measurementId = String(measurement.measurementId);
                 input.dataset.label = measurement.name;
                 input.id = "measurement_" + measurement.measurementId;
+                const previous = current?.measurements?.find(value => value.measurementId === measurement.measurementId);
+                if (previous) input.value = String(previous.value);
                 label.htmlFor = input.id;
                 dialogFields.append(label, input);
             });
@@ -198,17 +232,57 @@
             const notesLabel = element("label", "form-label mt-2", text("Instructions", "ملاحظات"));
             const notes = element("textarea", "form-control");
             notes.id = "posNotes"; notes.maxLength = 1000; notes.rows = 2;
+            notes.value = current?.notes ?? "";
             notesLabel.htmlFor = notes.id;
             dialogFields.append(notesLabel, notes);
             dialog.showModal();
         } catch (error) {
             if (error.name !== "AbortError") notice(error.message, true);
         }
-    }));
+    }
+
+    document.querySelectorAll(".pos-product").forEach(button =>
+        button.addEventListener("click", () => openProduct(button.dataset.productId)));
+
+    function editService(index) {
+        const line = items[index];
+        if (!line || saving || completed) return;
+        productAbort?.abort();
+        selectedProduct = null;
+        editingIndex = index;
+        document.getElementById("dialogTitle").textContent = arabic ? line.nameAr || line.name : line.name;
+        document.getElementById("addProductButton").textContent = text("Update item", "تحديث العنصر");
+        dialogFields.replaceChildren();
+        const quantityLabel = element("label", "form-label", text("Quantity", "الكمية"));
+        const quantity = element("input", "form-control mb-3");
+        quantity.type = "number"; quantity.min = "1"; quantity.max = "100";
+        quantity.value = String(line.quantity); quantity.id = "posQuantity"; quantity.required = true;
+        quantityLabel.htmlFor = quantity.id;
+        const notesLabel = element("label", "form-label", text("Instructions", "ملاحظات"));
+        const notes = element("textarea", "form-control");
+        notes.id = "posNotes"; notes.maxLength = 1000; notes.rows = 2;
+        notes.value = line.notes ?? "";
+        notesLabel.htmlFor = notes.id;
+        dialogFields.append(quantityLabel, quantity, notesLabel, notes);
+        dialog.showModal();
+    }
 
     document.getElementById("cancelProductButton").addEventListener("click", () => dialog.close());
     document.getElementById("addProductButton").addEventListener("click", () => {
-        if (!selectedProduct || !customerId || saving || completed) return;
+        if (!customerId || saving || completed) return;
+        if (editingIndex >= 0 && items[editingIndex]?.itemType === "Service") {
+            const quantity = dialogFields.querySelector("#posQuantity");
+            if (!quantity.checkValidity()) { quantity.reportValidity(); return; }
+            items[editingIndex] = {
+                ...items[editingIndex], quantity: Number(quantity.value),
+                notes: dialogFields.querySelector("#posNotes").value
+            };
+            editingIndex = -1;
+            dialog.close();
+            renderCart();
+            return;
+        }
+        if (!selectedProduct) return;
         const quantity = dialogFields.querySelector("#posQuantity");
         const size = dialogFields.querySelector("#posSize");
         const fields = [...dialogFields.querySelectorAll("[data-measurement-id]")];
@@ -219,7 +293,7 @@
         const measurements = fields.filter(field => field.value !== "").map(field => ({
             measurementId: Number(field.dataset.measurementId), value: Number(field.value)
         }));
-        items.push({
+        const nextItem = {
             itemType: "Product", itemId: selectedProduct.productId,
             name: selectedProduct.name, nameAr: selectedProduct.nameAr,
             price: Number(selectedProduct.price), quantity: Number(quantity.value),
@@ -229,7 +303,10 @@
             measurements,
             measurementLabels: fields.filter(field => field.value !== "").map(field =>
                 field.dataset.label + ": " + field.value)
-        });
+        };
+        if (editingIndex >= 0) items[editingIndex] = nextItem;
+        else items.push(nextItem);
+        editingIndex = -1;
         dialog.close();
         renderCart();
         notice("");

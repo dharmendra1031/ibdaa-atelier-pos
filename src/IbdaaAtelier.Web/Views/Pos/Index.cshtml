@@ -21,6 +21,11 @@
      data-order-url="@Url.Action("Details", "Orders")"
      data-arabic="@(ar ? "true" : "false")">
     <div class="col-lg-7">
+        <div class="d-flex gap-2 mb-3" role="group" aria-label="@(ar ? "نوع العنصر" : "Catalogue type")">
+            <button type="button" class="btn btn-primary flex-fill" id="showProducts" aria-controls="catalogueProducts" aria-pressed="true">@(ar ? "المنتجات" : "Products")</button>
+            <button type="button" class="btn btn-outline-primary flex-fill" id="showServices" aria-controls="catalogueServices" aria-pressed="false">@(ar ? "خدمات التعديل" : "Alterations")</button>
+        </div>
+        <div id="catalogueProducts">
         <section class="card filter-card mb-4">
             <div class="card-body p-3 p-md-4">
                 <h2 class="h5 mb-3">@(ar ? "كتالوج المنتجات" : "Product catalogue")</h2>
@@ -92,7 +97,8 @@
                 </div>
             </nav>
         }
-        <section class="mt-5">
+        </div>
+        <section id="catalogueServices" class="mt-3" hidden>
             <h2 class="h5 mb-3">@(ar ? "خدمات التعديل" : "Alteration services")</h2>
             <div class="row row-cols-1 row-cols-sm-2 g-2">
                 @foreach (var service in Model.Services)
@@ -117,6 +123,7 @@
         <section class="card filter-card pos-checkout">
             <div class="card-body p-3 p-md-4">
                 <h2 class="h5 mb-3">@(ar ? "الطلب الحالي" : "Current order")</h2>
+                <p class="small text-secondary mb-3">@(ar ? "١. العميل ← ٢. العناصر ← ٣. الحفظ والدفع" : "1. Customer → 2. Cart → 3. Save & payment")</p>
                 <form id="posCheckoutForm" asp-controller="Pos" asp-action="Save" method="post" asp-antiforgery="true">
                     <label for="customerSearch" class="form-label">@(ar ? "ابحث عن العميل" : "Find customer") *</label>
                     <input id="customerSearch" class="form-control" type="search" autocomplete="off"
@@ -140,7 +147,7 @@
                         <span>@(ar ? "المجموع" : "Total")</span>
                         <strong id="cartTotal" class="h4 mb-0">0.000 KWD</strong>
                     </div>
-                    <p class="small text-secondary mt-2">@(ar ? "يُحسب السعر النهائي في الخادم. سيتم حفظ الطلب دون دفع." : "Final prices are verified on the server. This stage saves an unpaid order only.")</p>
+                    <p class="small text-secondary mt-2">@(ar ? "يُحسب السعر النهائي في الخادم. سيتم حفظ الطلب دون دفع." : "Prices are checked when saving. To take full, advance or split payment, open the saved order.")</p>
                     <div id="posMessage" class="small mb-3" role="status" aria-live="polite"></div>
                     <button type="submit" id="saveOrderButton" class="btn btn-primary w-100">@(ar ? "حفظ طلب غير مدفوع" : "Save unpaid order")</button>
                     <a id="savedOrderLink" class="btn btn-outline-primary w-100 mt-2" hidden>

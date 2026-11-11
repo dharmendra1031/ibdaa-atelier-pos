@@ -418,3 +418,17 @@ a:focus-visible, button:focus-visible {
     .site-header .container-xxl { gap: 7px !important; }
     .site-header .brand-copy small { display: none; }
 }
+
+/* POS catalogue remains two content areas, with compact cards and clear modes. */
+.pos-shell .product-media { aspect-ratio: 4 / 3; }
+.pos-shell .pos-product .card-body { min-height: 102px; }
+.pos-shell .pos-product { text-align: start !important; }
+.pos-shell .pos-service { padding-block: 13px; }
+.pos-shell #catalogueProducts[hidden], .pos-shell #catalogueServices[hidden] { display: none !important; }
+.pos-shell .pos-cart-item .btn { min-height: 34px; }
+.pos-shell #customerResults { max-height: 240px; overflow-y: auto; }
+.pos-shell #customerResults:empty { display: none; }
+@media (max-width: 575.98px) {
+    .pos-shell .product-media { aspect-ratio: 1 / 1; }
+    .pos-checkout .card-body { padding: 16px !important; }
+}
