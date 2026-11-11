@@ -35,6 +35,7 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <a class="nav-link @(controller == "Pos" ? "active" : "")" asp-controller="Pos" asp-action="Index">@(isArabic ? "نقطة البيع" : "POS")</a>
+                        <a class="nav-link @(controller == "Orders" || controller == "Payments" ? "active" : "")" asp-controller="Orders" asp-action="Index">@(isArabic ? "الطلبات" : "Orders")</a>
                     }
                     @if (User.IsInRole("Admin"))
                     {

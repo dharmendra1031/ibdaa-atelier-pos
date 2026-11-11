@@ -1,0 +1,113 @@
+@model IbdaaAtelier.Web.Models.Orders.OrderDetailsPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Order " + Model.Order.OrderNumber;
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+        <span class="eyebrow">IBDAA ATELIER · ORDER</span>
+        <h1 class="section-title mt-2 mb-1">@Model.Order.OrderNumber</h1>
+        <p class="text-secondary mb-0">@(ar ? Model.Order.CustomerNameAr : Model.Order.CustomerName) · @Model.Order.CustomerMobile</p>
+    </div>
+    <div class="d-flex gap-2">
+        @if (Model.Balance > 0 && Model.Order.Status != "Cancelled")
+        {
+            <a asp-controller="Payments" asp-action="Take" asp-route-id="@Model.Order.OrderId" class="btn btn-primary">
+                @(ar ? "استلام دفعة" : "Take payment")
+            </a>
+        }
+        <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "الطلبات" : "Orders")</a>
+    </div>
+</section>
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-success" role="status">@message</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-warning" role="alert">@error</div>
+}
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card filter-card overflow-hidden">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "تفاصيل الطلب" : "Order items")</h2>
+                <p class="small text-secondary">@(ar ? "الحالة" : "Status"): @Model.Order.Status · @(ar ? "التسليم" : "Delivery"): @Model.Order.DeliveryDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</p>
+                @foreach (var item in Model.Items)
+                {
+                    <div class="border-top py-3">
+                        <div class="d-flex justify-content-between gap-3">
+                            <div>
+                                <strong>@(ar ? item.NameAr : item.Name)</strong>
+                                <small class="d-block text-secondary">@(item.ItemType == "Product" ? item.ProductCode : "Service") · @(item.SizeName ?? "—") · ×@item.Quantity</small>
+                            </div>
+                            <span class="text-nowrap fw-bold">@item.LineTotal.ToString("0.000", CultureInfo.InvariantCulture) KWD</span>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(item.Notes))
+                        {
+                            <small class="d-block mt-2 text-secondary">@item.Notes</small>
+                        }
+                        @foreach (var measure in Model.Measurements.Where(m => m.OrderItemId == item.OrderItemId))
+                        {
+                            <small class="d-block text-secondary">
+                                @(ar ? measure.NameAr : measure.Name): @measure.Value.ToString("0.##", CultureInfo.InvariantCulture) @measure.Unit
+                            </small>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card filter-card"><div class="card-body p-4">
+            <h2 class="h5">@(ar ? "الملخص" : "Balance summary")</h2>
+            <dl class="mb-0">
+                <div class="d-flex justify-content-between border-bottom py-3">
+                    <dt>@(ar ? "الإجمالي" : "Total")</dt>
+                    <dd class="mb-0">@Model.Order.Total.ToString("0.000", CultureInfo.InvariantCulture)</dd>
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-3">
+                    <dt>@(ar ? "المدفوع" : "Paid")</dt>
+                    <dd class="mb-0">@Model.Paid.ToString("0.000", CultureInfo.InvariantCulture)</dd>
+                </div>
+                <div class="d-flex justify-content-between py-3">
+                    <dt>@(ar ? "المتبقي" : "Outstanding")</dt>
+                    <dd class="mb-0 fw-bold">@Model.Balance.ToString("0.000", CultureInfo.InvariantCulture) KWD</dd>
+                </div>
+            </dl>
+        </div></div>
+    </div>
+</div>
+<section class="card filter-card">
+    <div class="card-body p-4">
+        <h2 class="h5">@(ar ? "المدفوعات" : "Payment history")</h2>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead><tr>
+                    <th scope="col">@(ar ? "التاريخ" : "Date")</th>
+                    <th scope="col">@(ar ? "الطريقة" : "Method")</th>
+                    <th scope="col">@(ar ? "القيمة" : "Amount")</th>
+                    <th scope="col">@(ar ? "النقد المستلم" : "Tendered")</th>
+                    <th scope="col">@(ar ? "الباقي" : "Change")</th>
+                </tr></thead>
+                <tbody>
+                @foreach (var receipt in Model.Payments)
+                {
+                    <tr>
+                        <td>@receipt.CreatedAtUtc.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+                        <td>@receipt.Method</td>
+                        <td>@receipt.Amount.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                        <td>@receipt.Tendered.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                        <td>@receipt.Change.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                    </tr>
+                }
+                @if (Model.Payments.Count == 0)
+                {
+                    <tr><td colspan="5" class="text-center text-secondary py-4">@(ar ? "لا توجد مدفوعات بعد." : "No payments recorded.")</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

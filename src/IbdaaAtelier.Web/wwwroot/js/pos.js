@@ -14,6 +14,7 @@
     const message = document.getElementById("posMessage");
     const saveButton = document.getElementById("saveOrderButton");
     const newButton = document.getElementById("newOrderButton");
+    const savedOrderLink = document.getElementById("savedOrderLink");
     const dialog = document.getElementById("productDialog");
     const dialogFields = document.getElementById("dialogFields");
     const arabic = shell.dataset.arabic === "true";
@@ -294,6 +295,8 @@
             } catch { /* Ignore storage restrictions. */ }
             notice(text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
                 data.orderNumber + " · " + money(data.total));
+            savedOrderLink.href = shell.dataset.orderUrl + "?id=" + encodeURIComponent(data.orderId);
+            savedOrderLink.hidden = false;
             newButton.hidden = false;
         } catch (error) {
             notice(error.message, true);

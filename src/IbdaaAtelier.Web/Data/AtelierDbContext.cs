@@ -2,6 +2,7 @@ using IbdaaAtelier.Web.Models.Catalog;
 using IbdaaAtelier.Web.Models.Security;
 using IbdaaAtelier.Web.Models.Masters;
 using IbdaaAtelier.Web.Models.Orders;
+using IbdaaAtelier.Web.Models.Payments;
 using Microsoft.EntityFrameworkCore;
 
 namespace IbdaaAtelier.Web.Data;
@@ -27,4 +28,8 @@ public sealed class AtelierDbContext(DbContextOptions<AtelierDbContext> options)
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<OrderItemMeasurement> OrderItemMeasurements => Set<OrderItemMeasurement>();
     public DbSet<OrderStatusChange> OrderStatusHistory => Set<OrderStatusChange>();
+
+    public DbSet<PaymentRequest> PaymentRequests => Set<PaymentRequest>();
+    public DbSet<PaymentBatch> PaymentBatches => Set<PaymentBatch>();
+    public DbSet<OrderPayment> OrderPayments => Set<OrderPayment>();
 }

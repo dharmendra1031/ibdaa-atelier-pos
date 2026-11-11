@@ -1,0 +1,108 @@
+@model IbdaaAtelier.Web.Models.Payments.PaymentEntryPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Receive payment";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+        <span class="eyebrow">IBDAA ATELIER · PAYMENT</span>
+        <h1 class="section-title mt-2">@(ar ? "استلام دفعة" : "Receive payment")</h1>
+        <p class="text-secondary mb-0">@(ar ? "رقم الطلب" : "Order") @Model.OrderNumber</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="Orders" asp-action="Details" asp-route-id="@Model.OrderId">
+        @(ar ? "العودة للطلب" : "Back to order")
+    </a>
+</section>
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-warning" role="alert">@error</div>
+}
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card filter-card">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">@(ar ? "طريقة الدفع" : "Split / partial payment")</h2>
+                <p class="text-secondary small mb-4">
+                    @(ar ? "أدخل مبلغ كل طريقة مستخدمة فقط. يمكن ترك الطرق الأخرى بقيمة صفر." :
+                        "Enter amounts for the methods used; leave unused methods at zero. Cash received is optional and determines change.")
+                </p>
+                <form id="receivePaymentForm" method="post" asp-controller="Payments" asp-action="Take"
+                      asp-antiforgery="true">
+                    <input type="hidden" name="RequestId" value="@Model.Form.RequestId" />
+                    <input type="hidden" name="OrderId" value="@Model.Form.OrderId" />
+                    <div class="row g-3">
+                        @for (var i = 0; i < Model.Form.Lines.Count; i++)
+                        {
+                            var line = Model.Form.Lines[i];
+                            <div class="col-12 border-bottom pb-3">
+                                <input name="Lines[@i].Method" value="@line.Method" type="hidden" />
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-sm-5">
+                                        <label for="amount_@i" class="form-label">
+                                            @(line.Method == "BankTransfer" ? (ar ? "تحويل بنكي" : "Bank transfer") :
+                                                line.Method == "Other" ? (ar ? "أخرى" : "Other") :
+                                                line.Method)
+                                        </label>
+                                        <input id="amount_@i" name="Lines[@i].Amount" type="number" class="form-control payment-amount"
+                                               min="0" step=".001" max="@Model.Balance.ToString("0.000", CultureInfo.InvariantCulture)"
+                                               value="0.000" inputmode="decimal" />
+                                    </div>
+                                    @if (line.Method == "Cash")
+                                    {
+                                        <div class="col-sm-5">
+                                            <label for="cashTendered" class="form-label">@(ar ? "النقد المستلم" : "Cash tendered")</label>
+                                            <input id="cashTendered" name="Lines[@i].Tendered" type="number"
+                                                   class="form-control" min="0" step=".001" inputmode="decimal"
+                                                   placeholder="@(ar ? "اختياري" : "Optional")" />
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <small class="d-block text-secondary">@(ar ? "الباقي" : "Change")</small>
+                                            <output id="cashChange" class="fw-bold">0.000</output>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="mt-4 d-flex justify-content-between gap-3">
+                        <span>@(ar ? "إجمالي الدفعة" : "Payment total")</span>
+                        <strong id="paymentTotal">0.000 KWD</strong>
+                    </div>
+                    <p class="small text-secondary mt-2">
+                        @(ar ? "لا يُحتسب النقد المعاد للعميل ضمن المبلغ المدفوع." :
+                            "Change returned to the customer is not counted as payment.")
+                    </p>
+                    <button type="submit" id="savePayment" class="btn btn-primary w-100 mt-2">
+                        @(ar ? "حفظ الدفعة" : "Save payment")
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card filter-card">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "ملخص الطلب" : "Order summary")</h2>
+                <dl class="mb-0">
+                    <div class="d-flex justify-content-between gap-3 border-bottom py-3">
+                        <dt>@(ar ? "الإجمالي" : "Total")</dt>
+                        <dd class="mb-0">@Model.Total.ToString("0.000", CultureInfo.InvariantCulture) KWD</dd>
+                    </div>
+                    <div class="d-flex justify-content-between gap-3 border-bottom py-3">
+                        <dt>@(ar ? "المدفوع" : "Paid")</dt>
+                        <dd class="mb-0">@Model.Paid.ToString("0.000", CultureInfo.InvariantCulture) KWD</dd>
+                    </div>
+                    <div class="d-flex justify-content-between gap-3 py-3">
+                        <dt>@(ar ? "المتبقي" : "Balance due")</dt>
+                        <dd class="mb-0 fw-bold">@Model.Balance.ToString("0.000", CultureInfo.InvariantCulture) KWD</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/js/payments.js" asp-append-version="true" defer></script>
+}

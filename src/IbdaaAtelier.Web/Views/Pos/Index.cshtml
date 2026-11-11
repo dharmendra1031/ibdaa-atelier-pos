@@ -18,6 +18,7 @@
      data-customer-url="@Url.Action("FindCustomers", "Pos")"
      data-reserve-url="@Url.Action("Reserve", "Pos")"
      data-save-url="@Url.Action("Save", "Pos")"
+     data-order-url="@Url.Action("Details", "Orders")"
      data-arabic="@(ar ? "true" : "false")">
     <div class="col-lg-7">
         <section class="card filter-card mb-4">
@@ -142,6 +143,9 @@
                     <p class="small text-secondary mt-2">@(ar ? "يُحسب السعر النهائي في الخادم. سيتم حفظ الطلب دون دفع." : "Final prices are verified on the server. This stage saves an unpaid order only.")</p>
                     <div id="posMessage" class="small mb-3" role="status" aria-live="polite"></div>
                     <button type="submit" id="saveOrderButton" class="btn btn-primary w-100">@(ar ? "حفظ طلب غير مدفوع" : "Save unpaid order")</button>
+                    <a id="savedOrderLink" class="btn btn-outline-primary w-100 mt-2" hidden>
+                        @(ar ? "عرض الطلب واستلام الدفعة" : "View order / receive payment")
+                    </a>
                     <button type="button" id="newOrderButton" class="btn btn-outline-secondary w-100 mt-2" hidden>@(ar ? "طلب جديد" : "Start another order")</button>
                 </form>
             </div>

@@ -1,0 +1,68 @@
+@model IbdaaAtelier.Web.Models.Orders.OrderListPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Orders";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+        <span class="eyebrow">IBDAA ATELIER · ORDERS</span>
+        <h1 class="section-title mt-2">@(ar ? "الطلبات" : "Orders")</h1>
+        <p class="text-secondary mb-0">@(ar ? "سجل الطلبات والمدفوعات." : "View saved orders and payments.")</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Pos" asp-action="Index">@(ar ? "طلب جديد" : "New order")</a>
+</section>
+<form role="search" asp-action="Index" method="get" class="d-flex gap-2 mb-4">
+    <input type="search" name="search" value="@Model.Search" maxlength="100" class="form-control"
+           placeholder="@(ar ? "رقم الطلب أو اسم العميل" : "Order number, customer, mobile")" />
+    <button class="btn btn-primary" type="submit">@(ar ? "بحث" : "Search")</button>
+</form>
+<div class="card filter-card overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr>
+                <th scope="col">@(ar ? "الطلب" : "Order")</th>
+                <th scope="col">@(ar ? "العميل" : "Customer")</th>
+                <th scope="col">@(ar ? "الإجمالي" : "Total (KWD)")</th>
+                <th scope="col">@(ar ? "التسليم" : "Delivery")</th>
+                <th scope="col">@(ar ? "الحالة" : "Status")</th>
+                <th scope="col" class="text-end">@(ar ? "الإجراء" : "Actions")</th>
+            </tr></thead>
+            <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <td><strong>@order.OrderNumber</strong><small class="d-block text-secondary">@order.CreatedAtUtc.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</small></td>
+                    <td>@(ar ? order.CustomerNameAr : order.CustomerName)<small class="d-block text-secondary">@order.CustomerMobile</small></td>
+                    <td>@order.Total.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                    <td>@order.DeliveryDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                    <td>@order.Status</td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-outline-primary btn-sm">@(ar ? "عرض" : "View")</a>
+                    </td>
+                </tr>
+            }
+            @if (Model.Orders.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center py-5 text-secondary">@(ar ? "لا توجد طلبات." : "No orders found.")</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Order pages" class="d-flex justify-content-between mt-3">
+        <span>@Model.Page / @Model.TotalPages</span>
+        <div class="d-flex gap-2">
+            @if (Model.Page > 1)
+            {
+                <a class="btn btn-outline-primary btn-sm" asp-route-page="@(Model.Page-1)" asp-route-search="@Model.Search">@(ar ? "السابق" : "Previous")</a>
+            }
+            @if (Model.Page < Model.TotalPages)
+            {
+                <a class="btn btn-outline-primary btn-sm" asp-route-page="@(Model.Page+1)" asp-route-search="@Model.Search">@(ar ? "التالي" : "Next")</a>
+            }
+        </div>
+    </nav>
+}
