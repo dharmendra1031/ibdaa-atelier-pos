@@ -30,11 +30,17 @@
 </section>
 @if (TempData["Message"] is string message)
 {
-    <div class="alert alert-success" role="status">@message</div>
+    <div class="order-feedback" role="status" aria-live="polite">
+        <span>@message</span>
+        <button type="button" class="btn-close" aria-label="@(ar ? "إغلاق الرسالة" : "Dismiss message")"></button>
+    </div>
 }
 @if (TempData["Error"] is string error)
 {
-    <div class="alert alert-warning" role="alert">@error</div>
+    <div class="order-feedback order-feedback-error" role="alert" aria-live="assertive">
+        <span>@error</span>
+        <button type="button" class="btn-close" aria-label="@(ar ? "إغلاق الرسالة" : "Dismiss message")"></button>
+    </div>
 }
 <div class="row g-4 mb-4">
     <div class="col-lg-8">
@@ -170,7 +176,7 @@
             @(ar ? "الإلغاء يتطلب سبباً واضحاً واسترداد المبلغ المدفوع بالكامل أولاً." :
                 "Cancellation requires a reason and all payments must be refunded first.")
         </p>
-        <form asp-controller="OrderStatus" asp-action="Change" method="post" asp-antiforgery="true"
+        <form id="orderStatusForm" asp-controller="OrderStatus" asp-action="Change" method="post" asp-antiforgery="true"
               class="row g-3 align-items-end">
             <input type="hidden" name="OrderId" value="@Model.Order.OrderId" />
             <div class="col-md-4">
@@ -217,3 +223,25 @@
         </table>
     </div>
 </div></section>
+
+@section Scripts
+{
+    <script>
+        document.querySelectorAll(".order-feedback .btn-close").forEach(button =>
+            button.addEventListener("click", () => { button.parentElement.hidden = true; }));
+
+        const statusForm = document.getElementById("orderStatusForm");
+        statusForm?.addEventListener("submit", event => {
+            const button = statusForm.querySelector('button[type="submit"]');
+            if (button.disabled) { event.preventDefault(); return; }
+            if (!statusForm.reportValidity()) { event.preventDefault(); return; }
+            button.disabled = true;
+            button.setAttribute("aria-busy", "true");
+            const spinner = document.createElement("span");
+            spinner.className = "spinner-border spinner-border-sm me-2";
+            spinner.setAttribute("aria-hidden", "true");
+            button.replaceChildren(spinner, document.createTextNode(
+                document.documentElement.lang === "ar" ? "جار التحديث..." : "Processing..."));
+        });
+    </script>
+}
