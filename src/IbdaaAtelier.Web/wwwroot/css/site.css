@@ -33,6 +33,9 @@ h1, h2, h3 { color: var(--atelier-ink); }
 .btn-primary {
     --bs-btn-bg: var(--atelier-primary);
     --bs-btn-border-color: var(--atelier-primary);
+    --bs-btn-disabled-bg: var(--atelier-primary);
+    --bs-btn-disabled-border-color: var(--atelier-primary);
+    --bs-btn-disabled-color: #fff;
     --bs-btn-hover-bg: var(--atelier-primary-dark);
     --bs-btn-hover-border-color: var(--atelier-primary-dark);
     --bs-btn-active-bg: var(--atelier-primary-dark);
@@ -728,7 +731,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-app-layout .pos-checkout { top: 12px; border-radius: 14px; }
 .pos-app-layout .pos-checkout .card-body { min-width: 0; }
 .pos-app-layout .pos-cart { min-height: 90px; overflow: visible; }
-.pos-app-layout .pos-checkout-actions { position: static; }
+.pos-app-layout .pos-checkout-actions { position: sticky; bottom: 0; }
 .pos-app-layout .pos-product-grid .product-media { aspect-ratio: 4 / 4; }
 .pos-app-layout .pos-product { height: 100%; }
 .auth-page .auth-wrap { place-items: stretch; }
@@ -751,4 +754,67 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .admin-kpis .feature-card { min-height: 104px; }
     .admin-kpis .feature-card .h4 { font-size: 1.1rem; }
     .pos-app-layout .pos-shell { --bs-gutter-x: 12px; --bs-gutter-y: 12px; }
+}
+
+/* Approved visual references: restrained surface updates, existing actions retained. */
+.admin-page .app-sidebar { border-radius: 0; }
+.admin-page .workspace-nav-link { position: relative; padding-inline-start: 36px; }
+.admin-page .workspace-nav-link::before {
+    content: "◇"; position: absolute; inset-inline-start: 13px;
+    color: #eac892; font-size: 16px; line-height: 1.2;
+}
+.admin-page .workspace-nav-link.active::before { color: #73203e; }
+.admin-page .workspace-nav-link[href*="/Admin"]::before { content: "⌂"; }
+.admin-page .workspace-nav-link[href*="/Orders"]::before { content: "▤"; }
+.admin-page .workspace-nav-link[href*="/Customers"]::before { content: "♧"; }
+.admin-page .workspace-nav-link[href*="/Register"]::before { content: "▣"; }
+.admin-page .workspace-nav-link[href*="/Services"]::before { content: "✂"; }
+.admin-page .workspace-nav-link[href*="/ShopSettings"]::before { content: "⚙"; }
+.admin-page .admin-hero { border-inline-start: 4px solid #c99a54; }
+.admin-page .admin-kpis .feature-card { border-radius: 15px; }
+.admin-page .admin-kpis .feature-card .h4 { color: var(--atelier-primary); }
+.admin-page .admin-kpis .col-6:first-child .feature-card .h4 { color: #fff; }
+.pos-page .site-header { background: #690a2b; border-bottom-color: #690a2b; }
+.pos-page .site-header .brand,
+.pos-page .site-header .workspace-user,
+.pos-page .site-header .brand-copy { color: #fff8f3; }
+.pos-page .site-header .brand-copy small { color: #efc9d4; }
+.pos-page .site-header .brand-mark { color: #f3cd89; background: transparent; }
+.pos-page .site-header .language-button,
+.pos-page .site-header .btn-outline-secondary {
+    color: #fff; border-color: #a55f74; background: transparent;
+}
+.pos-page .site-header .language-button:hover,
+.pos-page .site-header .btn-outline-secondary:hover { background: #8a2849; }
+.pos-app-layout .pos-heading { margin-bottom: 14px !important; }
+.pos-app-layout .pos-shell .pos-checkout { box-shadow: 0 10px 30px rgb(93 23 49 / 6%); }
+.pos-app-layout .pos-shell .pos-checkout-actions .btn-primary:disabled {
+    background: #762c48; border-color: #762c48; color: #fff; opacity: .62;
+}
+.pos-app-layout .pos-category { border-radius: 11px; }
+.pos-app-layout .pos-catalogue-tools { box-shadow: 0 7px 20px rgb(69 24 40 / 4%); }
+.pos-app-layout .pos-cart-item { overflow-wrap: anywhere; }
+.auth-showcase-subtitle { color: #fff5e9 !important; font-size: 1.1rem; }
+.auth-showcase-content > p:not(.auth-showcase-subtitle) { max-width: 330px; line-height: 1.55; }
+.auth-services { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.auth-services > span {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 2px; text-align: center;
+    width: 104px; min-height: 88px; border: 1px solid #b36879;
+    border-radius: 16px; background: rgb(255 255 255 / 5%);
+    color: #efc781; font-size: 24px;
+}
+.auth-services small { font: 12px/1.2 system-ui, sans-serif; color: #fff4eb; }
+.auth-role-note {
+    padding: 13px; margin: 24px 0 0; border-radius: 10px;
+    border: 1px solid #eeded7; background: #fbf3ee;
+    color: #75515c; font-size: .82rem; text-align: center;
+}
+@media (min-width: 992px) {
+    .pos-app-layout .pos-checkout-actions { position: sticky; bottom: 0; }
+}
+@media (max-width: 575.98px) {
+    .auth-services > span { width: 88px; min-height: 74px; }
+    .auth-services { gap: 6px; }
+    .auth-role-note { margin-top: 16px; }
 }
