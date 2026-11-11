@@ -58,3 +58,30 @@ test("premium POS uses two full-width work areas without a persistent sidebar", 
     assert.match(view, /class="col-lg-7"/);
     assert.match(view, /class="col-lg-5"/);
 });
+
+
+test("POS shows loading and clear success or failed messages", () => {
+    assert.match(view, /id="posToast"/);
+    assert.match(view, /id="posToastText"/);
+    assert.match(pos, /toast\.setAttribute\("role", error \? "alert" : "status"\)/);
+    assert.match(pos, /setBusy\(quickCustomerSave, true/);
+    assert.match(pos, /setBusy\(saveButton, true/);
+    assert.match(pos, /setBusy\(saveButton, false/);
+    assert.match(pos, /Searching customers\.\.\./);
+    assert.match(pos, /Loading product\.\.\./);
+    assert.match(pos, /Retry Save safely/);
+    assert.match(pos, /false, true\)/);
+});
+
+test("payment and order status submissions show processing without changing financial APIs", () => {
+    const payment = read("src/IbdaaAtelier.Web/wwwroot/js/payments.js");
+    const details = read("src/IbdaaAtelier.Web/Views/Orders/Details.cshtml");
+    assert.match(payment, /Processing payment\.\.\./);
+    assert.match(payment, /if \(save\.disabled\)/);
+    assert.match(payment, /save\.setAttribute\("aria-busy", "true"\)/);
+    assert.match(payment, /window\.addEventListener\("pageshow"/);
+    assert.match(details, /class="order-feedback"/);
+    assert.match(details, /class="order-feedback order-feedback-error"/);
+    assert.match(details, /id="orderStatusForm"/);
+    assert.match(details, /Processing\.\.\./);
+});
