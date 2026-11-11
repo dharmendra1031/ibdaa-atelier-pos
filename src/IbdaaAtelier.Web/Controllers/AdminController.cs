@@ -88,6 +88,11 @@ public sealed class AdminController(AtelierDbContext db) : Controller
             Collected = received.Sum(x => x.Total),
             Refunded = returned.Sum(x => x.Total),
             Outstanding = Math.Max(0m, totalReceivable - totalReceived + totalRefunded),
+            RecentOrders = await db.Orders.AsNoTracking()
+                .OrderByDescending(o => o.OrderId).Take(5)
+                .Select(o => new AdminRecentOrder(o.OrderId, o.OrderNumber,
+                    o.CustomerName, o.Total, o.Status, o.DeliveryDate))
+                .ToListAsync(ct),
             PaymentMethods = received.Select(x => new PaymentMethodTotal(
                 x.Method, x.Total, refundedByMethod.GetValueOrDefault(x.Method)))
                 .Concat(returned.Where(x => received.All(p => p.Method != x.Method))
