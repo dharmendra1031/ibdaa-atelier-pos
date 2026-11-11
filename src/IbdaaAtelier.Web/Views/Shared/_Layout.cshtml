@@ -43,6 +43,14 @@
                 <span class="brand-mark" aria-hidden="true">IA</span>
                 <span class="brand-copy">IBDAA <strong>ATELIER</strong><small>@(isArabic ? "تصميم · خياطة · تعديلات" : "Fashion · Tailoring · Alteration")</small></span>
             </a>
+            @if (authenticated && controller == "Pos")
+            {
+                <span class="workspace-header-title">@(isArabic ? "نقطة البيع" : "POS Billing")</span>
+            }
+            else if (authenticated && controller == "Admin")
+            {
+                <span class="workspace-header-title admin-header-title">@(isArabic ? "لوحة الإدارة" : "Admin Dashboard")</span>
+            }
             <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
                 @if (authenticated)
                 {
