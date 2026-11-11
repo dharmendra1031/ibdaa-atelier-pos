@@ -525,3 +525,37 @@ a:focus-visible, button:focus-visible {
     .pos-app-layout .pos-shortcuts .btn { padding: 6px 10px; }
     .pos-app-layout .pos-catalogue-tools { padding: 10px; }
 }
+
+
+/* Short cashier action feedback; no external notification library. */
+.pos-toast,
+.order-feedback {
+    position: fixed;
+    inset-block-start: 78px;
+    inset-inline-end: 18px;
+    z-index: 1100;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 16px;
+    width: min(410px, calc(100vw - 36px));
+    padding: 16px;
+    border: 1px solid #dfebe1;
+    border-inline-start: 4px solid #377a55;
+    border-radius: 12px;
+    background: #fff;
+    color: #27382c;
+    box-shadow: 0 12px 36px rgb(31 28 26 / 14%);
+    line-height: 1.45;
+}
+.pos-toast[hidden],
+.order-feedback[hidden] { display: none; }
+.pos-toast-error,
+.order-feedback-error {
+    border-color: #f0d6d6;
+    border-inline-start-color: #b33d3d;
+    color: #6b2525;
+}
+.pos-toast .btn-close,
+.order-feedback .btn-close { flex: 0 0 auto; }
+.pos-product.is-loading { opacity: .55; cursor: progress; }
