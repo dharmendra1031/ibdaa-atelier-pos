@@ -509,10 +509,6 @@ a:focus-visible, button:focus-visible {
 .pos-dialog-thumbnail { padding: 3px; border: 2px solid transparent; border-radius: 8px; background: #fff; flex: 0 0 auto; }
 .pos-dialog-thumbnail.active { border-color: var(--atelier-primary); }
 .pos-dialog-thumbnail img { display: block; width: 54px; height: 60px; object-fit: cover; border-radius: 5px; }
-@media (min-width: 992px) {
-    .pos-app-layout .pos-shell > .col-lg-7 { width: 62%; flex: 0 0 62%; max-width: 62%; }
-    .pos-app-layout .pos-shell > .col-lg-5 { width: 38%; flex: 0 0 38%; max-width: 38%; }
-}
 @media (max-width: 575.98px) {
     .pos-app-layout .pos-shortcuts { max-width: 100%; }
     .pos-app-layout .pos-shortcuts .btn { padding: 6px 10px; }
