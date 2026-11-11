@@ -93,6 +93,7 @@
                         @(ar ? "لا يُحتسب النقد المعاد للعميل ضمن المبلغ المدفوع." :
                             "Change returned to the customer is not counted as payment.")
                     </p>
+                    <p id="paymentError" class="small text-danger mt-2 mb-0" role="alert" aria-live="polite" hidden></p>
                     <button type="submit" id="savePayment" class="btn btn-primary w-100 mt-2">
                         @(ar ? "حفظ الدفعة" : "Save payment")
                     </button>
