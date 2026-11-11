@@ -13,7 +13,10 @@
         {
             <a class="workspace-nav-link @(current == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index" aria-current="@(current == "Admin" ? "page" : null)">@(ar ? "لوحة التحكم" : "Dashboard")</a>
         }
-        <a class="workspace-nav-link @(current == "Pos" ? "active" : "")" asp-controller="Pos" asp-action="Index" aria-current="@(current == "Pos" ? "page" : null)">@(ar ? "نقطة البيع" : "POS billing")</a>
+        @if (!isAdmin)
+        {
+            <a class="workspace-nav-link @(current == "Pos" ? "active" : "")" asp-controller="Pos" asp-action="Index" aria-current="@(current == "Pos" ? "page" : null)">@(ar ? "نقطة البيع" : "POS billing")</a>
+        }
         <a class="workspace-nav-link @(ordersActive ? "active" : "")" asp-controller="Orders" asp-action="Index" aria-current="@(ordersActive ? "page" : null)">@(ar ? "الطلبات والتسليم" : "Orders & delivery")</a>
         <a class="workspace-nav-link @(current == "Register" ? "active" : "")" asp-controller="Register" asp-action="Index" aria-current="@(current == "Register" ? "page" : null)">@(ar ? "الصندوق النقدي" : "Cash register")</a>
         <a class="workspace-nav-link @(current == "Customers" ? "active" : "")" asp-controller="Customers" asp-action="Index" aria-current="@(current == "Customers" ? "page" : null)">@(ar ? "العملاء" : "Customers")</a>
