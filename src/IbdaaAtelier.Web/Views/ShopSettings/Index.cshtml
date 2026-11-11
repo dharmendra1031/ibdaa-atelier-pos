@@ -13,6 +13,10 @@
 {
     <div class="alert alert-success" role="status">@message</div>
 }
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-warning" role="alert">@error</div>
+}
 <div class="card filter-card">
     <div class="card-body p-4 p-lg-5">
         <form asp-controller="ShopSettings" asp-action="Save" method="post" asp-antiforgery="true">
@@ -60,6 +64,17 @@
                 <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save settings")</button>
                 <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">@(ar ? "رجوع" : "Back")</a>
             </div>
+        </form>
+        <hr class="my-4" />
+        <h2 class="h5">@(ar ? "شعار المتجر" : "Shop logo")</h2>
+        <p class="small text-secondary">@(ar ? "JPEG أو PNG أو WebP، بحد أقصى 5 ميغابايت. احفظ بيانات المتجر أولاً." : "JPEG, PNG or WebP; maximum 5 MB. Save business details first.")</p>
+        <form asp-controller="ShopSettings" asp-action="UploadLogo" method="post"
+              enctype="multipart/form-data" asp-antiforgery="true" class="d-flex flex-wrap gap-2 align-items-end">
+            <div class="flex-grow-1">
+                <label for="shopLogo" class="form-label">@(ar ? "صورة الشعار" : "Logo image")</label>
+                <input id="shopLogo" type="file" name="logo" class="form-control" accept="image/jpeg,image/png,image/webp" required />
+            </div>
+            <button type="submit" class="btn btn-outline-primary">@(ar ? "تحديث الشعار" : "Upload logo")</button>
         </form>
     </div>
 </div>

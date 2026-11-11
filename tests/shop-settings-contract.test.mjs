@@ -32,3 +32,16 @@ test("isolated SQL CI includes guarded settings scripts and smoke test", () => {
     assert.match(runner, /022_verify_shop_settings\.sql/);
     assert.match(runner, /shop-settings-smoke\.sql/);
 });
+
+test("logo is validated against existing image headers and stored under a safe shop path", () => {
+    const files = read("src/IbdaaAtelier.Web/Services/ProductImageFiles.cs");
+    const newController = read("src/IbdaaAtelier.Web/Controllers/ShopSettingsController.cs");
+    const editor = read("src/IbdaaAtelier.Web/Views/ShopSettings/Index.cshtml");
+    assert.match(files, /MaxFileBytes = 5 \* 1024 \* 1024/);
+    assert.match(newController, /images\.ReadAsync\(logo, ct\)/);
+    assert.match(newController, /FileMode\.CreateNew/);
+    assert.match(newController, /"uploads", "shop"/);
+    assert.match(newController, /ShopSettings\.UpdateLogo/);
+    assert.match(editor, /enctype="multipart\/form-data"/);
+    assert.match(editor, /asp-action="UploadLogo"/);
+});

@@ -2,6 +2,8 @@ using System.Security.Claims;
 using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Masters;
 using IbdaaAtelier.Web.Models.Security;
+using IbdaaAtelier.Web.Services;
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IbdaaAtelier.Web.Controllers;
 
 [Authorize(Roles = "Admin")]
-public sealed class ShopSettingsController(AtelierDbContext db) : Controller
+public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFiles images, IWebHostEnvironment environment) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(CancellationToken ct)
@@ -25,6 +27,95 @@ public sealed class ShopSettingsController(AtelierDbContext db) : Controller
             AddressAr = settings?.AddressAr,
             LogoPath = settings?.LogoPath
         });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [RequestSizeLimit(ProductImageFiles.MaxFileBytes + 100_000)]
+    public async Task<IActionResult> UploadLogo(IFormFile? logo, CancellationToken ct)
+    {
+        if (logo is null)
+        {
+            TempData["Error"] = "Choose a JPEG, PNG or WebP logo.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var settings = await db.ShopSettings.SingleOrDefaultAsync(ct);
+        if (settings is null)
+        {
+            TempData["Error"] = "Save your shop details before uploading a logo.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        byte[] bytes;
+        string extension;
+        try
+        {
+            (bytes, extension) = await images.ReadAsync(logo, ct);
+        }
+        catch (ArgumentException exception)
+        {
+            TempData["Error"] = exception.Message;
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (string.IsNullOrWhiteSpace(environment.WebRootPath))
+            throw new InvalidOperationException("Shop image storage is not configured.");
+
+        var folder = Path.Combine(environment.WebRootPath, "uploads", "shop");
+        Directory.CreateDirectory(folder);
+        var fileName = "logo-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture) + extension;
+        var fullPath = Path.Combine(folder, fileName);
+        var publicPath = "/uploads/shop/" + fileName;
+        var previousPath = settings.LogoPath;
+
+        await using (var output = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write,
+            FileShare.None, 81920, useAsync: true))
+            await output.WriteAsync(bytes, ct);
+
+        try
+        {
+            settings.LogoPath = publicPath;
+            var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : 0;
+            db.AuditLogs.Add(new AuditLog
+            {
+                UserId = userId > 0 ? userId : null,
+                Action = "ShopSettings.UpdateLogo",
+                EntityName = "ShopSettings",
+                EntityId = settings.SettingsId
+            });
+            await db.SaveChangesAsync(ct);
+        }
+        catch
+        {
+            System.IO.File.Delete(fullPath);
+            throw;
+        }
+
+        if (!string.IsNullOrWhiteSpace(previousPath) &&
+            previousPath.StartsWith("/uploads/shop/", StringComparison.Ordinal))
+        {
+            var oldFileName = previousPath["/uploads/shop/".Length..];
+            if (Path.GetFileName(oldFileName) == oldFileName && !oldFileName.Contains('\\'))
+            {
+                var oldFullPath = Path.Combine(folder, oldFileName);
+                try
+                {
+                    if (System.IO.File.Exists(oldFullPath))
+                        System.IO.File.Delete(oldFullPath);
+                }
+                catch (IOException)
+                {
+                    // The database now points to the new logo; file cleanup is best-effort.
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Preserve a successfully updated logo if old-file cleanup is denied.
+                }
+            }
+        }
+
+        TempData["Message"] = "Shop logo updated.";
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost, ValidateAntiForgeryToken]
