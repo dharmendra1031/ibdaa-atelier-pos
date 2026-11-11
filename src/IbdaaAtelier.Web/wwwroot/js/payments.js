@@ -2,6 +2,9 @@
     const form = document.getElementById("receivePaymentForm");
     if (!form) return;
 
+    document.querySelectorAll(".order-feedback .btn-close").forEach(button =>
+        button.addEventListener("click", () => { button.parentElement.hidden = true; }));
+
     const amounts = [...form.querySelectorAll(".payment-amount")];
     const cash = document.getElementById("amount_0");
     const tendered = document.getElementById("cashTendered");
