@@ -34,14 +34,14 @@
     }
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body class="@(controller == "Pos" ? "pos-page" : "")">
+<body class="@(controller == "Pos" ? "pos-page" : controller == "Auth" ? "auth-page" : "admin-page")">
     <a class="visually-hidden-focusable skip-link" href="#mainContent">@(isArabic ? "الانتقال إلى المحتوى" : "Skip to content")</a>
     <header class="site-header">
         <div class="container-xxl d-flex align-items-center justify-content-between gap-3">
             <a class="brand d-inline-flex align-items-center gap-2 text-decoration-none"
-               asp-controller="Home" asp-action="Index" aria-label="IBDAA Atelier">
+               asp-controller="@(User.IsInRole("Admin") ? "Admin" : User.IsInRole("Cashier") ? "Pos" : "Home")" asp-action="Index" aria-label="IBDAA Atelier">
                 <span class="brand-mark" aria-hidden="true">IA</span>
-                <span class="brand-copy">IBDAA <strong>ATELIER</strong><small>@(isArabic ? "إدارة المتجر" : "Shop management")</small></span>
+                <span class="brand-copy">IBDAA <strong>ATELIER</strong><small>@(isArabic ? "تصميم · خياطة · تعديلات" : "Fashion · Tailoring · Alteration")</small></span>
             </a>
             <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
                 @if (authenticated)
