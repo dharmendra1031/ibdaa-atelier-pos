@@ -275,6 +275,11 @@
 
     async function openProduct(productId, index = -1) {
         if (saving || completed) return;
+        if (index < 0 && items.length >= 30) {
+            notice(text("One order supports up to 30 items. Save this order first.",
+                "الحد الأقصى للطلب ٣٠ عنصراً. احفظ الطلب أولاً."), true);
+            return;
+        }
         if (!customerId) {
             notice(text("Select a customer before adding an item.", "اختر العميل أولاً."), true);
             customerSearch.focus();
@@ -455,6 +460,11 @@
 
     document.querySelectorAll(".pos-service").forEach(button => button.addEventListener("click", () => {
         if (saving || completed) return;
+        if (items.length >= 30) {
+            notice(text("One order supports up to 30 items. Save this order first.",
+                "الحد الأقصى للطلب ٣٠ عنصراً. احفظ الطلب أولاً."), true);
+            return;
+        }
         if (!customerId) {
             notice(text("Select a customer before adding an item.", "اختر العميل أولاً."), true);
             customerSearch.focus();
