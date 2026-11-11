@@ -34,7 +34,7 @@
     }
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
+<body class="@(controller == "Pos" ? "pos-page" : "")">
     <a class="visually-hidden-focusable skip-link" href="#mainContent">@(isArabic ? "الانتقال إلى المحتوى" : "Skip to content")</a>
     <header class="site-header">
         <div class="container-xxl d-flex align-items-center justify-content-between gap-3">
@@ -71,7 +71,7 @@
     </header>
     @if (authenticated)
     {
-        <div class="container-xxl app-layout">
+        <div class="container-xxl app-layout @(controller == "Pos" ? "pos-app-layout" : "")">
             <aside class="app-sidebar" aria-label="@(isArabic ? "تنقل المتجر" : "Shop navigation")">
                 <partial name="_Navigation" />
             </aside>
