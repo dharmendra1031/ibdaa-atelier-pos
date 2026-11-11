@@ -164,7 +164,12 @@ public sealed class PaymentService(AtelierDbContext db)
 
     public async Task<decimal> GetPaidAsync(long orderId, CancellationToken ct)
     {
-        return await db.OrderPayments.AsNoTracking().Where(payment => payment.OrderId == orderId)
+        var received = await db.OrderPayments.AsNoTracking()
+            .Where(payment => payment.OrderId == orderId)
             .SumAsync(payment => (decimal?)payment.Amount, ct) ?? 0m;
+        var refunded = await db.OrderRefunds.AsNoTracking()
+            .Where(refund => refund.OrderId == orderId)
+            .SumAsync(refund => (decimal?)refund.Amount, ct) ?? 0m;
+        return received - refunded;
     }
 }

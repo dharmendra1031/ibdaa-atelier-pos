@@ -1,0 +1,77 @@
+@model IbdaaAtelier.Web.Models.Payments.RefundEntryPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Issue refund";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+        <span class="eyebrow">IBDAA ATELIER · ADMIN ONLY</span>
+        <h1 class="section-title mt-2">@(ar ? "تسجيل رد المبلغ" : "Issue a refund")</h1>
+        <p class="text-secondary mb-0">@Model.OrderNumber</p>
+    </div>
+    <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.OrderId"
+       class="btn btn-outline-secondary">@(ar ? "العودة للطلب" : "Back to order")</a>
+</section>
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-warning" role="alert">@error</div>
+}
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card filter-card">
+            <div class="card-body p-4">
+                <h2 class="h5">@(ar ? "تفاصيل الاسترداد" : "Refund details")</h2>
+                <p class="small text-secondary">
+                    @(ar ? "لا يمكن رد مبلغ أكبر مما استلم بهذه الطريقة. يلزم سبب واضح."
+                        : "You cannot refund more than the net receipts from that method. A reason is required.")
+                </p>
+                <form asp-controller="Refunds" asp-action="Issue" asp-antiforgery="true" method="post">
+                    <input type="hidden" name="RequestId" value="@Model.Form.RequestId" />
+                    <input type="hidden" name="OrderId" value="@Model.Form.OrderId" />
+                    <div class="mb-3">
+                        <label for="refundMethod" class="form-label">@(ar ? "طريقة الدفع" : "Original payment method") *</label>
+                        <select id="refundMethod" name="Method" class="form-select" required>
+                            @foreach (var method in Model.AvailableByMethod.Where(x => x.Value > 0))
+                            {
+                                <option value="@method.Key" selected="@(method.Key == Model.Form.Method)">
+                                    @method.Key — @method.Value.ToString("0.000", CultureInfo.InvariantCulture) KWD
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="refundAmount" class="form-label">@(ar ? "المبلغ (د.ك)" : "Refund amount (KWD)") *</label>
+                        <input id="refundAmount" name="Amount" class="form-control" type="number"
+                               min=".001" step=".001" required inputmode="decimal" />
+                    </div>
+                    <div class="mb-4">
+                        <label for="refundReason" class="form-label">@(ar ? "سبب الاسترداد" : "Reason") *</label>
+                        <textarea id="refundReason" name="Reason" class="form-control"
+                                  rows="3" minlength="10" maxlength="500" required></textarea>
+                    </div>
+                    <button class="btn btn-primary w-100" type="submit">
+                        @(ar ? "تسجيل الاسترداد" : "Record refund")
+                    </button>
+                </form>
+                <p class="small text-secondary mt-3 mb-0">
+                    @(ar ? "يسجّل هذا الإجراء رد المبلغ فقط؛ لا ينفذ حوالة مصرفية تلقائية." :
+                        "This records a manual refund; it does not automatically reverse bank or KNET transactions.")
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card filter-card"><div class="card-body p-4">
+            <h2 class="h5">@(ar ? "الحركات" : "Receipt summary")</h2>
+            <div class="d-flex justify-content-between border-bottom py-3">
+                <strong>@(ar ? "إجمالي المدفوع" : "Gross received")</strong>
+                <span>@Model.TotalPaid.ToString("0.000", CultureInfo.InvariantCulture)</span>
+            </div>
+            <div class="d-flex justify-content-between py-3">
+                <strong>@(ar ? "إجمالي المسترد" : "Previously refunded")</strong>
+                <span>@Model.TotalRefunded.ToString("0.000", CultureInfo.InvariantCulture)</span>
+            </div>
+        </div></div>
+    </div>
+</div>

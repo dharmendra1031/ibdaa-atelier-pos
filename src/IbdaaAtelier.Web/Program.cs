@@ -19,6 +19,7 @@ builder.Services.AddScoped<OrderLineBuilder>();
 builder.Services.AddScoped<PosOrderService>();
 builder.Services.AddScoped<ProductImageFiles>();
 builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<RefundService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

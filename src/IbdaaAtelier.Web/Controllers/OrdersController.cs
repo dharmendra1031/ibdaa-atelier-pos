@@ -52,7 +52,11 @@ public sealed class OrdersController(AtelierDbContext db) : Controller
             .OrderBy(m => m.OrderMeasurementId).ToListAsync(ct);
         var receipts = await db.OrderPayments.AsNoTracking()
             .Where(p => p.OrderId == id).OrderBy(p => p.PaymentId).ToListAsync(ct);
-        var paid = receipts.Sum(p => p.Amount);
+        var refunds = await db.OrderRefunds.AsNoTracking()
+            .Where(r => r.OrderId == id).OrderBy(r => r.RefundId).ToListAsync(ct);
+        var grossPaid = receipts.Sum(p => p.Amount);
+        var refunded = refunds.Sum(r => r.Amount);
+        var paid = grossPaid - refunded;
 
         return View(new OrderDetailsPage
         {
@@ -60,8 +64,11 @@ public sealed class OrdersController(AtelierDbContext db) : Controller
             Items = items,
             Measurements = measurements,
             Payments = receipts,
+            Refunds = refunds,
+            GrossPaid = grossPaid,
+            Refunded = refunded,
             Paid = paid,
-            Balance = Math.Max(0m, order.Total - paid)
+            Balance = order.Status == "Cancelled" ? 0m : Math.Max(0m, order.Total - paid)
         });
     }
 }

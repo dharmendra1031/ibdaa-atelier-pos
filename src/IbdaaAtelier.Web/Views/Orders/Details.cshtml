@@ -17,6 +17,12 @@
                 @(ar ? "استلام دفعة" : "Take payment")
             </a>
         }
+        @if (User.IsInRole("Admin") && Model.Paid > 0)
+        {
+            <a asp-controller="Refunds" asp-action="Issue" asp-route-id="@Model.Order.OrderId" class="btn btn-outline-primary">
+                @(ar ? "رد مبلغ" : "Refund")
+            </a>
+        }
         <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "الطلبات" : "Orders")</a>
     </div>
 </section>
@@ -68,7 +74,15 @@
                     <dd class="mb-0">@Model.Order.Total.ToString("0.000", CultureInfo.InvariantCulture)</dd>
                 </div>
                 <div class="d-flex justify-content-between border-bottom py-3">
-                    <dt>@(ar ? "المدفوع" : "Paid")</dt>
+                    <dt>@(ar ? "الإيصالات" : "Gross received")</dt>
+                    <dd class="mb-0">@Model.GrossPaid.ToString("0.000", CultureInfo.InvariantCulture)</dd>
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-3">
+                    <dt>@(ar ? "المسترد" : "Refunded")</dt>
+                    <dd class="mb-0">@Model.Refunded.ToString("0.000", CultureInfo.InvariantCulture)</dd>
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-3">
+                    <dt>@(ar ? "الصافي" : "Net paid")</dt>
                     <dd class="mb-0">@Model.Paid.ToString("0.000", CultureInfo.InvariantCulture)</dd>
                 </div>
                 <div class="d-flex justify-content-between py-3">
@@ -111,3 +125,29 @@
         </div>
     </div>
 </section>
+
+@if (Model.Refunds.Count > 0)
+{
+    <section class="card filter-card mt-4"><div class="card-body p-4">
+        <h2 class="h5">@(ar ? "سجل الاسترداد" : "Refund history")</h2>
+        <div class="table-responsive"><table class="table table-sm align-middle">
+            <thead><tr>
+                <th scope="col">@(ar ? "التاريخ" : "Date")</th>
+                <th scope="col">@(ar ? "الطريقة" : "Method")</th>
+                <th scope="col">@(ar ? "المبلغ" : "Amount")</th>
+                <th scope="col">@(ar ? "السبب" : "Reason")</th>
+            </tr></thead>
+            <tbody>
+            @foreach (var refund in Model.Refunds)
+            {
+                <tr>
+                    <td>@refund.CreatedAtUtc.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+                    <td>@refund.Method</td>
+                    <td>@refund.Amount.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                    <td>@refund.Reason</td>
+                </tr>
+            }
+            </tbody>
+        </table></div>
+    </div></section>
+}
