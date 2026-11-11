@@ -61,7 +61,8 @@ for file in \
     database/015_refunds.sql \
     database/017_order_status_remarks.sql \
     database/019_user_session_version.sql \
-    database/021_shop_settings.sql; do
+    database/021_shop_settings.sql \
+    database/023_invoice_snapshots.sql; do
     run_script "$file"
 done
 
@@ -76,7 +77,8 @@ for file in \
     database/016_verify_refunds.sql \
     database/018_verify_order_status_remarks.sql \
     database/020_verify_user_session_version.sql \
-    database/022_verify_shop_settings.sql; do
+    database/022_verify_shop_settings.sql \
+    database/024_verify_invoice_snapshots.sql; do
     run_script "$file"
 done
 

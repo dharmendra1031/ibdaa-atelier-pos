@@ -26,6 +26,7 @@ public sealed class AtelierDbContext(DbContextOptions<AtelierDbContext> options)
 
     public DbSet<OrderRequest> OrderRequests => Set<OrderRequest>();
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderInvoiceSnapshot> OrderInvoiceSnapshots => Set<OrderInvoiceSnapshot>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<OrderItemMeasurement> OrderItemMeasurements => Set<OrderItemMeasurement>();
     public DbSet<OrderStatusChange> OrderStatusHistory => Set<OrderStatusChange>();

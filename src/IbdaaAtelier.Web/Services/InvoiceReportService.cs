@@ -30,7 +30,13 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
             .Where(p => p.OrderId == orderId).OrderBy(p => p.PaymentId).ToListAsync(ct);
         var refunds = await db.OrderRefunds.AsNoTracking()
             .Where(r => r.OrderId == orderId).OrderBy(r => r.RefundId).ToListAsync(ct);
-        var shop = await db.ShopSettings.AsNoTracking().SingleOrDefaultAsync(ct);
+        var savedBrand = await db.OrderInvoiceSnapshots.AsNoTracking()
+            .SingleOrDefaultAsync(s => s.OrderId == orderId, ct);
+        // Older orders made before the snapshot migration retain the original
+        // item details but may not have a historical shop-branding snapshot.
+        var shop = savedBrand is null
+            ? await db.ShopSettings.AsNoTracking().SingleOrDefaultAsync(ct)
+            : null;
 
         var schema = Path.Combine(environment.ContentRootPath,
             "Reports", "DataSets", "InvoiceDataSet.xsd");
@@ -42,7 +48,7 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
 
         byte[]? logo = null;
         string logoMime = "";
-        if (shop?.LogoPath is { } path &&
+        if ((savedBrand?.LogoPath ?? shop?.LogoPath) is { } path &&
             path.StartsWith("/uploads/shop/", StringComparison.Ordinal))
         {
             var fileName = path["/uploads/shop/".Length..];
@@ -69,11 +75,12 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
         header["OrderDate"] = order.CreatedAtUtc.AddHours(3)
             .ToString("dd-MM-yyyy HH:mm", MoneyCulture);
         header["DeliveryDate"] = order.DeliveryDate.ToString("dd-MM-yyyy", MoneyCulture);
-        header["BusinessName"] = shop?.BusinessName ?? "IBDAA Atelier";
-        header["BusinessNameAr"] = shop?.BusinessNameAr ?? "";
-        header["ShopAddress"] = shop?.Address ?? "";
-        header["ShopAddressAr"] = shop?.AddressAr ?? "";
-        header["ShopMobile"] = shop?.Mobile ?? "";
+        header["BusinessName"] = savedBrand?.BusinessName ?? shop?.BusinessName ?? "IBDAA Atelier";
+        header["BusinessNameAr"] = savedBrand?.BusinessNameAr ?? shop?.BusinessNameAr ?? "";
+        header["ShopAddress"] = savedBrand?.Address ?? shop?.Address ?? "";
+        header["ShopAddressAr"] = savedBrand?.AddressAr ?? shop?.AddressAr ?? "";
+        header["ShopMobile"] = savedBrand?.Mobile ?? shop?.Mobile ?? "";
+        header["ShopEmail"] = savedBrand?.Email ?? shop?.Email ?? "";
         header["CustomerName"] = order.CustomerName;
         header["CustomerNameAr"] = order.CustomerNameAr;
         header["CustomerMobile"] = order.CustomerMobile;

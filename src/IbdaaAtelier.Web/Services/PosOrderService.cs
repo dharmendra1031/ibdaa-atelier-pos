@@ -84,6 +84,19 @@ public sealed class PosOrderService(AtelierDbContext db, OrderLineBuilder lineBu
         db.Orders.Add(order);
         await db.SaveChangesAsync(ct);
 
+        var shop = await db.ShopSettings.AsNoTracking().SingleOrDefaultAsync(ct);
+        db.OrderInvoiceSnapshots.Add(new OrderInvoiceSnapshot
+        {
+            OrderId = order.OrderId,
+            BusinessName = shop?.BusinessName ?? "IBDAA Atelier",
+            BusinessNameAr = shop?.BusinessNameAr ?? "",
+            Address = shop?.Address,
+            AddressAr = shop?.AddressAr,
+            Mobile = shop?.Mobile,
+            Email = shop?.Email,
+            LogoPath = shop?.LogoPath
+        });
+
         foreach (var line in lines)
         {
             line.Item.OrderId = order.OrderId;

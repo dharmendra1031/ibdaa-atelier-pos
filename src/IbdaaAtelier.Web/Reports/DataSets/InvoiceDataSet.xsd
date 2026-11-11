@@ -12,6 +12,7 @@
         <xs:element name="ShopAddress" type="xs:string" minOccurs="1" />
         <xs:element name="ShopAddressAr" type="xs:string" minOccurs="1" />
         <xs:element name="ShopMobile" type="xs:string" minOccurs="1" />
+        <xs:element name="ShopEmail" type="xs:string" minOccurs="1" />
         <xs:element name="CustomerName" type="xs:string" minOccurs="1" />
         <xs:element name="CustomerNameAr" type="xs:string" minOccurs="1" />
         <xs:element name="CustomerMobile" type="xs:string" minOccurs="1" />

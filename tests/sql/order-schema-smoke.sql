@@ -34,6 +34,12 @@ VALUES(@requestId, @customerId, @userId,
     N'Test Customer', N'عميل اختبار', N'12345678',
     DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 27.500);
 DECLARE @orderId BIGINT = SCOPE_IDENTITY();
+INSERT dbo.OrderInvoiceSnapshots(OrderId, BusinessName, BusinessNameAr, Mobile, LogoPath)
+VALUES (@orderId, N'Old IBDAA Branding', N'اسم المتجر القديم', N'12345678',
+    N'/uploads/shop/logo-historical.png');
+IF NOT EXISTS (SELECT 1 FROM dbo.OrderInvoiceSnapshots WHERE OrderId = @orderId
+    AND BusinessName = N'Old IBDAA Branding')
+    THROW 51106, 'Order branding snapshot was not preserved.', 1;
 IF NOT EXISTS (SELECT 1 FROM dbo.Orders WHERE OrderId = @orderId
     AND OrderNumber = 'IA-' + CONVERT(VARCHAR(20), @orderId))
     THROW 51071, 'Order number must derive from numeric identity.', 1;

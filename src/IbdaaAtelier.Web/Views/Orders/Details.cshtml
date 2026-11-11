@@ -17,7 +17,15 @@
                 @(ar ? "استلام دفعة" : "Take payment")
             </a>
         }
-        <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "الطلبات" : "Orders")</a>
+        <a asp-controller="Invoices" asp-action="Print" asp-route-id="@Model.Order.OrderId"
+           asp-route-paper="a4" class="btn btn-outline-primary" target="_blank" rel="noopener">
+            @(ar ? "فاتورة A4" : "A4 invoice")
+        </a>
+        <a asp-controller="Invoices" asp-action="Print" asp-route-id="@Model.Order.OrderId"
+           asp-route-paper="80mm" class="btn btn-outline-primary" target="_blank" rel="noopener">
+            @(ar ? "فاتورة 80 مم" : "80mm receipt")
+        </a>
+                <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "الطلبات" : "Orders")</a>
     </div>
 </section>
 @if (TempData["Message"] is string message)

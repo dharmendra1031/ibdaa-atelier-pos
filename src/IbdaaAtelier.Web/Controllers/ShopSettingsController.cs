@@ -66,7 +66,6 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
         var fileName = "logo-" + DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture) + extension;
         var fullPath = Path.Combine(folder, fileName);
         var publicPath = "/uploads/shop/" + fileName;
-        var previousPath = settings.LogoPath;
 
         await using (var output = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write,
             FileShare.None, 81920, useAsync: true))
@@ -91,28 +90,8 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
             throw;
         }
 
-        if (!string.IsNullOrWhiteSpace(previousPath) &&
-            previousPath.StartsWith("/uploads/shop/", StringComparison.Ordinal))
-        {
-            var oldFileName = previousPath["/uploads/shop/".Length..];
-            if (Path.GetFileName(oldFileName) == oldFileName && !oldFileName.Contains('\\'))
-            {
-                var oldFullPath = Path.Combine(folder, oldFileName);
-                try
-                {
-                    if (System.IO.File.Exists(oldFullPath))
-                        System.IO.File.Delete(oldFullPath);
-                }
-                catch (IOException)
-                {
-                    // The database now points to the new logo; file cleanup is best-effort.
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    // Preserve a successfully updated logo if old-file cleanup is denied.
-                }
-            }
-        }
+        // Keep previous logo files: saved invoice snapshots may still refer to them.
+        // The uploads/shop folder must be included in deployment backups.
 
         TempData["Message"] = "Shop logo updated.";
         return RedirectToAction(nameof(Index));
