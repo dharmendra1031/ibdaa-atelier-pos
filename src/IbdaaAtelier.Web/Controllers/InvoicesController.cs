@@ -19,7 +19,6 @@ public sealed class InvoicesController(InvoiceReportService invoices) : Controll
 
         var pdf = invoices.RenderPdf(data, paper);
         Response.Headers.CacheControl = "no-store";
-        var fileName = paper == "80mm" ? $"Invoice-{id}-80mm.pdf" : $"Invoice-{id}-A4.pdf";
-        return File(pdf, "application/pdf", fileName);
+        return File(pdf, "application/pdf");
     }
 }
