@@ -123,7 +123,7 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
             System.Data.IsolationLevel.Serializable, ct);
 
         var settings = await db.ShopSettings.FromSqlRaw(
-            "SELECT * FROM dbo.ShopSettings WITH (UPDLOCK, HOLDLOCK) WHERE SettingsId = 1")
+            "SELECT * FROM dbo.ShopSettings WITH (UPDLOCK, HOLDLOCK)")
             .SingleOrDefaultAsync(ct);
 
         if (settings is null)
