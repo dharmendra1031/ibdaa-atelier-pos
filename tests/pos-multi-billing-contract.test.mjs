@@ -70,3 +70,11 @@ test("saved invoice opens inline for printing rather than forced attachment", ()
     assert.match(invoices, /invoices\.PrepareAsync\(id, ct\)/);
     assert.match(view, /id="viewSavedOrderLink"/);
 });
+
+
+test("cashier login goes directly to billing while admin opens dashboard", () => {
+    const auth = read("src/IbdaaAtelier.Web/Controllers/AuthController.cs");
+    assert.match(auth, /user\.Role == "Admin" \? "Admin" : "Pos"/);
+    assert.match(auth, /User\.IsInRole\("Admin"\) \? "Admin" : "Pos"/);
+    assert.match(auth, /Url\.IsLocalUrl\(form\.ReturnUrl\)/);
+});
