@@ -121,6 +121,17 @@ public sealed class PaymentService(AtelierDbContext db)
         if (request.Fingerprint is not null)
             throw new InvalidOperationException("Incomplete payment request requires review.");
 
+        // A register close holds the same row lock, preventing unassigned late postings.
+        var register = await db.CashRegisterSessions.FromSqlRaw(
+            "SELECT * FROM dbo.CashRegisterSessions WITH (UPDLOCK, HOLDLOCK) WHERE ClosedAtUtc IS NULL")
+            .SingleOrDefaultAsync(ct);
+        var openingRequired = await db.ShopSettings.AsNoTracking()
+            .Select(s => (bool?)s.RequireRegisterOpen).SingleOrDefaultAsync(ct) ?? false;
+        if (openingRequired && register is null)
+            throw new InvalidOperationException("Open the cash register before receiving payments.");
+        foreach (var payment in prepared)
+            payment.RegisterSessionId = register?.SessionId;
+
         // Serialize all payments on one order, even if they use different request IDs.
         var order = await db.Orders.FromSqlInterpolated(
             $"SELECT * FROM dbo.Orders WITH (UPDLOCK, HOLDLOCK) WHERE OrderId = {form.OrderId}")

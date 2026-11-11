@@ -3,6 +3,7 @@ using IbdaaAtelier.Web.Models.Security;
 using IbdaaAtelier.Web.Models.Masters;
 using IbdaaAtelier.Web.Models.Orders;
 using IbdaaAtelier.Web.Models.Payments;
+using IbdaaAtelier.Web.Models.Registers;
 using Microsoft.EntityFrameworkCore;
 
 namespace IbdaaAtelier.Web.Data;
@@ -34,6 +35,9 @@ public sealed class AtelierDbContext(DbContextOptions<AtelierDbContext> options)
     public DbSet<PaymentRequest> PaymentRequests => Set<PaymentRequest>();
     public DbSet<PaymentBatch> PaymentBatches => Set<PaymentBatch>();
     public DbSet<OrderPayment> OrderPayments => Set<OrderPayment>();
+    public DbSet<CashRegisterSession> CashRegisterSessions => Set<CashRegisterSession>();
+    public DbSet<CashExpenseRequest> CashExpenseRequests => Set<CashExpenseRequest>();
+    public DbSet<CashExpense> CashExpenses => Set<CashExpense>();
     public DbSet<RefundRequest> RefundRequests => Set<RefundRequest>();
     public DbSet<OrderRefund> OrderRefunds => Set<OrderRefund>();
 }

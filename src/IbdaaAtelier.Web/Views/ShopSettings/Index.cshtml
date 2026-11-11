@@ -60,6 +60,13 @@
                     <img src="@Model.LogoPath" alt="Business logo" loading="lazy" style="max-width:180px;max-height:100px;object-fit:contain" />
                 </div>
             }
+            <div class="form-check mt-4">
+                <input asp-for="RequireRegisterOpen" class="form-check-input" />
+                <label asp-for="RequireRegisterOpen" class="form-check-label">
+                    @(ar ? "اشتراط فتح صندوق النقد قبل استقبال المدفوعات والمبالغ المستردة" : "Require an open cash register before receiving payments or refunds")
+                </label>
+                <p class="small text-secondary mb-0">@(ar ? "عند إيقاف الإعداد يمكن قبول مدفوعات غير مرتبطة بجلسة الصندوق." : "When disabled, payments outside a register session remain possible and are not included in a session closing.")</p>
+            </div>
             <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save settings")</button>
                 <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">@(ar ? "رجوع" : "Back")</a>

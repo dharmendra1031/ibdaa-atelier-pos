@@ -25,7 +25,8 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
             Email = settings?.Email,
             Address = settings?.Address,
             AddressAr = settings?.AddressAr,
-            LogoPath = settings?.LogoPath
+            LogoPath = settings?.LogoPath,
+            RequireRegisterOpen = settings?.RequireRegisterOpen ?? false
         });
     }
 
@@ -131,6 +132,7 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
             db.ShopSettings.Add(settings);
         }
 
+        settings.RequireRegisterOpen = form.RequireRegisterOpen;
         settings.BusinessName = form.BusinessName;
         settings.BusinessNameAr = form.BusinessNameAr;
         settings.Mobile = string.IsNullOrWhiteSpace(form.Mobile) ? null : form.Mobile;

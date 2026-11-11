@@ -4,6 +4,7 @@ using IbdaaAtelier.Web.Models.Masters;
 using IbdaaAtelier.Web.Models.Orders;
 using IbdaaAtelier.Web.Models.Payments;
 using IbdaaAtelier.Web.Models.Security;
+using IbdaaAtelier.Web.Models.Registers;
 using IbdaaAtelier.Web.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,12 @@ db.Users.Add(user);
 db.Customers.Add(customer);
 db.ProductCategories.Add(category);
 db.ServiceCategories.Add(serviceCategory);
+db.ShopSettings.Add(new ShopSettings
+{
+    BusinessName = "Integration Test Atelier",
+    BusinessNameAr = "مشغل اختبار",
+    RequireRegisterOpen = true
+});
 await db.SaveChangesAsync();
 
 var product = new Product
@@ -141,6 +148,21 @@ await ExpectFailureAsync<InvalidOperationException>(async () =>
     await orders.SaveAsync(changed, user.UserId, CancellationToken.None);
 }, "A reused order request accepted a changed payload.");
 
+var withoutRegister = await payments.PrepareAsync(saved.OrderId, user.UserId, CancellationToken.None);
+await ExpectFailureAsync<InvalidOperationException>(() =>
+    payments.SaveAsync(new PaymentForm
+    {
+        RequestId = withoutRegister.Form.RequestId,
+        OrderId = saved.OrderId,
+        Lines = [new PaymentLine { Method = "Cash", Amount = 1.000m }]
+    }, user.UserId, CancellationToken.None), "Payment was accepted without the required open register.");
+
+var register = new CashRegisterService(db);
+var sessionId = await register.OpenAsync(5.000m, user.UserId, CancellationToken.None);
+Check(sessionId > 0, "Cash register did not receive numeric identity.");
+Check(await register.OpenAsync(9.000m, user.UserId, CancellationToken.None) == sessionId,
+    "A second register was opened while one was already active.");
+
 var firstPayment = await payments.PrepareAsync(saved.OrderId, user.UserId, CancellationToken.None);
 var splitForm = new PaymentForm
 {
@@ -222,7 +244,49 @@ await statuses.ChangeAsync(new OrderStatusForm
 Check(await db.OrderStatusHistory.CountAsync(x => x.OrderId == saved.OrderId) == 2,
     "Order status transition was not audited.");
 
-Console.WriteLine("Domain integration passed: numeric order, snapshots, duplicate retries, split/partial/full payments, cash change, refunds and status safeguards.");
+Check(await db.OrderPayments.CountAsync(p => p.RegisterSessionId == sessionId) == 3 &&
+      await db.OrderRefunds.CountAsync(r => r.RegisterSessionId == sessionId) == 1,
+    "Payments or refunds were not linked to the open register.");
+
+var expenseId = await register.ReserveExpenseAsync(sessionId, user.UserId, CancellationToken.None);
+var expenseForm = new CashExpenseForm
+{
+    SessionId = sessionId,
+    RequestId = expenseId,
+    Amount = 1.000m,
+    Reason = "Approved courier cash expense for test"
+};
+Check(!await register.AddExpenseAsync(expenseForm, user.UserId, CancellationToken.None),
+    "Cash expense was not recorded.");
+Check(await register.AddExpenseAsync(expenseForm, user.UserId, CancellationToken.None) &&
+    await db.CashExpenses.CountAsync() == 1,
+    "Cash expense retry created a duplicate expense.");
+
+var closing = await register.CloseAsync(sessionId, 18.000m, user.UserId, CancellationToken.None);
+Check(!closing.Replayed && closing.Expected == 17.500m && closing.Difference == 0.500m,
+    "Cash register closing reconciliation was incorrect.");
+Check((await register.CloseAsync(sessionId, 18.000m, user.UserId, CancellationToken.None)).Replayed,
+    "Identical closing retry was not idempotent.");
+await ExpectFailureAsync<InvalidOperationException>(() =>
+    register.CloseAsync(sessionId, 18.500m, user.UserId, CancellationToken.None),
+    "Different cash count was accepted after closing.");
+
+await register.ApproveAsync(sessionId, user.UserId, CancellationToken.None);
+Check(await db.CashRegisterSessions.AnyAsync(s =>
+    s.SessionId == sessionId && s.ApprovedAtUtc.HasValue),
+    "Manager approval did not persist.");
+
+var postClosing = await payments.PrepareAsync(saved.OrderId, user.UserId, CancellationToken.None);
+await ExpectFailureAsync<InvalidOperationException>(() =>
+    payments.SaveAsync(new PaymentForm
+    {
+        RequestId = postClosing.Form.RequestId,
+        OrderId = saved.OrderId,
+        Lines = [new PaymentLine { Method = "Cash", Amount = 4.000m }]
+    }, user.UserId, CancellationToken.None),
+    "Payment was accepted after the required register was closed.");
+
+Console.WriteLine("Domain integration passed: numeric order, snapshots, duplicate retries, split/partial/full payments, cash change, refunds status safeguards, cash register reconciliation and closing retries.");
 
 static void Check(bool condition, string message)
 {

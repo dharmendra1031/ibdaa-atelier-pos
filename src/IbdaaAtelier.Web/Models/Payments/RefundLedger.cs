@@ -23,5 +23,6 @@ public sealed class OrderRefund
     [Column(TypeName = "decimal(18,3)")] public decimal Amount { get; set; }
     [Required, MaxLength(500)] public string Reason { get; set; } = "";
     public int ApprovedByUserId { get; set; }
+    public long? RegisterSessionId { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }

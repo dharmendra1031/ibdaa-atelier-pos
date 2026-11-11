@@ -89,6 +89,14 @@ public sealed class RefundService(AtelierDbContext db)
         if (request.Fingerprint is not null)
             throw new InvalidOperationException("Incomplete refund request requires review.");
 
+        var register = await db.CashRegisterSessions.FromSqlRaw(
+            "SELECT * FROM dbo.CashRegisterSessions WITH (UPDLOCK, HOLDLOCK) WHERE ClosedAtUtc IS NULL")
+            .SingleOrDefaultAsync(ct);
+        var openingRequired = await db.ShopSettings.AsNoTracking()
+            .Select(s => (bool?)s.RequireRegisterOpen).SingleOrDefaultAsync(ct) ?? false;
+        if (openingRequired && register is null)
+            throw new InvalidOperationException("Open the cash register before issuing refunds.");
+
         // This lock is shared with PaymentService, preventing concurrent over-refunds.
         var order = await db.Orders.FromSqlInterpolated(
             $"SELECT * FROM dbo.Orders WITH (UPDLOCK, HOLDLOCK) WHERE OrderId = {form.OrderId}")
@@ -113,7 +121,8 @@ public sealed class RefundService(AtelierDbContext db)
             Method = form.Method,
             Amount = form.Amount,
             Reason = form.Reason,
-            ApprovedByUserId = userId
+            ApprovedByUserId = userId,
+            RegisterSessionId = register?.SessionId
         };
         request.Fingerprint = fingerprint;
         db.OrderRefunds.Add(refund);

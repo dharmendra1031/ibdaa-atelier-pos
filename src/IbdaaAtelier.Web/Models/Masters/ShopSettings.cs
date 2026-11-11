@@ -29,6 +29,7 @@ public sealed class ShopSettings
 
     [MaxLength(260)]
     public string? LogoPath { get; set; }
+    public bool RequireRegisterOpen { get; set; }
 }
 
 public sealed class ShopSettingsForm

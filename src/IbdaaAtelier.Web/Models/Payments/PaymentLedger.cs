@@ -34,5 +34,6 @@ public sealed class OrderPayment
     [Column(TypeName = "decimal(18,3)")] public decimal Tendered { get; set; }
     [Column(TypeName = "decimal(18,3)")] public decimal Change { get; set; }
     public int ReceivedByUserId { get; set; }
+    public long? RegisterSessionId { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }

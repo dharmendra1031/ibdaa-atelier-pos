@@ -1,0 +1,164 @@
+@model IbdaaAtelier.Web.Models.Registers.RegisterPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Cash register";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var admin = User.IsInRole("Admin");
+    var open = Model.OpenSession;
+    var expected = open is null ? 0m : open.OpeningCash + Model.Cash.NetCash;
+}
+<section class="mb-4">
+    <span class="eyebrow">IBDAA ATELIER · CASH CONTROL</span>
+    <h1 class="section-title mt-2 mb-1">@(ar ? "الصندوق النقدي" : "Cash register")</h1>
+    <p class="text-secondary mb-0">
+        @(ar ? "التحصيل والنفقات المرتبطة بجلسة الصندوق الحالية." : "Cash receipts, refunds and expenses linked to the current register session.")
+    </p>
+</section>
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-success" role="status">@message</div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-warning" role="alert">@error</div>
+}
+@if (!Model.OpeningRequired)
+{
+    <p class="small text-secondary">
+        @(ar ? "فتح الصندوق اختياري في الإعدادات. لا تُدرج المدفوعات خارج الجلسة في إغلاقها." : "Register opening is optional in Settings. Payments made outside a session are not included in a register closing.")
+    </p>
+}
+@if (open is null)
+{
+    <div class="card filter-card">
+        <div class="card-body p-4">
+            <h2 class="h5">@(ar ? "فتح الصندوق" : "Open a cash register session")</h2>
+            <form asp-action="Open" method="post" asp-antiforgery="true" class="row g-3 align-items-end">
+                <div class="col-sm-5">
+                    <label for="openingCash" class="form-label">@(ar ? "النقد الافتتاحي (د.ك)" : "Opening cash (KWD)")</label>
+                    <input id="openingCash" class="form-control" name="openingCash"
+                           type="number" min="0" step="0.001" value="0.000" required />
+                </div>
+                <div class="col-sm-auto">
+                    <button type="submit" class="btn btn-primary">@(ar ? "فتح الصندوق" : "Open register")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card filter-card mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <h2 class="h5 mb-0">@(ar ? "الجلسة المفتوحة" : "Open register") #@open.SessionId</h2>
+                <small class="text-secondary">@open.OpenedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture) Kuwait</small>
+            </div>
+            <div class="row g-3 mt-2">
+                <div class="col-6 col-md-3"><small class="text-secondary">@(ar ? "الافتتاحي" : "Opening")</small><div class="h5">@open.OpeningCash.ToString("0.000", CultureInfo.InvariantCulture)</div></div>
+                <div class="col-6 col-md-3"><small class="text-secondary">@(ar ? "نقد مقبوض" : "Cash received")</small><div class="h5">@Model.Cash.Received.ToString("0.000", CultureInfo.InvariantCulture)</div></div>
+                <div class="col-6 col-md-3"><small class="text-secondary">@(ar ? "المسترد" : "Cash refunded")</small><div class="h5">@Model.Cash.Refunded.ToString("0.000", CultureInfo.InvariantCulture)</div></div>
+                <div class="col-6 col-md-3"><small class="text-secondary">@(ar ? "النفقات" : "Cash expenses")</small><div class="h5">@Model.Cash.Expenses.ToString("0.000", CultureInfo.InvariantCulture)</div></div>
+                <div class="col-12 border-top pt-3">
+                    <span class="text-secondary">@(ar ? "النقد المتوقع" : "Expected cash"):</span>
+                    <strong class="h4 ms-2">@expected.ToString("0.000", CultureInfo.InvariantCulture) KWD</strong>
+                    <small class="d-block text-secondary mt-2">
+                        @(ar ? "غير النقدي: المقبوض" : "Non-cash received"):
+                        @Model.ReceivedOther.ToString("0.000", CultureInfo.InvariantCulture) ·
+                        @(ar ? "المسترد" : "Refunded"):
+                        @Model.RefundedOther.ToString("0.000", CultureInfo.InvariantCulture)
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-3">
+        @if (admin && Model.ExpenseRequestId > 0)
+        {
+            <div class="col-lg-6">
+                <div class="card filter-card h-100"><div class="card-body p-4">
+                    <h2 class="h5">@(ar ? "نفقات الصندوق" : "Record cash expense")</h2>
+                    <p class="small text-secondary">@(ar ? "إجراء متاح للمسؤول فقط، وتُحفظ العملية في سجل المراجعة." : "Admin only. Each expense is saved with an audit record.")</p>
+                    <form asp-action="Expense" method="post" asp-antiforgery="true">
+                        <input type="hidden" name="sessionId" value="@open.SessionId" />
+                        <input type="hidden" name="requestId" value="@Model.ExpenseRequestId" />
+                        <div class="mb-3">
+                            <label for="expenseAmount" class="form-label">@(ar ? "المبلغ (د.ك)" : "Amount (KWD)")</label>
+                            <input id="expenseAmount" name="amount" type="number" min=".001" step=".001" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenseReason" class="form-label">@(ar ? "سبب النفقة" : "Reason")</label>
+                            <textarea id="expenseReason" name="reason" class="form-control" minlength="10" maxlength="500" required></textarea>
+                        </div>
+                        <button class="btn btn-outline-primary" type="submit">@(ar ? "حفظ النفقة" : "Save expense")</button>
+                    </form>
+                </div></div>
+            </div>
+        }
+        <div class="col-lg-6">
+            <div class="card filter-card h-100"><div class="card-body p-4">
+                <h2 class="h5">@(ar ? "إغلاق الصندوق" : "Close register")</h2>
+                <p class="small text-secondary">@(ar ? "أدخل المبلغ النقدي الفعلي. تُحسب الفروقات تلقائياً." : "Enter the actual counted cash; differences are calculated on the server.")</p>
+                <form asp-action="Close" method="post" asp-antiforgery="true">
+                    <input type="hidden" name="sessionId" value="@open.SessionId" />
+                    <div class="mb-3">
+                        <label for="countedCash" class="form-label">@(ar ? "النقد الفعلي (د.ك)" : "Counted cash (KWD)")</label>
+                        <input id="countedCash" name="countedCash" type="number"
+                               min="0" step=".001" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">@(ar ? "تأكيد الإغلاق" : "Confirm closing")</button>
+                </form>
+            </div></div>
+        </div>
+    </div>
+}
+<section class="card filter-card mt-4">
+    <div class="card-body p-4">
+        <h2 class="h5">@(ar ? "آخر جلسات الصندوق" : "Recent register closings")</h2>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle">
+                <thead><tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">@(ar ? "وقت الإغلاق" : "Closed (Kuwait)")</th>
+                    <th scope="col">@(ar ? "المتوقع" : "Expected")</th>
+                    <th scope="col">@(ar ? "الفعلي" : "Counted")</th>
+                    <th scope="col">@(ar ? "الفرق" : "Difference")</th>
+                    <th scope="col">@(ar ? "الموافقة" : "Approval")</th>
+                </tr></thead>
+                <tbody>
+                @foreach (var session in Model.RecentSessions)
+                {
+                    <tr>
+                        <td>@session.SessionId</td>
+                        <td>@session.ClosedAtUtc!.Value.AddHours(3).ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+                        <td>@session.ExpectedCash!.Value.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                        <td>@session.CountedCash!.Value.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                        <td>@session.Difference!.Value.ToString("0.000", CultureInfo.InvariantCulture)</td>
+                        <td>
+                            @if (session.ApprovedAtUtc.HasValue)
+                            {
+                                <span class="badge text-bg-success">@(ar ? "موافق" : "Approved")</span>
+                            }
+                            else if (admin)
+                            {
+                                <form asp-action="Approve" method="post" asp-antiforgery="true">
+                                    <input type="hidden" name="sessionId" value="@session.SessionId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">@(ar ? "اعتماد" : "Approve")</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">@(ar ? "قيد المراجعة" : "Awaiting approval")</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (Model.RecentSessions.Count == 0)
+                {
+                    <tr><td colspan="6" class="py-4 text-secondary text-center">@(ar ? "لا توجد جلسات مغلقة بعد." : "No completed closings yet.")</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
