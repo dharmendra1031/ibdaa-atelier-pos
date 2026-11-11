@@ -75,7 +75,21 @@ var chest = new MeasurementDefinition
 };
 db.ProductSizes.Add(size);
 db.MeasurementDefinitions.Add(chest);
+var inheritedChest = new MeasurementDefinition
+{
+    CategoryId = category.CategoryId,
+    Name = "Chest",
+    NameAr = "الصدر العام",
+    Unit = "in",
+    IsRequired = true
+};
+db.MeasurementDefinitions.Add(inheritedChest);
 await db.SaveChangesAsync();
+
+var visibleFields = MeasurementFields.Resolve(
+    new[] { inheritedChest, chest }, product.ProductId, category.CategoryId);
+Check(visibleFields.Count == 1 && visibleFields[0].MeasurementId == chest.MeasurementId,
+    "Product-specific measurement must override an identically named category field.");
 
 var orders = new PosOrderService(db, new OrderLineBuilder(db));
 var payments = new PaymentService(db);

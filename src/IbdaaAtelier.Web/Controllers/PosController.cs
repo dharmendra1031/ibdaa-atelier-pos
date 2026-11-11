@@ -72,11 +72,12 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
         var sizes = await db.ProductSizes.AsNoTracking()
             .Where(s => s.ProductId == id && s.IsActive)
             .OrderBy(s => s.DisplayOrder).Select(s => new { s.SizeId, s.Name }).ToListAsync(ct);
-        var measurements = await db.MeasurementDefinitions.AsNoTracking()
+        var definitions = await db.MeasurementDefinitions.AsNoTracking()
             .Where(m => m.IsActive && (m.ProductId == id || m.CategoryId == product.CategoryId))
-            .OrderBy(m => m.DisplayOrder)
-            .Select(m => new { m.MeasurementId, m.Name, m.NameAr, m.Unit, m.IsRequired })
             .ToListAsync(ct);
+        var measurements = MeasurementFields.Resolve(definitions, id, product.CategoryId)
+            .Select(m => new { m.MeasurementId, m.Name, m.NameAr, m.Unit, m.IsRequired })
+            .ToList();
 
         return Json(new
         {

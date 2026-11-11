@@ -85,8 +85,8 @@ public sealed class OrderLineBuilder(AtelierDbContext db)
                 (input.SizeId.HasValue && chosenSize is null))
                 throw new ArgumentException("Select a size belonging to this product.");
 
-            var applicable = definitions.Where(m => m.ProductId == product.ProductId ||
-                m.CategoryId == product.CategoryId).ToDictionary(m => m.MeasurementId);
+            var applicable = MeasurementFields.Resolve(definitions,
+                product.ProductId, product.CategoryId).ToDictionary(m => m.MeasurementId);
             var submitted = input.Measurements ?? [];
             if (submitted.Select(m => m.MeasurementId).Distinct().Count() != submitted.Count ||
                 applicable.Values.Any(m => m.IsRequired && !submitted.Any(v => v.MeasurementId == m.MeasurementId)))
