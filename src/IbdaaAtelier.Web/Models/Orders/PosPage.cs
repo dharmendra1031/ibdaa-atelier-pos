@@ -12,4 +12,8 @@ public sealed class PosPage
     public string Search { get; init; } = "";
     public int Page { get; init; } = 1;
     public int TotalPages { get; init; } = 1;
+    public string ServiceSearch { get; init; } = "";
+    public int ServicePage { get; init; } = 1;
+    public int ServiceTotalPages { get; init; } = 1;
+    public bool ShowServices { get; init; }
 }
