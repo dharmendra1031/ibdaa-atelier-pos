@@ -46,6 +46,9 @@ public sealed class OrderLineBuilder(AtelierDbContext db)
         var prepared = new List<PreparedLine>(inputs.Count);
         foreach (var input in inputs)
         {
+            if (input is null || input.Measurements is null)
+                throw new ArgumentException("Invalid order line.");
+
             if (input.Notes?.Length > 1000 || input.Measurements.Count > 50)
                 throw new ArgumentException("Line notes or measurement count exceed the permitted limit.");
 

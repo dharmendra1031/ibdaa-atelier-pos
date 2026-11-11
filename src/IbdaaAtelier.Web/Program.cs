@@ -32,8 +32,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Events.OnValidatePrincipal = async context =>
         {
             var identity = context.Principal;
-            var id = identity?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(id, out var userId) || userId <= 0)
+            if (identity is null ||
+                !int.TryParse(identity.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ||
+                userId <= 0)
             {
                 context.RejectPrincipal();
                 return;
@@ -46,7 +47,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
 
             if (user is null || !user.IsActive ||
-                user.Role != identity!.FindFirstValue(ClaimTypes.Role) ||
+                user.Role != identity.FindFirstValue(ClaimTypes.Role) ||
                 user.UserName != identity.FindFirstValue(ClaimTypes.Name))
             {
                 context.RejectPrincipal();

@@ -21,8 +21,8 @@ test("order/request/item/measurement/status keys are numeric SQL IDENTITY", () =
 
 test("product and service lines keep separate FKs and original details", () => {
     assert.match(sql, /CK_OrderItems_Type/);
-    assert.match(sql, /FK_OrderItems_Product/);
-    assert.match(sql, /FK_OrderItems_Service/);
+    assert.match(sql, /ProductId INT NULL REFERENCES dbo\.Products\(ProductId\)/);
+    assert.match(sql, /ServiceId INT NULL REFERENCES dbo\.AlterationServices\(ServiceId\)/);
     assert.match(sql, /UQ_OrderMeasurements_ItemDefinition/);
     assert.match(builder, /product\.DiscountPrice \?\? product\.RegularPrice/);
     assert.match(builder, /Name = definition\.Name/);

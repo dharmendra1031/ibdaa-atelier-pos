@@ -48,7 +48,8 @@ test("The shell has visible, real navigation and no fake billing button", () => 
     assert.match(layout, /href="#mainContent"/);
     assert.match(home, /not enabled yet/);
     assert.match(catalogue, /not enabled yet/);
-    assert.doesNotMatch(layout, /asp-controller="Pos"|asp-controller="Billing"/);
+    assert.match(layout, /asp-controller="Pos"/);
+    assert.doesNotMatch(layout, /asp-controller="Billing"/);
 });
 
 test("Responsive touch-friendly catalogue uses optimized layout primitives", () => {
