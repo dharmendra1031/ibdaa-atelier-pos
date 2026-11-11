@@ -32,6 +32,10 @@
                 <nav class="app-nav d-flex align-items-center gap-1" aria-label="@(isArabic ? "القائمة الرئيسية" : "Main navigation")">
                     <a class="nav-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index" aria-current="@(controller == "Home" ? "page" : null)">@(isArabic ? "الرئيسية" : "Overview")</a>
                     <a class="nav-link @(controller == "Catalog" ? "active" : "")" asp-controller="Catalog" asp-action="Index" aria-current="@(controller == "Catalog" ? "page" : null)">@(isArabic ? "المنتجات" : "Catalogue")</a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="nav-link @(controller == "Pos" ? "active" : "")" asp-controller="Pos" asp-action="Index">@(isArabic ? "نقطة البيع" : "POS")</a>
+                    }
                     @if (User.IsInRole("Admin"))
                     {
                         <a class="nav-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">@(isArabic ? "الفئات" : "Categories")</a>

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Claims;
 using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Security;
+using IbdaaAtelier.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AtelierDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AtelierDb")));
 builder.Services.AddScoped<IPasswordHasher<ShopUser>, PasswordHasher<ShopUser>>();
+builder.Services.AddScoped<OrderLineBuilder>();
+builder.Services.AddScoped<PosOrderService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

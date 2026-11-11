@@ -20,5 +20,7 @@ jobs:
         run: dotnet restore src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj
       - name: Build
         run: dotnet build src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj --configuration Release --no-restore
+      - name: POS JavaScript syntax
+        run: node --check src/IbdaaAtelier.Web/wwwroot/js/pos.js
       - name: Source contract tests
         run: node --test tests/*.test.mjs

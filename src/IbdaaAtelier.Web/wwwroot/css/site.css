@@ -377,3 +377,19 @@ a:focus-visible, button:focus-visible {
 }
 .auth-card .form-label { font-size: .85rem; font-weight: 650; }
 .auth-card .form-control { background: #fff; }
+
+/* Two-area POS; no third persistent column or external UI library. */
+.pos-product { cursor: pointer; min-height: 100%; color: var(--atelier-ink); }
+.pos-product:hover { border-color: #8eafa5; box-shadow: 0 9px 26px rgb(21 54 46 / 9%); }
+.pos-product:focus-visible { outline: 3px solid var(--atelier-accent); outline-offset: 2px; }
+.pos-checkout { position: sticky; top: 14px; max-height: calc(100dvh - 28px); overflow-y: auto; }
+.pos-cart { max-height: 230px; overflow-y: auto; }
+.pos-cart-item { font-size: .88rem; }
+.pos-service { min-height: 50px; }
+.pos-dialog { width: min(520px, calc(100% - 24px)); max-height: 86dvh; overflow: auto;
+    border: 1px solid var(--atelier-border); border-radius: 14px; padding: 24px; }
+.pos-dialog::backdrop { background: rgb(19 39 35 / 58%); }
+@media (max-width: 991.98px) {
+    .pos-checkout { position: static; max-height: none; overflow: visible; }
+    .pos-cart { max-height: 350px; }
+}

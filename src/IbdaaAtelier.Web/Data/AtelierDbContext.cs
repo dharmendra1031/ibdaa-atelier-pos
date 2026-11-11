@@ -1,6 +1,7 @@
 using IbdaaAtelier.Web.Models.Catalog;
 using IbdaaAtelier.Web.Models.Security;
 using IbdaaAtelier.Web.Models.Masters;
+using IbdaaAtelier.Web.Models.Orders;
 using Microsoft.EntityFrameworkCore;
 
 namespace IbdaaAtelier.Web.Data;
@@ -20,4 +21,10 @@ public sealed class AtelierDbContext(DbContextOptions<AtelierDbContext> options)
 
     public DbSet<ShopUser> Users => Set<ShopUser>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+
+    public DbSet<OrderRequest> OrderRequests => Set<OrderRequest>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<OrderItemMeasurement> OrderItemMeasurements => Set<OrderItemMeasurement>();
+    public DbSet<OrderStatusChange> OrderStatusHistory => Set<OrderStatusChange>();
 }
