@@ -81,4 +81,26 @@ if [ "$status" != 400 ]; then
     exit 1
 fi
 
+browser="$(command -v google-chrome || command -v chromium || true)"
+if [ -z "$browser" ]; then
+    echo "Headless Chrome is required for Login screenshots."
+    exit 1
+fi
+
+mkdir -p tests/ui-output
+for viewport in desktop:1440,900 mobile:390,844; do
+    name="${viewport%%:*}"
+    size="${viewport#*:}"
+    "$browser" --headless=new --no-sandbox --disable-gpu \
+        --disable-dev-shm-usage --hide-scrollbars \
+        --user-data-dir="$output_dir/chrome-$name" \
+        --window-size="$size" --virtual-time-budget=1500 \
+        --screenshot="$PWD/tests/ui-output/login-$name.png" \
+        "$base_url/Auth/Login" >"$output_dir/chrome-$name.log" 2>&1 || {
+            cat "$output_dir/chrome-$name.log"
+            exit 1
+        }
+    test -s "tests/ui-output/login-$name.png"
+done
+
 echo "HTTP smoke passed: login, RTL, static CSS, protected routes and CSRF."
