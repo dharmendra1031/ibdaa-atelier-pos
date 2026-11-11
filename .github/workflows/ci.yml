@@ -20,6 +20,8 @@ jobs:
         run: dotnet restore src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj
       - name: Build
         run: dotnet build src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj --configuration Release --no-restore
+      - name: Public-page HTTP and RTL smoke
+        run: bash tests/http-smoke.sh
       - name: POS JavaScript syntax
         run: node --check src/IbdaaAtelier.Web/wwwroot/js/pos.js
       - name: Gallery JavaScript syntax
