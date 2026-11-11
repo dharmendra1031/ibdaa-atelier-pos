@@ -41,6 +41,7 @@
                     {
                         <a class="nav-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">@(isArabic ? "الفئات" : "Categories")</a>
                         <a class="nav-link @(controller == "Products" ? "active" : "")" asp-controller="Products" asp-action="Index">@(isArabic ? "المنتجات" : "Products")</a>
+                        <a class="nav-link @(controller == "Users" ? "active" : "")" asp-controller="Users" asp-action="Index">@(isArabic ? "المستخدمون" : "Users")</a>
                         <a class="nav-link @(controller == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index" aria-current="@(controller == "Admin" ? "page" : null)">@(isArabic ? "الإدارة" : "Admin")</a>
                     }
                 </nav>

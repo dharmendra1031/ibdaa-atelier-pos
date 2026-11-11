@@ -30,4 +30,11 @@
             <a class="btn btn-outline-primary" asp-controller="Services" asp-action="Index">@(isArabic ? "إدارة الخدمات" : "Manage services")</a>
         </div></div>
     </div>
+    <div class="col-md-6">
+        <div class="card feature-card h-100"><div class="card-body p-4">
+            <h2 class="h5">@(isArabic ? "المستخدمون والصلاحيات" : "Users and access")</h2>
+            <p class="text-secondary">@(isArabic ? "إدارة حسابات الموظفين وكلمات المرور." : "Manage shop accounts, roles and password resets.")</p>
+            <a class="btn btn-outline-primary" asp-controller="Users" asp-action="Index">@(isArabic ? "إدارة المستخدمين" : "Manage users")</a>
+        </div></div>
+    </div>
 </div>

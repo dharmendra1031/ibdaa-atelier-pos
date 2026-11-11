@@ -1,0 +1,50 @@
+@model List<IbdaaAtelier.Web.Models.Security.ShopUser>
+@using System.Globalization
+@{
+    ViewData["Title"] = "Users";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+        <span class="eyebrow">IBDAA ATELIER · ADMIN</span>
+        <h1 class="section-title mt-2">@(ar ? "إدارة المستخدمين" : "User management")</h1>
+        <p class="text-secondary mb-0">@(ar ? "الصلاحيات وكلمات المرور." : "Manage shop access, roles and password resets.")</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">@(ar ? "مستخدم جديد" : "Add user")</a>
+</section>
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-success" role="status">@message</div>
+}
+<div class="card filter-card overflow-hidden">
+    <div class="table-responsive"><table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr>
+            <th scope="col">ID</th>
+            <th scope="col">@(ar ? "اسم المستخدم" : "Username")</th>
+            <th scope="col">@(ar ? "الدور" : "Role")</th>
+            <th scope="col">@(ar ? "الحالة" : "Status")</th>
+            <th scope="col" class="text-end">@(ar ? "إجراءات" : "Actions")</th>
+        </tr></thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.UserName</td>
+                <td>@user.Role</td>
+                <td>
+                    <span class="badge @(user.IsActive ? "text-bg-success" : "text-bg-secondary")">
+                        @(user.IsActive ? (ar ? "نشط" : "Active") : (ar ? "غير نشط" : "Inactive"))
+                    </span>
+                </td>
+                <td class="text-end">
+                    <div class="d-inline-flex flex-wrap gap-2">
+                        <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary">@(ar ? "تعديل" : "Edit")</a>
+                        <a asp-action="ResetPassword" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-secondary">@(ar ? "كلمة المرور" : "Reset password")</a>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table></div>
+</div>

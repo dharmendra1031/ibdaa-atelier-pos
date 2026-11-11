@@ -1,0 +1,44 @@
+@model IbdaaAtelier.Web.Models.Security.UserCreateForm
+@using System.Globalization
+@{
+    ViewData["Title"] = "Add user";
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+}
+<section class="mb-4">
+    <span class="eyebrow">IBDAA ATELIER · ADMIN</span>
+    <h1 class="section-title mt-2">@(ar ? "إضافة مستخدم" : "Create shop user")</h1>
+</section>
+<div class="card filter-card"><div class="card-body p-4">
+    <form method="post" asp-action="Create" asp-antiforgery="true">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="UserName" class="form-label">@(ar ? "اسم المستخدم" : "Username")</label>
+                <input asp-for="UserName" class="form-control" required minlength="3" maxlength="60" autocomplete="off" />
+                <span asp-validation-for="UserName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Role" class="form-label">@(ar ? "الدور" : "Role")</label>
+                <select asp-for="Role" class="form-select" required>
+                    <option value="Cashier">Cashier</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Password" class="form-label">@(ar ? "كلمة المرور" : "Password (12+ characters)")</label>
+                <input asp-for="Password" type="password" class="form-control" required minlength="12" maxlength="128" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ConfirmPassword" class="form-label">@(ar ? "تأكيد كلمة المرور" : "Confirm password")</label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" required autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+        </div>
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">@(ar ? "إنشاء" : "Create user")</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</a>
+        </div>
+    </form>
+</div></div>

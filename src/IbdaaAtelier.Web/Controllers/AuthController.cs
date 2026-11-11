@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Globalization;
 using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Security;
 using Microsoft.AspNetCore.Authentication;
@@ -69,7 +70,8 @@ public sealed class AuthController(AtelierDbContext db, IPasswordHasher<ShopUser
         {
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim("auth_version", user.AuthVersion.ToString(CultureInfo.InvariantCulture))
         };
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(

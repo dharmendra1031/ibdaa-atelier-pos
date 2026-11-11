@@ -59,7 +59,8 @@ for file in \
     database/011_unpaid_orders.sql \
     database/013_payment_ledger.sql \
     database/015_refunds.sql \
-    database/017_order_status_remarks.sql; do
+    database/017_order_status_remarks.sql \
+    database/019_user_session_version.sql; do
     run_script "$file"
 done
 
@@ -72,7 +73,8 @@ for file in \
     database/012_verify_unpaid_orders.sql \
     database/014_verify_payment_ledger.sql \
     database/016_verify_refunds.sql \
-    database/018_verify_order_status_remarks.sql; do
+    database/018_verify_order_status_remarks.sql \
+    database/020_verify_user_session_version.sql; do
     run_script "$file"
 done
 
@@ -81,4 +83,5 @@ run_script tests/sql/product-gallery-smoke.sql
 run_script tests/sql/payments-smoke.sql
 run_script tests/sql/refunds-smoke.sql
 run_script tests/sql/status-smoke.sql
+run_script tests/sql/user-access-smoke.sql
 echo "SQL migrations, identity keys and constraint smoke test passed."

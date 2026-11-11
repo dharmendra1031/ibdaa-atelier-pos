@@ -20,6 +20,7 @@ public sealed class ShopUser
 
     public bool IsActive { get; set; } = true;
     public int FailedLoginCount { get; set; }
+    public int AuthVersion { get; set; } = 1;
     public DateTime? LockedUntilUtc { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }

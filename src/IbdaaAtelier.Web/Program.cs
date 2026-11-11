@@ -47,12 +47,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             var db = context.HttpContext.RequestServices.GetRequiredService<AtelierDbContext>();
             var user = await db.Users.AsNoTracking()
                 .Where(item => item.UserId == userId)
-                .Select(item => new { item.IsActive, item.Role, item.UserName })
+                .Select(item => new { item.IsActive, item.Role, item.UserName, item.AuthVersion })
                 .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
 
             if (user is null || !user.IsActive ||
                 user.Role != identity.FindFirstValue(ClaimTypes.Role) ||
-                user.UserName != identity.FindFirstValue(ClaimTypes.Name))
+                user.UserName != identity.FindFirstValue(ClaimTypes.Name) ||
+                user.AuthVersion.ToString(CultureInfo.InvariantCulture) != identity.FindFirstValue("auth_version"))
             {
                 context.RejectPrincipal();
                 await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
