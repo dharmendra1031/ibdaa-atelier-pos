@@ -109,8 +109,8 @@ a:focus-visible, button:focus-visible {
 }
 
 .language-button:hover {
-    background: #edf4f0;
-    border-color: #a5beb3;
+    background: #f7e9ed;
+    border-color: #ca9aa8;
     color: var(--atelier-primary);
 }
 
@@ -180,7 +180,7 @@ a:focus-visible, button:focus-visible {
     position: relative;
     min-height: 380px;
     padding: 35px;
-    background: linear-gradient(150deg, #d9e6df, #eaf0e7 54%, #c6d7cf);
+    background: linear-gradient(150deg, #f4e1d7, #f9efeb 54%, #e5c4b9);
     border-radius: 18px;
     overflow: hidden;
 }
@@ -236,7 +236,7 @@ a:focus-visible, button:focus-visible {
     position: absolute;
     inset-inline-end: 24px;
     inset-block-end: 18px;
-    color: #355e54;
+    color: #7a3552;
     font-size: 10px;
     letter-spacing: .14em;
 }
@@ -274,7 +274,7 @@ a:focus-visible, button:focus-visible {
     width: 100%;
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    background: #e6eee9;
+    background: #f5eae6;
     display: grid;
     place-items: center;
 }
@@ -291,7 +291,7 @@ a:focus-visible, button:focus-visible {
     place-items: center;
     width: 88px;
     height: 88px;
-    border: 1px solid #b0c6bb;
+    border: 1px solid #d8b6c4;
     border-radius: 50%;
     color: var(--atelier-primary);
     font: 30px Georgia, serif;
@@ -318,7 +318,7 @@ a:focus-visible, button:focus-visible {
     height: 65px;
     margin-inline: auto;
     border-radius: 50%;
-    background: #edf4f0;
+    background: #f7e9ed;
     color: var(--atelier-primary);
     font: 22px Georgia, serif;
 }
@@ -378,7 +378,7 @@ a:focus-visible, button:focus-visible {
 }
 
 /* Product photo management */
-.gallery-photo { display: block; width: 100%; aspect-ratio: 6 / 7; object-fit: cover; background: #f3f5f2; }
+.gallery-photo { display: block; width: 100%; aspect-ratio: 6 / 7; object-fit: cover; background: #f6efeb; }
 .image-preview { display: block; width: 120px; height: 138px; object-fit: cover; }
 .image-preview[hidden] { display: none; }
 
@@ -392,8 +392,8 @@ a:focus-visible, button:focus-visible {
 .workspace-nav-group + .workspace-nav-group { margin-top: 20px; }
 .workspace-nav-label { display: block; padding: 0 12px 8px; font-size: .68rem; letter-spacing: .1em; font-weight: 750; color: var(--atelier-muted); }
 .workspace-nav-link { display: block; padding: 10px 12px; border-radius: 9px; color: var(--atelier-ink); font-size: .88rem; font-weight: 550; text-decoration: none; line-height: 1.4; }
-.workspace-nav-link:hover, .workspace-nav-link:focus-visible { background: #f1f5f2; color: var(--atelier-primary); }
-.workspace-nav-link.active { background: #e7f0eb; color: var(--atelier-primary); font-weight: 750; }
+.workspace-nav-link:hover, .workspace-nav-link:focus-visible { background: #f7e9ee; color: var(--atelier-primary); }
+.workspace-nav-link.active { background: #f2dfe7; color: var(--atelier-primary); font-weight: 750; }
 .app-workspace { min-width: 0; padding-block: 18px 42px; }
 .app-workspace .page-shell { min-height: 65vh; padding: 0; }
 .workspace-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; color: var(--atelier-muted); font-size: .74rem; }
