@@ -14,10 +14,13 @@ namespace IbdaaAtelier.Web.Controllers;
 public sealed class PosController(AtelierDbContext db, PosOrderService orders) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Index(int? categoryId, string? search, int page = 1, CancellationToken ct = default)
+    public async Task<IActionResult> Index(int? categoryId, string? search, int page = 1,
+        string? serviceSearch = null, int servicePage = 1, bool services = false, CancellationToken ct = default)
     {
         search = search?.Trim() ?? "";
         if (search.Length > 100) search = search[..100];
+        serviceSearch = serviceSearch?.Trim() ?? "";
+        if (serviceSearch.Length > 100) serviceSearch = serviceSearch[..100];
 
         var query = db.Products.AsNoTracking().Where(p => p.IsActive &&
             db.ProductCategories.Any(c => c.CategoryId == p.CategoryId && c.IsActive &&
@@ -33,6 +36,17 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
         var totalPages = Math.Max(1, (count + 35) / 36);
         page = Math.Clamp(page, 1, totalPages);
 
+        var serviceQuery = db.AlterationServices.AsNoTracking()
+            .Where(s => s.IsActive && db.ServiceCategories.Any(c =>
+                c.ServiceCategoryId == s.ServiceCategoryId && c.IsActive));
+        if (serviceSearch.Length > 0)
+            serviceQuery = serviceQuery.Where(s => s.Name.Contains(serviceSearch) ||
+                s.NameAr.Contains(serviceSearch));
+
+        var serviceCount = await serviceQuery.CountAsync(ct);
+        var serviceTotalPages = Math.Max(1, (serviceCount + 23) / 24);
+        servicePage = Math.Clamp(servicePage, 1, serviceTotalPages);
+
         var products = await query.OrderBy(p => p.DisplayOrder).ThenBy(p => p.ProductId)
             .Skip((page - 1) * 36).Take(36)
             .Select(p => new CatalogProduct(p.ProductId, p.ProductCode, p.Name, p.NameAr,
@@ -47,10 +61,12 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
             Products = products,
             Categories = await db.ProductCategories.AsNoTracking()
                 .Where(c => c.IsActive).OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name).ToListAsync(ct),
-            Services = await db.AlterationServices.AsNoTracking()
-                .Where(s => s.IsActive && db.ServiceCategories.Any(c =>
-                    c.ServiceCategoryId == s.ServiceCategoryId && c.IsActive))
-                .OrderBy(s => s.Name).Take(24).ToListAsync(ct),
+            Services = await serviceQuery.OrderBy(s => s.Name).ThenBy(s => s.ServiceId)
+                .Skip((servicePage - 1) * 24).Take(24).ToListAsync(ct),
+            ServiceSearch = serviceSearch,
+            ServicePage = servicePage,
+            ServiceTotalPages = serviceTotalPages,
+            ShowServices = services,
             CategoryId = categoryId,
             Search = search,
             Page = page,
