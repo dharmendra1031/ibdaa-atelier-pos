@@ -79,10 +79,16 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
             .Select(m => new { m.MeasurementId, m.Name, m.NameAr, m.Unit, m.IsRequired })
             .ToList();
 
+        var images = await db.ProductImages.AsNoTracking()
+            .Where(image => image.ProductId == id)
+            .OrderByDescending(image => image.IsPrimary).ThenBy(image => image.DisplayOrder)
+            .Select(image => image.ImagePath).Take(12).ToListAsync(ct);
+
         return Json(new
         {
             product.ProductId, product.Name, product.NameAr,
-            Price = product.DiscountPrice ?? product.RegularPrice, Sizes = sizes, Measurements = measurements
+            Price = product.DiscountPrice ?? product.RegularPrice,
+            Images = images, Sizes = sizes, Measurements = measurements
         });
     }
 
