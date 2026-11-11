@@ -18,7 +18,8 @@ public sealed class AuthController(AtelierDbContext db, IPasswordHasher<ShopUser
     public IActionResult Login(string? returnUrl)
     {
         if (User.Identity?.IsAuthenticated == true)
-            return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl : Url.Action("Index", "Home")!);
+            return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl :
+                Url.Action("Index", User.IsInRole("Admin") ? "Admin" : "Pos")!);
 
         return View(new LoginForm { ReturnUrl = returnUrl });
     }
@@ -80,7 +81,7 @@ public sealed class AuthController(AtelierDbContext db, IPasswordHasher<ShopUser
             new ClaimsPrincipal(identity));
 
         return LocalRedirect(Url.IsLocalUrl(form.ReturnUrl) ?
-            form.ReturnUrl : Url.Action("Index", "Home")!);
+            form.ReturnUrl : Url.Action("Index", user.Role == "Admin" ? "Admin" : "Pos")!);
     }
 
     [HttpPost, Authorize, ValidateAntiForgeryToken]
