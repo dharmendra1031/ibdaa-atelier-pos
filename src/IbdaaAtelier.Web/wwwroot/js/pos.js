@@ -254,6 +254,38 @@
             document.getElementById("dialogTitle").textContent = arabic ? product.nameAr || product.name : product.name;
             dialogFields.replaceChildren();
 
+            if (Array.isArray(product.images) && product.images.length) {
+                const gallery = element("div", "pos-dialog-gallery mb-3");
+                const preview = element("img", "pos-dialog-image");
+                preview.src = product.images[0];
+                preview.alt = arabic ? product.nameAr || product.name : product.name;
+                preview.width = 400;
+                preview.height = 480;
+                gallery.append(preview);
+                if (product.images.length > 1) {
+                    const thumbnails = element("div", "pos-dialog-thumbnails");
+                    product.images.forEach((url, index) => {
+                        const button = element("button", "pos-dialog-thumbnail");
+                        button.type = "button";
+                        button.setAttribute("aria-label", text("View image ", "عرض الصورة ") + (index + 1));
+                        if (index === 0) button.classList.add("active");
+                        const thumb = element("img", "");
+                        thumb.src = url;
+                        thumb.alt = "";
+                        thumb.loading = "lazy";
+                        button.append(thumb);
+                        button.addEventListener("click", () => {
+                            preview.src = url;
+                            thumbnails.querySelector(".active")?.classList.remove("active");
+                            button.classList.add("active");
+                        });
+                        thumbnails.append(button);
+                    });
+                    gallery.append(thumbnails);
+                }
+                dialogFields.append(gallery);
+            }
+
             const quantityLabel = element("label", "form-label", text("Quantity", "الكمية"));
             const quantity = element("input", "form-control mb-3");
             quantity.type = "number"; quantity.min = "1"; quantity.max = "100";
