@@ -20,3 +20,6 @@ appsettings.Production.json
 # Uploaded customer and product content
 **/wwwroot/uploads/
 **/wwwroot/media/
+
+# Generated browser screenshots
+tests/ui-output/
