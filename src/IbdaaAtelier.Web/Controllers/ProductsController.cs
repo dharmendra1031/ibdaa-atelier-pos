@@ -127,6 +127,31 @@ public sealed class ProductsController(AtelierDbContext db) : Controller
             return NotFound();
 
         await ValidateAsync(form, ct);
+
+        if (form.CategoryId != product.CategoryId)
+        {
+            var previousCategoryId = product.CategoryId;
+            var oldCategoryValues = await db.SizeChartValues.AnyAsync(value =>
+                db.ProductSizes.Any(size =>
+                    size.SizeId == value.SizeId && size.ProductId == product.ProductId) &&
+                db.MeasurementDefinitions.Any(measurement =>
+                    measurement.MeasurementId == value.MeasurementId &&
+                    measurement.CategoryId == previousCategoryId), ct);
+
+            if (oldCategoryValues)
+                ModelState.AddModelError(nameof(form.CategoryId),
+                    "This product has size-chart values from its current category. Remove or migrate those values before changing category.");
+
+            var overlappingFields = await db.MeasurementDefinitions.AnyAsync(measurement =>
+                measurement.CategoryId == form.CategoryId && measurement.IsActive &&
+                db.MeasurementDefinitions.Any(productMeasurement =>
+                    productMeasurement.ProductId == product.ProductId &&
+                    productMeasurement.IsActive && productMeasurement.Name == measurement.Name), ct);
+            if (overlappingFields)
+                ModelState.AddModelError(nameof(form.CategoryId),
+                    "The new category contains measurement names already defined on this product.");
+        }
+
         if (!ModelState.IsValid)
         {
             await LoadCategoriesAsync(ct);

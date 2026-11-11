@@ -122,8 +122,19 @@ public sealed class ProductSetupController(AtelierDbContext db) : Controller
         nameAr = nameAr?.Trim();
         unit = unit?.Trim().ToLowerInvariant();
 
+        var productCategoryId = toProduct
+            ? await db.Products.Where(p => p.ProductId == productId)
+                .Select(p => (int?)p.CategoryId).SingleAsync(ct)
+            : categoryId;
+
         var duplicate = await db.MeasurementDefinitions.AnyAsync(x =>
-            x.ProductId == productId && x.CategoryId == categoryId && x.Name == name, ct);
+            x.Name == name &&
+            ((x.ProductId == productId && x.CategoryId == categoryId) ||
+             (x.IsActive && (
+                (toProduct && x.CategoryId == productCategoryId) ||
+                (toCategory && x.ProductId.HasValue &&
+                    db.Products.Any(p => p.ProductId == x.ProductId &&
+                        p.CategoryId == categoryId))))), ct);
         if (string.IsNullOrWhiteSpace(name) || name.Length > 100 ||
             string.IsNullOrWhiteSpace(nameAr) || nameAr.Length > 100 ||
             unit is not ("cm" or "in") || displayOrder < 0 || duplicate)

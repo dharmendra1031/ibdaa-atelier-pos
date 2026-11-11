@@ -23,11 +23,14 @@ public sealed class CustomersController(AtelierDbContext db) : Controller
         var query = db.Customers.AsNoTracking();
         if (search.Length > 0)
         {
+            var mobileSearch = PhoneNumbers.Normalize(search);
             if (long.TryParse(search, out var customerId))
-                query = query.Where(c => c.CustomerId == customerId || c.Mobile.Contains(search) ||
+                query = query.Where(c => c.CustomerId == customerId ||
+                    (mobileSearch != null && c.Mobile.Contains(mobileSearch)) ||
                     c.Name.Contains(search) || c.NameAr.Contains(search));
             else
-                query = query.Where(c => c.Mobile.Contains(search) ||
+                query = query.Where(c =>
+                    (mobileSearch != null && c.Mobile.Contains(mobileSearch)) ||
                     c.Name.Contains(search) || c.NameAr.Contains(search));
         }
 

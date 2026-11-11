@@ -166,6 +166,13 @@ public sealed class CategoriesController(AtelierDbContext db) : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        if (category.IsActive &&
+            await db.Products.AnyAsync(item => item.CategoryId == id && item.IsActive, ct))
+        {
+            TempData["Error"] = "Deactivate active products in this category first.";
+            return RedirectToAction(nameof(Index));
+        }
+
         category.IsActive = !category.IsActive;
         AddAudit(category.IsActive ? "Category.Activate" : "Category.Deactivate", id);
         await db.SaveChangesAsync(ct);
