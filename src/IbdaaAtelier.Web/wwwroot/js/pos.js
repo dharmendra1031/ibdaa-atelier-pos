@@ -92,7 +92,9 @@
         cartView.replaceChildren();
         cartCount.textContent = String(items.length);
         if (items.length === 0) {
-            cartView.append(element("p", "text-secondary small", text("No items added yet.", "لا توجد عناصر بعد.")));
+            cartView.append(element("p", "pos-empty-cart", text(
+                "Choose a customer, then tap a product to add it.",
+                "اختر العميل ثم اضغط على المنتج لإضافته.")));
         }
         items.forEach((line, index) => {
             const row = element("div", "pos-cart-item border-bottom py-2");
@@ -123,6 +125,7 @@
             cartView.append(row);
         });
         totalView.textContent = money(items.reduce((sum, line) => sum + line.price * line.quantity, 0));
+        saveButton.disabled = saving || completed || !customerId || items.length === 0;
         persistCart();
     }
 
@@ -141,6 +144,7 @@
         customerName = "";
         persistCart();
         customerLabel.textContent = text("No customer selected", "لم يتم اختيار عميل");
+        saveButton.disabled = true;
         customerResults.replaceChildren();
         customerAbort?.abort();
         const search = customerSearch.value.trim();
@@ -163,7 +167,9 @@
                     customerSearch.value = name + " · " + customer.mobile;
                     customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
                     persistCart();
+                    customerAbort?.abort();
                     customerResults.replaceChildren();
+                    renderCart();
                     notice("");
                 });
                 customerResults.append(row);
