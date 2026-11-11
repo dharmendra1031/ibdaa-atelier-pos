@@ -12,6 +12,8 @@
     const customerResults = document.getElementById("customerResults");
     const customerLabel = document.getElementById("selectedCustomer");
     const message = document.getElementById("posMessage");
+    const toast = document.getElementById("posToast");
+    const toastText = document.getElementById("posToastText");
     const saveButton = document.getElementById("saveOrderButton");
     const newButton = document.getElementById("newOrderButton");
     const savedOrderLink = document.getElementById("savedOrderLink");
@@ -56,10 +58,20 @@
     } catch { /* In-memory fallback when browser storage is unavailable. */ }
 
     const money = amount => Number(amount).toFixed(3) + " KWD";
-    const notice = (value, error = false) => {
+    const notice = (value, error = false, popup = error) => {
         message.textContent = value;
-        message.className = error ? "small text-danger mb-3" : "small text-success mb-3";
+        message.className = error ? "small text-danger mb-3" : "small text-secondary mb-3";
+        if (!value) toast.hidden = true;
+        else if (popup) {
+            toastText.textContent = value;
+            toast.classList.toggle("pos-toast-error", error);
+            toast.setAttribute("role", error ? "alert" : "status");
+            toast.hidden = false;
+        }
     };
+    document.getElementById("closePosToast").addEventListener("click", () => {
+        toast.hidden = true;
+    });
 
     async function getJson(url, options = {}) {
         const response = await fetch(url, { credentials: "same-origin", ...options });
@@ -73,6 +85,19 @@
         if (className) node.className = className;
         if (value !== undefined) node.textContent = value;
         return node;
+    }
+
+    function setBusy(button, busy, label) {
+        if (busy) {
+            button.dataset.idleLabel = button.textContent;
+            const spinner = element("span", "spinner-border spinner-border-sm me-2");
+            spinner.setAttribute("aria-hidden", "true");
+            button.replaceChildren(spinner, document.createTextNode(label));
+        } else if (button.dataset.idleLabel) {
+            button.textContent = button.dataset.idleLabel;
+        }
+        button.disabled = busy;
+        button.setAttribute("aria-busy", String(busy));
     }
 
     function persistCart() {
@@ -158,7 +183,8 @@
     quickCustomerForm.addEventListener("submit", async event => {
         event.preventDefault();
         if (saving || completed || !quickCustomerForm.reportValidity()) return;
-        quickCustomerSave.disabled = true;
+        if (quickCustomerSave.disabled) return;
+        setBusy(quickCustomerSave, true, text("Saving customer...", "جار حفظ العميل..."));
         quickCustomerError.textContent = "";
         try {
             const customer = await getJson(shell.dataset.customerCreateUrl, {
@@ -174,11 +200,16 @@
             customerResults.replaceChildren();
             quickCustomerDialog.close();
             renderCart();
-            notice("");
+            notice(text("Customer saved and selected.", "تم حفظ العميل واختياره."), false, true);
         } catch (error) {
-            quickCustomerError.textContent = error.message;
+            const detail = error instanceof TypeError
+                ? text("Unable to confirm. Search by mobile before trying again.",
+                    "تعذر التأكد من الحفظ. ابحث برقم الهاتف قبل المحاولة مجدداً.")
+                : error.message;
+            quickCustomerError.textContent = detail;
+            notice(detail, true);
         } finally {
-            quickCustomerSave.disabled = false;
+            setBusy(quickCustomerSave, false);
         }
     });
 
@@ -202,12 +233,18 @@
         customerAbort?.abort();
         const search = customerSearch.value.trim();
         if (search.length < 2) return;
+        customerResults.append(element("div", "list-group-item text-secondary",
+            text("Searching customers...", "جار البحث عن العملاء...")));
         const controller = new AbortController();
         customerAbort = controller;
         try {
             const customers = await getJson(shell.dataset.customerUrl + "?search=" + encodeURIComponent(search),
                 { signal: controller.signal });
             if (controller.signal.aborted) return;
+            customerResults.replaceChildren();
+            if (customers.length === 0)
+                customerResults.append(element("div", "list-group-item text-secondary",
+                    text("No customer found. Use New customer.", "لم يتم العثور على عميل. أضف عميلاً جديداً.")));
             customers.forEach(customer => {
                 const name = arabic ? (customer.nameAr || customer.name) : customer.name;
                 const row = element("button", "list-group-item list-group-item-action",
@@ -228,7 +265,10 @@
                 customerResults.append(row);
             });
         } catch (error) {
-            if (error.name !== "AbortError") notice(error.message, true);
+            if (error.name !== "AbortError") {
+                customerResults.replaceChildren();
+                notice(error.message, true);
+            }
         }
     });
 
@@ -242,6 +282,11 @@
         productAbort?.abort();
         const controller = new AbortController();
         productAbort = controller;
+        const productTile = [...document.querySelectorAll(".pos-product")]
+            .find(button => button.dataset.productId === String(productId));
+        productTile?.setAttribute("aria-busy", "true");
+        productTile?.classList.add("is-loading");
+        notice(text("Loading product...", "جار تحميل المنتج..."));
         try {
             const product = await getJson(shell.dataset.productUrl + "?id=" + encodeURIComponent(productId),
                 { signal: controller.signal });
@@ -326,9 +371,13 @@
             notes.value = current?.notes ?? "";
             notesLabel.htmlFor = notes.id;
             dialogFields.append(notesLabel, notes);
+            notice("");
             dialog.showModal();
         } catch (error) {
             if (error.name !== "AbortError") notice(error.message, true);
+        } finally {
+            productTile?.removeAttribute("aria-busy");
+            productTile?.classList.remove("is-loading");
         }
     }
 
@@ -440,7 +489,7 @@
             return;
         }
         saving = true;
-        saveButton.disabled = true;
+        setBusy(saveButton, true, text("Processing order...", "جار معالجة الطلب..."));
         notice(text("Saving order...", "جار حفظ الطلب..."));
         try {
             const id = await reserveRequest();
@@ -462,7 +511,7 @@
                 sessionStorage.removeItem(cartKey);
             } catch { /* Ignore storage restrictions. */ }
             notice(text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
-                data.orderNumber + " · " + money(data.total));
+                data.orderNumber + " · " + money(data.total), false, true);
             const savedId = "?id=" + encodeURIComponent(data.orderId);
             savedOrderLink.href = shell.dataset.paymentUrl + savedId;
             viewSavedOrderLink.href = shell.dataset.orderUrl + savedId;
@@ -470,10 +519,19 @@
             viewSavedOrderLink.hidden = false;
             newButton.hidden = false;
         } catch (error) {
-            notice(error.message, true);
-            saveButton.disabled = false;
+            notice(error instanceof TypeError
+                ? text("Save status could not be confirmed. Retry Save safely; do not start a new order.",
+                    "تعذر التأكد من الحفظ. أعد المحاولة بأمان ولا تبدأ طلباً جديداً.")
+                : error.message, true);
         } finally {
             saving = false;
+            setBusy(saveButton, false);
+            if (completed) {
+                saveButton.textContent = text("Order saved", "تم حفظ الطلب");
+                saveButton.disabled = true;
+            } else {
+                saveButton.disabled = !customerId || items.length === 0;
+            }
         }
     });
 
