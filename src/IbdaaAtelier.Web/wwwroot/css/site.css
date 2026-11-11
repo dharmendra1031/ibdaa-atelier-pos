@@ -862,3 +862,35 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .workspace-header-title { display: none; }
     .pos-page .site-header .brand-copy { font-size: .78rem; }
 }
+
+/* Management workspace proportions from the approved desktop reference. */
+.admin-page .admin-quick-links { flex-direction: column; align-items: stretch; gap: 0; }
+.admin-page .admin-quick-links .btn {
+    text-align: start; border: 0; border-bottom: 1px solid var(--atelier-border);
+    border-radius: 0; padding: 10px 6px; min-height: 42px;
+}
+.admin-page .admin-quick-links .btn:last-child { border-bottom: 0; }
+.admin-page .admin-recent-orders thead th {
+    background: #f7ece7; color: #4f2332; font-weight: 650;
+}
+.admin-page .admin-recent-orders td { vertical-align: middle; }
+.admin-page .admin-recent-orders td a { color: var(--atelier-primary); font-weight: 650; }
+@media (min-width: 1024px) {
+    .admin-page .site-header { margin-inline-start: 232px; }
+    .admin-page .site-header .brand { display: none !important; }
+    .admin-page .site-header .container-xxl { max-width: none; }
+    .admin-page .app-layout {
+        display: block; max-width: none; margin-inline-start: 232px;
+        padding-inline: 22px;
+    }
+    .admin-page .app-sidebar {
+        position: fixed; inset-block: 0; inset-inline-start: 0;
+        width: 232px; min-height: 100dvh; z-index: 20;
+        margin: 0; overflow-y: auto; border-radius: 0;
+    }
+}
+@media (max-width: 1023.98px) {
+    .admin-page .site-header { margin-inline-start: 0; }
+    .admin-page .site-header .brand { display: inline-flex !important; }
+    .admin-page .app-layout { margin-inline-start: 0; }
+}
