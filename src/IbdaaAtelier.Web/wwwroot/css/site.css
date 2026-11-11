@@ -99,22 +99,6 @@ a:focus-visible, button:focus-visible {
     letter-spacing: .06em;
 }
 
-.app-nav .nav-link {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    padding-inline: 15px;
-    color: var(--atelier-muted);
-    font-weight: 600;
-    border-radius: 10px;
-}
-
-.app-nav .nav-link:hover,
-.app-nav .nav-link.active {
-    background: #edf4f0;
-    color: var(--atelier-primary);
-}
-
 .language-button {
     min-width: 86px;
     padding-inline: 14px;
@@ -347,7 +331,6 @@ a:focus-visible, button:focus-visible {
     .site-header { padding-block: 12px; }
     .site-header > .container-xxl { align-items: flex-start; }
     .brand-mark { width: 44px; height: 44px; }
-    .app-nav .nav-link { padding-inline: 11px; }
     .page-shell { padding-block: 32px 55px; }
     .hero-section { min-height: 0; }
     .hero-art { min-height: 280px; }
@@ -398,3 +381,40 @@ a:focus-visible, button:focus-visible {
 .gallery-photo { display: block; width: 100%; aspect-ratio: 6 / 7; object-fit: cover; background: #f3f5f2; }
 .image-preview { display: block; width: 120px; height: 138px; object-fit: cover; }
 .image-preview[hidden] { display: none; }
+
+/* Operational shell: one shared navigation, two POS content columns. */
+.site-header { padding-block: 10px; }
+.site-header .brand-mark { width: 42px; height: 42px; }
+.site-header .btn { min-height: 38px; }
+.workspace-user { font-size: .82rem; color: var(--atelier-muted); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app-layout { display: grid; grid-template-columns: 228px minmax(0, 1fr); align-items: start; gap: 26px; }
+.app-sidebar { position: sticky; top: 16px; padding: 20px 13px; background: #fff; border: 1px solid var(--atelier-border); border-radius: 13px; margin-block: 22px; }
+.workspace-nav-group + .workspace-nav-group { margin-top: 20px; }
+.workspace-nav-label { display: block; padding: 0 12px 8px; font-size: .68rem; letter-spacing: .1em; font-weight: 750; color: var(--atelier-muted); }
+.workspace-nav-link { display: block; padding: 10px 12px; border-radius: 9px; color: var(--atelier-ink); font-size: .88rem; font-weight: 550; text-decoration: none; line-height: 1.4; }
+.workspace-nav-link:hover, .workspace-nav-link:focus-visible { background: #f1f5f2; color: var(--atelier-primary); }
+.workspace-nav-link.active { background: #e7f0eb; color: var(--atelier-primary); font-weight: 750; }
+.app-workspace { min-width: 0; padding-block: 24px 42px; }
+.app-workspace .page-shell { min-height: 65vh; padding: 0; }
+.workspace-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; color: var(--atelier-muted); font-size: .74rem; }
+.mobile-menu { display: none; }
+.app-workspace .section-title { font-size: clamp(1.6rem, 2.6vw, 2.2rem); }
+.app-workspace .page-heading { margin-bottom: 18px !important; }
+.app-workspace .eyebrow { letter-spacing: .09em; }
+.dashboard-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.dashboard-actions a { min-width: 120px; }
+@media (max-width: 1023.98px) {
+    .app-layout { display: block; }
+    .app-sidebar { display: none; }
+    .app-workspace { padding-block: 14px 32px; }
+    .mobile-menu { display: block; background: #fff; border: 1px solid var(--atelier-border); border-radius: 11px; }
+    .mobile-menu summary { cursor: pointer; padding: 11px 15px; font-weight: 700; color: var(--atelier-primary); }
+    .mobile-menu .workspace-nav { padding: 6px 9px 15px; border-top: 1px solid var(--atelier-border); }
+    .mobile-menu .workspace-nav-group { margin-top: 12px; }
+}
+@media (max-width: 575.98px) {
+    .workspace-user { display: none; }
+    .app-workspace .section-title { font-size: 1.7rem; }
+    .site-header .container-xxl { gap: 7px !important; }
+    .site-header .brand-copy small { display: none; }
+}

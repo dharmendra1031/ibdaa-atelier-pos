@@ -1,8 +1,22 @@
 @using System.Globalization
 @{
     var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
-    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var authenticated = User.Identity?.IsAuthenticated == true;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var currentUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+    var areaLabel = controller switch
+    {
+        "Admin" => isArabic ? "لوحة التحكم" : "Dashboard",
+        "Pos" => isArabic ? "نقطة البيع" : "POS billing",
+        "Orders" or "Payments" or "Refunds" or "OrderStatus" => isArabic ? "الطلبات" : "Orders",
+        "Customers" => isArabic ? "العملاء" : "Customers",
+        "Categories" => isArabic ? "الفئات" : "Categories",
+        "Products" or "ProductImages" or "ProductSetup" => isArabic ? "المنتجات" : "Products",
+        "Services" => isArabic ? "خدمات التعديل" : "Alteration services",
+        "Users" => isArabic ? "المستخدمون" : "Users",
+        "ShopSettings" => isArabic ? "إعدادات المتجر" : "Shop settings",
+        _ => isArabic ? "الرئيسية" : "Overview"
+    };
 }
 <!DOCTYPE html>
 <html lang="@(isArabic ? "ar" : "en")" dir="@(isArabic ? "rtl" : "ltr")">
@@ -23,54 +37,64 @@
 <body>
     <a class="visually-hidden-focusable skip-link" href="#mainContent">@(isArabic ? "الانتقال إلى المحتوى" : "Skip to content")</a>
     <header class="site-header">
-        <div class="container-xxl d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <a class="brand d-inline-flex align-items-center gap-3 text-decoration-none" asp-controller="Home" asp-action="Index" aria-label="IBDAA Atelier">
+        <div class="container-xxl d-flex align-items-center justify-content-between gap-3">
+            <a class="brand d-inline-flex align-items-center gap-2 text-decoration-none"
+               asp-controller="Home" asp-action="Index" aria-label="IBDAA Atelier">
                 <span class="brand-mark" aria-hidden="true">IA</span>
-                <span class="brand-copy">IBDAA <strong>ATELIER</strong><small>@(isArabic ? "الخياطة ونقطة البيع" : "Tailoring & Point of Sale")</small></span>
+                <span class="brand-copy">IBDAA <strong>ATELIER</strong><small>@(isArabic ? "إدارة المتجر" : "Shop management")</small></span>
             </a>
-            <div class="d-flex align-items-center flex-wrap gap-3">
-                <nav class="app-nav d-flex align-items-center gap-1" aria-label="@(isArabic ? "القائمة الرئيسية" : "Main navigation")">
-                    <a class="nav-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index" aria-current="@(controller == "Home" ? "page" : null)">@(isArabic ? "الرئيسية" : "Overview")</a>
-                    <a class="nav-link @(controller == "Catalog" ? "active" : "")" asp-controller="Catalog" asp-action="Index" aria-current="@(controller == "Catalog" ? "page" : null)">@(isArabic ? "المنتجات" : "Catalogue")</a>
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <a class="nav-link @(controller == "Pos" ? "active" : "")" asp-controller="Pos" asp-action="Index">@(isArabic ? "نقطة البيع" : "POS")</a>
-                        <a class="nav-link @(controller == "Orders" || controller == "Payments" ? "active" : "")" asp-controller="Orders" asp-action="Index">@(isArabic ? "الطلبات" : "Orders")</a>
-                    }
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a class="nav-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">@(isArabic ? "الفئات" : "Categories")</a>
-                        <a class="nav-link @(controller == "Products" ? "active" : "")" asp-controller="Products" asp-action="Index">@(isArabic ? "المنتجات" : "Products")</a>
-                        <a class="nav-link @(controller == "Users" ? "active" : "")" asp-controller="Users" asp-action="Index">@(isArabic ? "المستخدمون" : "Users")</a>
-                        <a class="nav-link @(controller == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index" aria-current="@(controller == "Admin" ? "page" : null)">@(isArabic ? "الإدارة" : "Admin")</a>
-                    }
-                </nav>
-                @if (User.Identity?.IsAuthenticated == true)
+            <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                @if (authenticated)
+                {
+                    <span class="workspace-user d-none d-sm-inline">@User.Identity?.Name</span>
+                }
+                <form class="m-0" method="post" asp-controller="Language" asp-action="Set" asp-antiforgery="true">
+                    <input type="hidden" name="returnUrl" value="@currentUrl" />
+                    <button class="btn language-button btn-sm" type="submit" name="culture"
+                            value="@(isArabic ? "en-US" : "ar-KW")"
+                            aria-label="@(isArabic ? "Switch to English" : "التبديل إلى العربية")">
+                        @(isArabic ? "English" : "العربية")
+                    </button>
+                </form>
+                @if (authenticated)
                 {
                     <form class="m-0" method="post" asp-controller="Auth" asp-action="Logout" asp-antiforgery="true">
-                        <button class="btn btn-outline-primary btn-sm" type="submit">@(isArabic ? "خروج" : "Sign out")</button>
+                        <button class="btn btn-outline-secondary btn-sm" type="submit">@(isArabic ? "خروج" : "Sign out")</button>
                     </form>
                 }
                 else
                 {
                     <a class="btn btn-outline-primary btn-sm" asp-controller="Auth" asp-action="Login">@(isArabic ? "دخول" : "Sign in")</a>
                 }
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <a class="btn btn-outline-primary btn-sm" asp-controller="Customers" asp-action="Index">@(isArabic ? "العملاء" : "Customers")</a>
-                }
-                <form class="m-0" method="post" asp-controller="Language" asp-action="Set" asp-antiforgery="true">
-                    <input type="hidden" name="returnUrl" value="@currentUrl" />
-                    <button class="btn language-button" type="submit" name="culture" value="@(isArabic ? "en-US" : "ar-KW")" aria-label="@(isArabic ? "Switch to English" : "التبديل إلى العربية")">
-                        @(isArabic ? "English" : "العربية")
-                    </button>
-                </form>
             </div>
         </div>
     </header>
-    <main id="mainContent" class="page-shell container-xxl">
-        @RenderBody()
-    </main>
+    @if (authenticated)
+    {
+        <div class="container-xxl app-layout">
+            <aside class="app-sidebar" aria-label="@(isArabic ? "تنقل المتجر" : "Shop navigation")">
+                <partial name="_Navigation" />
+            </aside>
+            <div class="app-workspace">
+                <details class="mobile-menu mb-3">
+                    <summary>@(isArabic ? "القائمة والأقسام" : "Menu & sections")</summary>
+                    <partial name="_Navigation" />
+                </details>
+                <nav aria-label="Breadcrumb" class="workspace-breadcrumb mb-3">
+                    <span>IBDAA ATELIER</span><span aria-hidden="true">/</span><span aria-current="page">@areaLabel</span>
+                </nav>
+                <main id="mainContent" class="page-shell">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
+    else
+    {
+        <main id="mainContent" class="page-shell container-xxl">
+            @RenderBody()
+        </main>
+    }
     <footer class="site-footer">
         <div class="container-xxl d-flex justify-content-between align-items-center flex-wrap gap-2">
             <span>© @DateTime.UtcNow.Year IBDAA Atelier</span>

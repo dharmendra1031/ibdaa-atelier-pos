@@ -1,0 +1,34 @@
+@using System.Globalization
+@{
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var isAdmin = User.IsInRole("Admin");
+    var ordersActive = current is "Orders" or "Payments" or "Refunds" or "OrderStatus";
+    var productsActive = current is "Products" or "ProductImages" or "ProductSetup";
+}
+<nav class="workspace-nav" aria-label="@(ar ? "القائمة الرئيسية" : "Main navigation")">
+    <div class="workspace-nav-group">
+        <span class="workspace-nav-label">@(ar ? "المبيعات" : "SALES")</span>
+        @if (isAdmin)
+        {
+            <a class="workspace-nav-link @(current == "Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index" aria-current="@(current == "Admin" ? "page" : null)">@(ar ? "لوحة التحكم" : "Dashboard")</a>
+        }
+        <a class="workspace-nav-link @(current == "Pos" ? "active" : "")" asp-controller="Pos" asp-action="Index" aria-current="@(current == "Pos" ? "page" : null)">@(ar ? "نقطة البيع" : "POS billing")</a>
+        <a class="workspace-nav-link @(ordersActive ? "active" : "")" asp-controller="Orders" asp-action="Index" aria-current="@(ordersActive ? "page" : null)">@(ar ? "الطلبات والتسليم" : "Orders & delivery")</a>
+        <a class="workspace-nav-link @(current == "Customers" ? "active" : "")" asp-controller="Customers" asp-action="Index" aria-current="@(current == "Customers" ? "page" : null)">@(ar ? "العملاء" : "Customers")</a>
+    </div>
+    @if (isAdmin)
+    {
+        <div class="workspace-nav-group">
+            <span class="workspace-nav-label">@(ar ? "الكتالوج" : "CATALOGUE")</span>
+            <a class="workspace-nav-link @(productsActive ? "active" : "")" asp-controller="Products" asp-action="Index" aria-current="@(productsActive ? "page" : null)">@(ar ? "المنتجات والصور والمقاسات" : "Products & setup")</a>
+            <a class="workspace-nav-link @(current == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index" aria-current="@(current == "Categories" ? "page" : null)">@(ar ? "فئات المنتجات" : "Product categories")</a>
+            <a class="workspace-nav-link @(current == "Services" ? "active" : "")" asp-controller="Services" asp-action="Index" aria-current="@(current == "Services" ? "page" : null)">@(ar ? "خدمات التعديل" : "Alteration services")</a>
+        </div>
+        <div class="workspace-nav-group">
+            <span class="workspace-nav-label">@(ar ? "الإدارة" : "ADMINISTRATION")</span>
+            <a class="workspace-nav-link @(current == "Users" ? "active" : "")" asp-controller="Users" asp-action="Index" aria-current="@(current == "Users" ? "page" : null)">@(ar ? "المستخدمون والصلاحيات" : "Users & access")</a>
+            <a class="workspace-nav-link @(current == "ShopSettings" ? "active" : "")" asp-controller="ShopSettings" asp-action="Index" aria-current="@(current == "ShopSettings" ? "page" : null)">@(ar ? "إعدادات المتجر" : "Shop settings")</a>
+        </div>
+    }
+</nav>
