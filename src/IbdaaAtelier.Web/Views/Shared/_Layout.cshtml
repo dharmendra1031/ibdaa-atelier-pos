@@ -123,12 +123,15 @@
             @RenderBody()
         </main>
     }
-    <footer class="site-footer">
-        <div class="container-xxl d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span>© @DateTime.UtcNow.Year IBDAA Atelier</span>
-            <span>@(isArabic ? "الدينار الكويتي · العربية / الإنجليزية" : "KWD · English / Arabic")</span>
-        </div>
-    </footer>
+    @if (controller != "Pos")
+    {
+        <footer class="site-footer">
+            <div class="container-xxl d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span>© @DateTime.UtcNow.Year IBDAA Atelier</span>
+                <span>@(isArabic ? "الدينار الكويتي · العربية / الإنجليزية" : "KWD · English / Arabic")</span>
+            </div>
+        </footer>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
