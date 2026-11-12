@@ -1308,6 +1308,18 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-discount-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .pos-discount-row label { font-size: .9rem; font-weight: 600; }
 .pos-discount-row .form-control { width: 125px; text-align: end; }
+.pos-payment-choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pos-payment-choice .btn { min-height: 44px; font-weight: 700; }
+.pos-app-layout #saveOrderButton { min-height: 46px; }
+.pos-payment-dialog { width: min(480px, calc(100% - 24px)); }
+.pos-payment-total { display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    border: 1px solid #efd9d8; background: #f9e9e8; border-radius: 10px; padding: 14px; }
+.pos-payment-total strong { color: #5f0c2c; font-size: 1.4rem; white-space: nowrap; }
+.pos-payment-methods { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.pos-payment-methods .btn { padding: 9px 4px; font-size: .85rem; font-weight: 600; }
+.pos-payment-dialog .form-control { min-height: 44px; }
+.pos-payment-dialog [hidden], .pos-checkout [hidden] { display: none !important; }
+
 .pos-order-icon { flex: 0 0 auto; width: 28px; height: 28px; }
 .pos-cart-heading-icon { width: 27px; height: 27px; margin-inline-end: 8px; vertical-align: -5px; }
 .pos-app-layout #catalogueProducts .pos-catalogue-tools > form { position: relative; }
