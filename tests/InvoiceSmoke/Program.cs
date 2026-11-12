@@ -18,6 +18,13 @@ foreach (System.Data.DataColumn column in data.Header.Columns)
         "BusinessNameAr" => "إبداع أتيليه",
         "CustomerName" => "Arabic and English Customer",
         "CustomerNameAr" => "عميل عربي",
+        "ShopAddress" => "Test address, Kuwait",
+        "ShopAddressAr" => "عنوان اختبار - الكويت",
+        "ShopMobile" => "00000000",
+        "ShopEmail" => "invoice-test@example.invalid",
+        "CustomerMobile" => "00000000",
+        "OrderDate" => "11-11-2026 10:00",
+        "DeliveryDate" => "15-11-2026",
         "Total" => "80.000",
         "Paid" => "25.000",
         "Refunded" => "0.000",
@@ -30,7 +37,7 @@ foreach (System.Data.DataColumn column in data.Header.Columns)
 }
 // Small in-memory test logo; no client image or live filesystem is used.
 header["Logo"] = Convert.FromBase64String(
-    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7+RwAAAABJRU5ErkJggg==");
+    "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABHUlEQVR42u3bvQnCQBjG8cuR0oAgYmXhAqYVXMHaEdI5gaXYOoBzuIAjmM5OsBYERbGKAxhzuWjg3rv/W4Z8vb978kG4REVRqJBLq8ALAAACr7jJRlmSOnvn3N4Okc36kc1TwOXGm0JoH5u3OV9jAqQ1bpsGngK+j76pD+1786Z+uARCGP2qvkgAAAAAAAAAAAAAAAAAABBkxW0fYJ3vVH80/Hk/r8dTLQYTEgAAAMLuAcvxrHR5p9dVm9P+Y/lqOlfn/EgCAAAAAAAAAAAAAAAAAAAAAABA8PeAb3W/XFWWpCQAAAAAcA/Adsq5lCrriwTYaPk2+sYE+ILAdPmKqv3LjMT5w3USrP+5M2nNWyVAShpa/WuMN0EAAPCu3ksZVtkJgHPYAAAAAElFTkSuQmCC");
 data.Header.Rows.Add(header);
 data.Lines.Rows.Add(1, "Long dress alteration with custom sleeves", "تعديل فستان بأكمام مخصصة",
     "Size: XL\nChest / الصدر: 100 cm\nWaist / الخصر: 85 cm", 2, "40.000", "80.000");
@@ -49,7 +56,11 @@ foreach (var name in new[] { "InvoiceA4.rdlc", "Invoice80mm.rdlc" })
     var pdf = report.Render("PDF");
     if (pdf.Length < 500 || System.Text.Encoding.ASCII.GetString(pdf.AsSpan(0, 4)) != "%PDF")
         throw new Exception(name + " did not render a PDF.");
-    Console.WriteLine($"{name}: rendered {pdf.Length} PDF bytes.");
+    var pages = System.Text.RegularExpressions.Regex.Matches(
+        System.Text.Encoding.Latin1.GetString(pdf), @"/Type\s*/Page\b").Count;
+    if (pages != 1)
+        throw new Exception(name + $" rendered {pages} pages instead of one.");
+    Console.WriteLine($"{name}: rendered {pdf.Length} PDF bytes on one page.");
     var outputDirectory = Environment.GetEnvironmentVariable("INVOICE_SMOKE_OUTPUT");
     if (!string.IsNullOrWhiteSpace(outputDirectory))
     {
