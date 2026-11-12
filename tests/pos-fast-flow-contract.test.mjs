@@ -54,7 +54,9 @@ test("unpaid saves and prints, while paid opens the payment popup", () => {
 
 test("premium POS uses two full-width work areas without a persistent sidebar", () => {
     assert.match(layout, /pos-app-layout/);
-    assert.match(css, /\.pos-app-layout \.app-sidebar/);
+    assert.match(layout, /@if \(controller != "Pos"\)/);
+    assert.doesNotMatch(view, /class="[^"]*pos-heading|pos-shortcuts/);
+    assert.doesNotMatch(css, /\.pos-app-layout \.app-sidebar/);
     assert.match(css, /\.pos-app-layout \.pos-shell > \.col-lg-7/);
     assert.match(css, /\.pos-page/);
     assert.match(view, /class="col-lg-7"/);
