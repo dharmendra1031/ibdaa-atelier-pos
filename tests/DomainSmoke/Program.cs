@@ -203,6 +203,13 @@ await ExpectFailureAsync<InvalidOperationException>(() =>
     }, user.UserId, CancellationToken.None), "Payment request accepted a different retry amount.");
 
 var secondPayment = await payments.PrepareAsync(saved.OrderId, user.UserId, CancellationToken.None);
+Check(secondPayment.PreviousPayments.Count == 2 &&
+      secondPayment.PreviousPayments[0].Method == "Cash" &&
+      secondPayment.PreviousPayments[0].Change == 2.000m &&
+      secondPayment.PreviousPayments[1].Method == "KNET" &&
+      secondPayment.Paid == 20.000m && secondPayment.Balance == 7.500m &&
+      secondPayment.Refunded == 0m,
+    "Returning customer did not see original invoice payment history and correct balance.");
 await ExpectFailureAsync<InvalidOperationException>(() =>
     payments.SaveAsync(new PaymentForm
     {

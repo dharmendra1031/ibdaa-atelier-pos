@@ -21,7 +21,13 @@ public sealed class PaymentService(AtelierDbContext db)
         if (order is null)
             throw new ArgumentException("Order not found.");
 
-        var paid = await GetPaidAsync(orderId, ct);
+        var previousPayments = await db.OrderPayments.AsNoTracking()
+            .Where(payment => payment.OrderId == orderId)
+            .OrderBy(payment => payment.PaymentId).ToListAsync(ct);
+        var refunded = await db.OrderRefunds.AsNoTracking()
+            .Where(refund => refund.OrderId == orderId)
+            .SumAsync(refund => (decimal?)refund.Amount, ct) ?? 0m;
+        var paid = previousPayments.Sum(payment => payment.Amount) - refunded;
         var balance = Math.Max(0m, order.Total - paid);
 
         if (order.Status == "Cancelled" || balance <= 0)
@@ -38,6 +44,8 @@ public sealed class PaymentService(AtelierDbContext db)
             Total = order.Total,
             Paid = paid,
             Balance = balance,
+            Refunded = refunded,
+            PreviousPayments = previousPayments,
             Form = new PaymentForm
             {
                 RequestId = request.RequestId,

@@ -14,7 +14,7 @@
         @if (User.IsInRole("Cashier") && Model.Balance > 0 && Model.Order.Status != "Cancelled")
         {
             <a asp-controller="Payments" asp-action="Take" asp-route-id="@Model.Order.OrderId" class="btn btn-primary">
-                @(ar ? "استلام دفعة" : "Take payment")
+                @(ar ? "تحصيل الباقي" : "Receive Balance")
             </a>
         }
         <a asp-controller="Invoices" asp-action="Index" asp-route-id="@Model.Order.OrderId"

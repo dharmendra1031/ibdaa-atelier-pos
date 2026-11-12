@@ -6,6 +6,10 @@
     var pdfUrl = Url.Action("Print", "Invoices", new { id = Model.OrderId, paper = Model.Paper });
 }
 <section class="mb-4">
+    @if (TempData["Message"] is string message)
+    {
+        <div class="alert alert-success" role="status">@message</div>
+    }
     <span class="eyebrow">IBDAA ATELIER · INVOICE</span>
     <h1 class="section-title mt-2 mb-2">@(ar ? "رقم الفاتورة" : "Invoice No.") @Model.InvoiceNumber</h1>
     <div class="d-flex flex-wrap gap-2 align-items-center">

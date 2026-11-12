@@ -48,8 +48,8 @@ public sealed class PaymentsController(PaymentService payments) : Controller
             var receipt = await payments.SaveAsync(form, userId, ct);
             TempData["Message"] = receipt.Replayed
                 ? "Payment already saved. Duplicate entry was prevented."
-                : "Payment recorded successfully.";
-            return RedirectToAction("Details", "Orders", new { id = form.OrderId });
+                : "Payment recorded successfully. Updated invoice is ready to print.";
+            return RedirectToAction("Index", "Invoices", new { id = form.OrderId, paper = "80mm" });
         }
         catch (ArgumentException exception)
         {

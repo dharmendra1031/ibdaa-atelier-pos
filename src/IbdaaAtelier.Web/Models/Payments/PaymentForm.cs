@@ -26,5 +26,7 @@ public sealed class PaymentEntryPage
     public decimal Total { get; init; }
     public decimal Paid { get; init; }
     public decimal Balance { get; init; }
+    public decimal Refunded { get; init; }
+    public List<OrderPayment> PreviousPayments { get; init; } = [];
     public PaymentForm Form { get; init; } = new();
 }

@@ -369,7 +369,7 @@ Admin shall see consolidated and POS-user-wise daily collection, including total
 
 - Shop name, logo, address and contact information.
 
-- Invoice number, order number and invoice date.
+- One invoice number and invoice date; do not print a separate order number.
 
 - Customer English/Arabic name and mobile number.
 
@@ -381,7 +381,7 @@ Admin shall see consolidated and POS-user-wise daily collection, including total
 
 - Subtotal, discount, additional charges, grand total, paid amount and balance due.
 
-- Payment method, delivery date, terms and thank-you message.
+- Unpaid / Partially Paid / Paid status, payment-method history with amounts, cash tendered and returned change where applicable, delivery date, terms and the saved shop-settings thank-you message.
 
 ### 10.2 Printing Requirements
 
@@ -479,15 +479,15 @@ Result: The product becomes available in the POS catalogue.
 
 ### 15.2 POS Creates a Tailoring Order
 
-- Log in and select a product category.
+- Log in and select an existing customer or create a new customer first.
+
+- Select a product category.
 
 - Select a product and review its images.
 
 - Select size and enter measurements/instructions.
 
 - Add the item to the cart; add more products if required.
-
-- Select an existing customer or create a new customer.
 
 - Set delivery date and review order totals.
 
@@ -516,6 +516,19 @@ Result: Customer, product, size, measurements, services, payment and delivery de
 - On handover, collect any remaining balance.
 
 - Mark the order Delivered and retain delivery/payment history.
+
+### 15.4.1 Returning Customer - Remaining Balance Payment
+
+- Search previously saved invoices by invoice number, customer mobile or English/Arabic customer name. Open the same invoice; do not create another order or invoice.
+- Show invoice total, previous dated payments by method, refunds, net paid and remaining balance.
+- Cashier selects **Receive Balance** for an invoice with a positive outstanding balance. Collect full or partial payment by Cash, KNET, WAMD or permitted split methods in KWD (three decimals).
+- For Cash, record the amount applied, actual cash tendered and change returned. Change is not included in paid/collection totals.
+- Reject excessive payments and collections against already paid or cancelled invoices. Retried or concurrent requests must not duplicate the ledger or create overpayment.
+- Save each new payment against the same internal order and invoice number, with user/date/time and payment audit. Recalculate Paid, Balance and payment status from persisted transactions.
+- After a successful payment, open the updated A4/80mm RDLC invoice preview, retaining the original invoice number, product/measurement details and complete payment history.
+- Payment collection must **not** change the delivery status. The customer may pay now and collect garments later; delivery remains a separate authorized action.
+
+Result: One invoice can have multiple dated payments with an accurate balance, cash change and complete history.
 
 ### 15.5 Daily Collection Closing
 
@@ -660,6 +673,12 @@ The database design should include, at minimum, the following logical entities. 
 | Set delivery date | Date is saved and searchable. |
 
 | Partial/split payment | Paid amount and balance are calculated correctly. |
+| Returning customer search | Cashier can find an existing invoice by number or customer mobile/name. |
+| Receive later balance | Payment is added to the existing invoice without creating another order/invoice. |
+| Cash change on later collection | Tendered cash and returned change are recorded; change does not increase collection. |
+| Duplicate/excess payment prevention | Repeated requests, paid/cancelled invoices and excessive amounts do not add extra ledger entries. |
+| Updated invoice reprint | Same invoice number, original items and all recorded payments print on A4/80mm. |
+| Payment independent of delivery | Receiving a payment does not automatically mark the order Delivered. |
 
 | Print invoice | Customer, product, size and measurements print correctly. |
 
