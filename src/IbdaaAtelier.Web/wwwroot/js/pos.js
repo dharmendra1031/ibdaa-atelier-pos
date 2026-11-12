@@ -10,6 +10,9 @@
     const totalView = document.getElementById("cartTotal");
     const subtotalView = document.getElementById("cartSubtotal");
     const discountInput = document.getElementById("posDiscountAmount");
+    const invoiceDialog = document.getElementById("findInvoiceDialog");
+    const openInvoiceButton = document.getElementById("openFindInvoice");
+    const backToNewBill = document.getElementById("closeInvoiceButton");
     const invoiceForm = document.getElementById("findInvoiceForm");
     const invoiceInput = document.getElementById("findInvoiceNumber");
     const invoiceButton = document.getElementById("findInvoiceButton");
@@ -214,8 +217,30 @@
         receive.hidden = (invoice.balance <= 0 && !paymentPayload) || invoice.status === "Cancelled";
         newOrderCart.hidden = true;
         boundInvoiceView.hidden = false;
+        openInvoiceButton.hidden = true;
+        backToNewBill.hidden = false;
+        if (invoiceDialog.open) invoiceDialog.close();
         notice("");
     }
+
+    openInvoiceButton.addEventListener("click", () => {
+        if (saving || paymentBusy || savedOrder || paymentPayload) {
+            notice(text("Finish the pending order payment first.", "أكمل دفع الطلب المعلق أولاً."), true);
+            return;
+        }
+        invoiceMessage.textContent = "";
+        invoiceMessage.className = "small text-secondary mt-2 mb-3";
+        invoiceDialog.showModal();
+        invoiceInput.focus();
+        invoiceInput.select();
+    });
+
+    document.getElementById("cancelFindInvoice").addEventListener("click", () => {
+        if (!invoiceButton.disabled) invoiceDialog.close();
+    });
+    invoiceDialog.addEventListener("cancel", event => {
+        if (invoiceButton.disabled) event.preventDefault();
+    });
 
     invoiceForm.addEventListener("submit", async event => {
         event.preventDefault();
@@ -228,7 +253,7 @@
             "فتح فاتورة محفوظة؟ ستبقى السلة الحالية حتى تعود."))) return;
 
         invoiceMessage.textContent = "";
-        invoiceMessage.className = "small text-secondary mb-2";
+        invoiceMessage.className = "small text-secondary mt-2 mb-3";
         setBusy(invoiceButton, true, text("Finding...", "جار البحث..."));
         try {
             const invoice = await getJson(shell.dataset.invoiceUrl +
@@ -237,13 +262,13 @@
             invoiceMessage.textContent = text("Saved invoice loaded (read-only).", "تم عرض الفاتورة المحفوظة للقراءة فقط.");
         } catch (error) {
             invoiceMessage.textContent = error.message;
-            invoiceMessage.className = "small text-danger mb-2";
+            invoiceMessage.className = "small text-danger mt-2 mb-3";
         } finally {
             setBusy(invoiceButton, false);
         }
     });
 
-    document.getElementById("closeInvoiceButton").addEventListener("click", () => {
+    backToNewBill.addEventListener("click", () => {
         if (paymentBusy || paymentPayload) {
             notice(text("Finish the pending payment before leaving this invoice.",
                 "أكمل الدفع المعلق قبل مغادرة الفاتورة."), true);
@@ -253,10 +278,12 @@
         boundInvoiceBalance = 0;
         boundInvoiceView.hidden = true;
         newOrderCart.hidden = false;
+        openInvoiceButton.hidden = false;
+        backToNewBill.hidden = true;
         invoiceNumberView.textContent = newInvoiceNumber;
         invoiceInput.value = "";
         invoiceMessage.textContent = "";
-        invoiceMessage.className = "small text-secondary mb-2";
+        invoiceMessage.className = "small text-secondary mt-2 mb-3";
         renderCart();
     });
 
