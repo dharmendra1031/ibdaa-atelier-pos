@@ -847,7 +847,8 @@
 
     function printInvoice(orderId, tab) {
         if (!tab || tab.closed) return false;
-        tab.location.replace(shell.dataset.printUrl + "?id=" + encodeURIComponent(orderId) + "&paper=80mm");
+        tab.location.replace(shell.dataset.printPreviewUrl + "?id=" +
+            encodeURIComponent(orderId) + "&paper=80mm&autoPrint=1");
         return true;
     }
 
