@@ -29,4 +29,4 @@ public sealed class OrderMeasurementInput
     public decimal Value { get; set; }
 }
 
-public sealed record SavedOrder(long OrderId, string OrderNumber, decimal Total, bool Replayed);
+public sealed record SavedOrder(long OrderId, decimal Total, bool Replayed);
