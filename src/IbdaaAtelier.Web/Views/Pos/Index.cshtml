@@ -5,18 +5,6 @@
     var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
     var today = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3)).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 }
-<section class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3 pos-heading">
-    <div>
-        <span class="eyebrow">IBDAA ATELIER · POS</span>
-        <h1 class="section-title mt-2 mb-1">@(ar ? "نقطة البيع" : "POS Billing")</h1>
-        <p class="text-secondary mb-0">@(ar ? "المنتجات · التعديلات · الخياطة" : "Garments · Alterations · Tailoring")</p>
-    </div>
-    <nav class="d-flex flex-wrap gap-2 pos-shortcuts" aria-label="@(ar ? "روابط سريعة" : "Quick links")">
-        <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الطلبات" : "Orders")</a>
-        <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-primary">@(ar ? "العملاء" : "Customers")</a>
-        <a asp-controller="Register" asp-action="Index" class="btn btn-outline-primary">@(ar ? "الصندوق" : "Register")</a>
-    </nav>
-</section>
 <div class="pos-shell row g-4" id="posShell"
      data-product-url="@Url.Action("Product", "Pos")"
      data-customer-url="@Url.Action("FindCustomers", "Pos")"
