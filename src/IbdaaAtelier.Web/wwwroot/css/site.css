@@ -774,6 +774,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     font-size: clamp(1.15rem, 1.5vw, 1.5rem);
     font-weight: 750; letter-spacing: -.025em;
 }
+.pos-page .site-header .pos-header-title { color: #fff7f1; }
 .pos-header-title::before {
     content: ""; display: inline-block; vertical-align: -.13em;
     width: 18px; height: 18px; margin-inline-end: 11px;
