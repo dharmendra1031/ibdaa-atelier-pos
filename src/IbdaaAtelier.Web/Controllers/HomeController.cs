@@ -10,7 +10,7 @@ public sealed class HomeController : Controller
         if (User.Identity?.IsAuthenticated == true)
             return RedirectToAction("Index", User.IsInRole("Admin") ? "Admin" : "Pos");
 
-        return View();
+        return RedirectToAction("Login", "Auth");
     }
 
     [HttpGet]
