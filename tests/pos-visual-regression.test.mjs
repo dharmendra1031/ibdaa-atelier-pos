@@ -34,3 +34,18 @@ test("idempotent server-side unpaid order save remains unchanged", () => {
     assert.match(server, /UPDLOCK, HOLDLOCK/);
     assert.match(server, /request\.Fingerprint != fingerprint/);
 });
+
+test("cashier POS header shows authenticated role and username without changing admin", () => {
+    const layout = read("src/IbdaaAtelier.Web/Views/Shared/_Layout.cshtml");
+    const auth = read("src/IbdaaAtelier.Web/Controllers/AuthController.cs");
+    assert.match(layout, /controller == "Pos" && User\.IsInRole\("Cashier"\)/);
+    assert.match(layout, /pos-header-account/);
+    assert.match(layout, /pos-header-account-copy/);
+    assert.match(layout, /@User\.Identity\?\.Name/);
+    assert.match(layout, /أمين الصندوق/);
+    assert.match(css, /\.pos-page \.site-header/);
+    assert.match(css, /\.pos-header-avatar/);
+    assert.match(css, /\.pos-header-title/);
+    assert.match(css, /@media \(max-width: 575\.98px\)/);
+    assert.match(auth, /new Claim\(ClaimTypes\.Role, user\.Role\)/);
+});

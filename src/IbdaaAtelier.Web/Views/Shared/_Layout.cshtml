@@ -37,7 +37,7 @@
 <body class="@(controller == "Pos" ? "pos-page" : controller == "Auth" ? "auth-page" : "admin-page")">
     <a class="visually-hidden-focusable skip-link" href="#mainContent">@(isArabic ? "الانتقال إلى المحتوى" : "Skip to content")</a>
     <header class="site-header">
-        <div class="container-xxl d-flex align-items-center justify-content-between gap-3">
+        <div class="container-xxl d-flex align-items-center justify-content-between gap-3 @(authenticated && controller == "Pos" ? "pos-header-inner" : "")">
             <a class="brand d-inline-flex align-items-center gap-2 text-decoration-none"
                asp-controller="@(User.IsInRole("Admin") ? "Admin" : User.IsInRole("Cashier") ? "Pos" : "Home")" asp-action="Index" aria-label="IBDAA Atelier">
                 <span class="brand-mark" aria-hidden="true">IA</span>
@@ -45,14 +45,24 @@
             </a>
             @if (authenticated && controller == "Pos")
             {
-                <span class="workspace-header-title">@(isArabic ? "نقطة البيع" : "POS Billing")</span>
+                <span class="workspace-header-title pos-header-title">@(isArabic ? "نقطة البيع" : "POS Billing")</span>
             }
             else if (authenticated && controller == "Admin")
             {
                 <span class="workspace-header-title admin-header-title">@(isArabic ? "لوحة الإدارة" : "Admin Dashboard")</span>
             }
-            <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-                @if (authenticated)
+            <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end @(authenticated && controller == "Pos" ? "pos-header-actions" : "")">
+                @if (authenticated && controller == "Pos" && User.IsInRole("Cashier"))
+                {
+                    <div class="pos-header-account" aria-label="@(isArabic ? "حساب أمين الصندوق" : "Cashier account")">
+                        <span class="pos-header-avatar" aria-hidden="true">@(string.IsNullOrEmpty(User.Identity?.Name) ? "C" : User.Identity.Name[..1].ToUpperInvariant())</span>
+                        <span class="pos-header-account-copy">
+                            <strong>@(isArabic ? "أمين الصندوق" : "Cashier")</strong>
+                            <small>@User.Identity?.Name</small>
+                        </span>
+                    </div>
+                }
+                else if (authenticated)
                 {
                     <span class="workspace-user d-none d-sm-inline">@User.Identity?.Name</span>
                 }

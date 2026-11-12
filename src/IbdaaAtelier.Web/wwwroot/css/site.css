@@ -747,7 +747,11 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .admin-page .admin-kpis .feature-card { border-radius: 15px; }
 .admin-page .admin-kpis .feature-card .h4 { color: var(--atelier-primary); }
 .admin-page .admin-kpis .col-6:first-child .feature-card .h4 { color: #fff; }
-.pos-page .site-header { background: #690a2b; border-bottom-color: #690a2b; }
+.pos-page .site-header {
+    background: #690a2b;
+    border-bottom: 1px solid #893c58;
+    box-shadow: 0 5px 18px rgb(55 7 27 / 13%);
+}
 .pos-page .site-header .brand,
 .pos-page .site-header .workspace-user,
 .pos-page .site-header .brand-copy { color: #fff8f3; }
@@ -755,10 +759,65 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-page .site-header .brand-mark { color: #f3cd89; background: transparent; }
 .pos-page .site-header .language-button,
 .pos-page .site-header .btn-outline-secondary {
-    color: #fff; border-color: #a55f74; background: transparent;
+    color: #fff8f3; border: 1px solid #a55f74; background: transparent;
 }
 .pos-page .site-header .language-button:hover,
 .pos-page .site-header .btn-outline-secondary:hover { background: #8a2849; }
+.pos-page .site-header .language-button:focus-visible,
+.pos-page .site-header .btn-outline-secondary:focus-visible { outline-color: #f3cd89; }
+.pos-header-inner { min-height: 52px; }
+.pos-page .site-header .brand { flex: 0 1 auto; min-width: 0; }
+.pos-page .site-header .brand-copy { font-size: .9rem; letter-spacing: .11em; }
+.pos-page .site-header .brand-mark { font-size: 1.3rem; }
+.pos-header-title {
+    flex: 1 1 auto; margin-inline: 6px 0;
+    font-size: clamp(1.15rem, 1.5vw, 1.5rem);
+    font-weight: 750; letter-spacing: -.025em;
+}
+.pos-header-title::before {
+    content: ""; display: inline-block; vertical-align: -.13em;
+    width: 18px; height: 18px; margin-inline-end: 11px;
+    border: 2px solid #f0d0a4; border-radius: 4px;
+    box-shadow: inset 0 0 0 3px #690a2b, inset 0 0 0 7px #f0d0a4;
+}
+.pos-header-actions { flex: 0 0 auto; }
+.pos-header-account {
+    display: flex; align-items: center; gap: 9px; min-width: 0;
+    padding: 5px 14px 5px 6px; border: 1px solid rgb(243 205 137 / 28%);
+    border-radius: 11px; background: rgb(255 255 255 / 6%);
+}
+.pos-header-avatar {
+    display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto;
+    border-radius: 9px; color: #690a2b; background: #f3cd89;
+    font-weight: 750; font-size: .9rem;
+}
+.pos-header-account-copy { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.pos-header-account-copy strong { color: #ffe6b9; font-size: .75rem; letter-spacing: .035em; }
+.pos-header-account-copy small {
+    max-width: 135px; color: #fff8f3; font-size: .78rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+@media (max-width: 991.98px) {
+    .pos-page .site-header .brand-copy small { display: none; }
+    .pos-header-account { padding-inline-end: 8px; }
+}
+@media (max-width: 767.98px) {
+    .pos-header-title { display: inline-flex; font-size: 1rem; margin-inline: 0; }
+    .pos-header-title::before { display: none; }
+    .pos-header-account-copy small { max-width: 75px; }
+}
+@media (max-width: 575.98px) {
+    .pos-page .site-header { padding-block: 9px; }
+    .pos-header-inner { flex-wrap: wrap; row-gap: 9px; }
+    .pos-header-title { order: 2; flex: 1 0 100%; }
+    .pos-header-actions { margin-inline-start: auto; gap: 5px !important; }
+    .pos-header-account { border: 0; background: transparent; padding: 0; gap: 6px; }
+    .pos-header-avatar { width: 30px; height: 30px; }
+    .pos-header-account-copy strong { font-size: .7rem; }
+    .pos-header-account-copy small { max-width: 80px; font-size: .72rem; }
+    .pos-page .site-header .language-button { min-width: 0; padding-inline: 9px; }
+    .pos-page .site-header .btn-outline-secondary { padding-inline: 9px; }
+}
 .pos-app-layout .pos-heading { margin-bottom: 14px !important; }
 .pos-app-layout .pos-shell .pos-checkout { box-shadow: 0 10px 30px rgb(93 23 49 / 6%); }
 .pos-app-layout .pos-shell .pos-checkout-actions .btn-primary:disabled {
@@ -795,8 +854,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     margin-inline-end: auto; font-weight: 750; font-size: 1.25rem;
     color: var(--atelier-primary);
 }
-.pos-page .workspace-header-title { color: #fff7f1; font-size: 1.5rem; }
-.pos-page .workspace-header-title::before { content: "▣"; color: #f0d0a4; margin-inline-end: 12px; }
 .admin-page .workspace-header-title { font-size: 1.1rem; }
 @media (min-width: 1200px) {
     .pos-app-layout #catalogueProducts {
@@ -830,8 +887,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-heading { margin-top: 0; }
 }
 @media (max-width: 767.98px) {
-    .workspace-header-title { display: none; }
-    .pos-page .site-header .brand-copy { font-size: .78rem; }
+    .workspace-header-title:not(.pos-header-title) { display: none; }
 }
 
 /* Management workspace proportions from the approved desktop reference. */
