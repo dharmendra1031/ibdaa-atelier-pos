@@ -15,7 +15,7 @@ test("order/request/item/measurement/status keys are numeric SQL IDENTITY", () =
         assert.match(sql, new RegExp(name + " BIGINT IDENTITY\\(1,1\\)"));
     assert.match(sql, /DB_NAME\(\) <> @ExpectedDatabase/);
     assert.match(sql, /UNIQUE INDEX UX_Orders_RequestId/);
-    assert.match(sql, /OrderNumber AS/);
+    assert.doesNotMatch(sql, /OrderNumber AS|IA-/);
     assert.doesNotMatch(sql, /NEWID\(|UNIQUEIDENTIFIER|MAX\(OrderId\)/i);
 });
 
