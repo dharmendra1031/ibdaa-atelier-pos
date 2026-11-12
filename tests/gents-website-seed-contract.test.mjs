@@ -6,6 +6,9 @@ const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8"
 const seed = read("database/029_demo_seed.sql");
 const details = read("database/030_demo_media_and_details.sql");
 const upgrade = read("database/037_replace_ladies_test_catalog.sql");
+const view = read("src/IbdaaAtelier.Web/Views/Pos/Index.cshtml");
+const css = read("src/IbdaaAtelier.Web/wwwroot/css/site.css");
+const verification = read("database/038_verify_gents_catalog.sql");
 
 test("official site-based seed contains exactly sixteen menswear products", () => {
     const productSection = seed.split("FROM (VALUES")[1].split(") item(CategoryName")[0];
@@ -61,4 +64,17 @@ test("existing TEST catalogue migration does not change invoices or reseed numer
     assert.match(upgrade, /INSERT dbo\.MeasurementDefinitions/);
     assert.match(upgrade, /NOT EXISTS \(\s*SELECT 1 FROM dbo\.Orders history WHERE history\.CustomerId = customer\.CustomerId/);
     assert.doesNotMatch(upgrade, /DELETE FROM dbo\.Orders|UPDATE dbo\.Orders|TRUNCATE TABLE|DBCC CHECKIDENT/);
+});
+
+test("POS service cards have no misleading ladies garment sprite", () => {
+    assert.doesNotMatch(view, /"Dress hem"|\"Abaya hem\"|pos-service-photo-1/);
+    assert.doesNotMatch(css, /background-image: url\('\/images\/alteration-service-tiles\.png'\)/);
+    assert.match(view, /class="pos-service-photo" aria-hidden="true">✂/);
+});
+
+test("test-only read-only verification checks website names and catalog prices", () => {
+    assert.match(verification, /DB_NAME\(\) <> N'IBDAA_TEST'/);
+    assert.match(verification, /COALESCE\(product\.DiscountPrice, product\.RegularPrice\) = reference\.PublicPrice/);
+    assert.match(verification, /OriginalPhotosUploaded/);
+    assert.doesNotMatch(verification, /UPDATE dbo|DELETE FROM|TRUNCATE TABLE/);
 });
