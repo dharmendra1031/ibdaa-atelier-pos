@@ -22,7 +22,6 @@ public sealed record PaymentResult(long BatchId, decimal Received, decimal Balan
 public sealed class PaymentEntryPage
 {
     public long OrderId { get; init; }
-    public string OrderNumber { get; init; } = "";
     public decimal Total { get; init; }
     public decimal Paid { get; init; }
     public decimal Balance { get; init; }
