@@ -69,6 +69,27 @@ FROM (VALUES
 JOIN dbo.ProductCategories category ON category.Name = item.CategoryName
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Products existing WHERE existing.NameAr = item.NameAr);
 
+-- Keep service masters without publishing fabricated alteration prices.
+INSERT dbo.ServiceCategories (Name, NameAr)
+SELECT candidate.Name, candidate.NameAr
+FROM (VALUES
+    (N'Length Alterations', N'تعديلات الطول'),
+    (N'Fit adjustments', N'تعديل المقاس'),
+    (N'Repairs', N'إصلاحات')
+) candidate(Name, NameAr)
+WHERE NOT EXISTS (
+    SELECT 1 FROM dbo.ServiceCategories existing WHERE existing.Name = candidate.Name
+);
+
+UPDATE category SET IsActive = 0
+FROM dbo.ServiceCategories category
+WHERE category.Name = N'Hemming'
+  AND category.NameAr = N'تقصير'
+  AND NOT EXISTS (
+      SELECT 1 FROM dbo.AlterationServices service
+      WHERE service.ServiceCategoryId = category.ServiceCategoryId AND service.IsActive = 1
+  );
+
 -- Historic measurement rows remain for existing invoices, but must not appear in new gents sales.
 UPDATE definition SET IsActive = 0
 FROM dbo.MeasurementDefinitions definition
