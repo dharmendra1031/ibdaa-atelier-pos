@@ -4,6 +4,7 @@
     var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
     ViewData["Title"] = (ar ? "فاتورة " : "Invoice ") + Model.OrderId;
     var pdfUrl = Url.Action("Print", "Invoices", new { id = Model.OrderId, paper = Model.Paper });
+    var autoPrint = Context.Request.Query["autoPrint"] == "1";
 }
 <section class="mb-4">
     @if (TempData["Message"] is string message)
@@ -23,6 +24,47 @@
         <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.OrderId"
            class="btn btn-outline-secondary">@(ar ? "رجوع" : "Back to order")</a>
     </div>
+    @if (autoPrint)
+    {
+        <p id="invoicePrintStatus" class="small text-secondary mt-3" role="status" aria-live="polite">
+            @(ar ? "جار تجهيز الفاتورة للطباعة..." : "Preparing invoice for printing...")
+        </p>
+    }
 </section>
-<iframe src="@pdfUrl" title="@(ar ? "معاينة الفاتورة" : "Invoice preview")"
+<iframe id="invoicePdf" src="@(autoPrint ? null : pdfUrl)"
+        title="@(ar ? "معاينة الفاتورة" : "Invoice preview")"
         class="w-100 border rounded" style="height:75vh; min-height:500px"></iframe>
+@if (autoPrint)
+{
+    <script>
+        (() => {
+            const frame = document.getElementById("invoicePdf");
+            const status = document.getElementById("invoicePrintStatus");
+            const pdfUrl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(pdfUrl));
+
+            fetch(pdfUrl, { credentials: "same-origin", cache: "no-store" })
+                .then(async response => {
+                    if (!response.ok)
+                        throw new Error("Invoice PDF failed: HTTP " + response.status);
+                    const pdf = await response.blob();
+                    if (!pdf.type.toLowerCase().includes("pdf"))
+                        throw new Error("The server did not return an invoice PDF.");
+
+                    frame.addEventListener("load", () => {
+                        status.textContent = "Invoice PDF is ready. If the print dialog does not open, use Open PDF / Print.";
+                        try {
+                            frame.contentWindow.focus();
+                            frame.contentWindow.print();
+                        } catch {
+                            status.textContent = "Use Open PDF / Print to print this invoice.";
+                        }
+                    }, { once: true });
+                    frame.src = URL.createObjectURL(pdf);
+                })
+                .catch(error => {
+                    status.className = "small text-danger mt-3";
+                    status.textContent = error.message + ". The order is saved; open the PDF again from Orders.";
+                });
+        })();
+    </script>
+}
