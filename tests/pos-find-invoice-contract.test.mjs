@@ -27,7 +27,7 @@ test("invoice binding stays in the cart and never creates or edits an order", ()
     assert.match(pos, /invoiceNumberView\.textContent = invoice\.orderNumber/);
     assert.match(pos, /newOrderCart\.hidden = true/);
     assert.match(pos, /boundInvoiceView\.hidden = false/);
-    assert.match(pos, /if \(saving \|\| completed \|\| boundInvoiceId\) return/);
+    assert.match(pos, /if \(paidMode \|\| saving \|\| completed \|\| boundInvoiceId\) return/);
     assert.match(pos, /boundInvoiceId = 0/);
     assert.match(pos, /renderCart\(\)/);
 });
