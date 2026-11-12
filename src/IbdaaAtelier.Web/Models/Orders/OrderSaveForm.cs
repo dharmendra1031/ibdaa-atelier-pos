@@ -7,6 +7,7 @@ public sealed class OrderSaveForm
     [Range(1, long.MaxValue)] public long RequestId { get; set; }
     [Range(1, long.MaxValue)] public long CustomerId { get; set; }
     public DateOnly DeliveryDate { get; set; }
+    public decimal DiscountAmount { get; set; }
 
     [Required, MinLength(1), MaxLength(30)]
     public List<OrderLineInput> Items { get; set; } = [];

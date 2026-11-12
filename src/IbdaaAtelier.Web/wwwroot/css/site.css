@@ -1303,6 +1303,9 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     background: #f9e9e8; color: #5f0c2c; font-weight: 700;
 }
 .pos-total-summary strong { color: #5f0c2c; }
+.pos-discount-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.pos-discount-row label { font-size: .9rem; font-weight: 600; }
+.pos-discount-row .form-control { width: 125px; text-align: end; }
 .pos-order-icon { flex: 0 0 auto; width: 28px; height: 28px; }
 .pos-cart-heading-icon { width: 27px; height: 27px; margin-inline-end: 8px; vertical-align: -5px; }
 .pos-app-layout #catalogueProducts .pos-catalogue-tools > form { position: relative; }

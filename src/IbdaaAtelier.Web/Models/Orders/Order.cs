@@ -18,6 +18,8 @@ public sealed class Order
     public DateOnly DeliveryDate { get; set; }
     [MaxLength(30)] public string Status { get; set; } = "New";
     [Column(TypeName = "decimal(18,3)")] public decimal Total { get; set; }
+    [Column(TypeName = "decimal(18,3)")] public decimal Subtotal { get; set; }
+    [Column(TypeName = "decimal(18,3)")] public decimal DiscountAmount { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }
 

@@ -8,6 +8,8 @@
     const cartView = document.getElementById("orderCart");
     const cartCount = document.getElementById("cartCount");
     const totalView = document.getElementById("cartTotal");
+    const subtotalView = document.getElementById("cartSubtotal");
+    const discountInput = document.getElementById("posDiscountAmount");
     const customerSearch = document.getElementById("customerSearch");
     const customerResults = document.getElementById("customerResults");
     const customerLabel = document.getElementById("selectedCustomer");
@@ -52,6 +54,8 @@
             customerId = saved.customerId || 0;
             customerName = saved.customerName || "";
             customerMobile = saved.customerMobile || "";
+            if (discountInput && saved.discountAmount !== undefined)
+                discountInput.value = String(saved.discountAmount);
             if (saved.deliveryDate && saved.deliveryDate >= deliveryDate.min)
                 deliveryDate.value = saved.deliveryDate;
             if (customerId) {
@@ -107,7 +111,8 @@
 
     function persistCart() {
         try { sessionStorage.setItem(cartKey, JSON.stringify({
-            items, customerId, customerName, customerMobile, deliveryDate: deliveryDate.value
+            items, customerId, customerName, customerMobile, deliveryDate: deliveryDate.value,
+            discountAmount: discountInput?.value ?? "0"
         })); }
         catch { /* Keep the current in-memory order. */ }
     }
@@ -190,7 +195,11 @@
             row.append(actions);
             cartView.append(row);
         });
-        totalView.textContent = money(items.reduce((sum, line) => sum + line.price * line.quantity, 0));
+        const subtotal = items.reduce((sum, line) => sum + line.price * line.quantity, 0);
+        const discount = Number(discountInput?.value || 0);
+        subtotalView.textContent = money(subtotal);
+        totalView.textContent = money(Math.max(0, subtotal -
+            (Number.isFinite(discount) && discount >= 0 ? discount : 0)));
         clearCartButton.disabled = saving || completed || items.length === 0;
         saveButton.disabled = saving || completed || !customerId || items.length === 0;
         persistCart();
@@ -203,6 +212,7 @@
     });
 
     deliveryDate.addEventListener("change", persistCart);
+    discountInput?.addEventListener("input", renderCart);
 
     document.getElementById("openQuickCustomer").addEventListener("click", () => {
         if (saving || completed) return;
@@ -557,6 +567,17 @@
             notice(text("Select a customer, delivery date and at least one item.", "اختر العميل وتاريخ التسليم وأضف عنصراً."), true);
             return;
         }
+        const subtotal = items.reduce((sum, line) => sum + line.price * line.quantity, 0);
+        const discountAmount = Number(discountInput?.value || 0);
+        if (discountInput && (!discountInput.checkValidity() || !Number.isFinite(discountAmount) ||
+            (discountInput.value.trim() !== "" &&
+                !/^(\d+(\.\d{1,3})?|\.\d{1,3})$/.test(discountInput.value.trim())) ||
+            discountAmount > subtotal)) {
+            notice(text("Discount must be between zero and the subtotal with up to three decimals.",
+                "يجب أن يكون الخصم بين الصفر والمجموع الفرعي وبحد أقصى ثلاث منازل عشرية."), true);
+            discountInput.focus();
+            return;
+        }
         saving = true;
         clearCartButton.disabled = true;
         setBusy(saveButton, true, text("Processing order...", "جار معالجة الطلب..."));
@@ -567,7 +588,7 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json", RequestVerificationToken: token },
                 body: JSON.stringify({
-                    requestId: id, customerId, deliveryDate: date,
+                    requestId: id, customerId, deliveryDate: date, discountAmount,
                     items: items.map(line => ({
                         itemType: line.itemType, itemId: line.itemId,
                         sizeId: line.sizeId, quantity: line.quantity,
@@ -576,6 +597,7 @@
                 })
             });
             completed = true;
+            if (discountInput) discountInput.disabled = true;
             const nextOrderNumber = document.getElementById("nextOrderNumber");
             if (nextOrderNumber) {
                 const number = /^IA-(\d+)$/.exec(data.orderNumber);
@@ -590,7 +612,7 @@
             const savedId = "?id=" + encodeURIComponent(data.orderId);
             savedOrderLink.href = shell.dataset.paymentUrl + savedId;
             viewSavedOrderLink.href = shell.dataset.orderUrl + savedId;
-            savedOrderLink.hidden = false;
+            savedOrderLink.hidden = Number(data.total) <= 0;
             viewSavedOrderLink.hidden = false;
             newButton.hidden = false;
         } catch (error) {

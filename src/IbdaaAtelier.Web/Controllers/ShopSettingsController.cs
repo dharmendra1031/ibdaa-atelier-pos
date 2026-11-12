@@ -27,7 +27,8 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
             AddressAr = settings?.AddressAr,
             LogoPath = settings?.LogoPath,
             ReceiptFooter = settings?.ReceiptFooter,
-            RequireRegisterOpen = settings?.RequireRegisterOpen ?? false
+            RequireRegisterOpen = settings?.RequireRegisterOpen ?? false,
+            EnablePosDiscount = settings?.EnablePosDiscount ?? false
         });
     }
 
@@ -141,6 +142,7 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
         }
 
         settings.RequireRegisterOpen = form.RequireRegisterOpen;
+        settings.EnablePosDiscount = form.EnablePosDiscount;
         settings.BusinessName = form.BusinessName;
         settings.BusinessNameAr = form.BusinessNameAr;
         settings.Mobile = string.IsNullOrWhiteSpace(form.Mobile) ? null : form.Mobile;

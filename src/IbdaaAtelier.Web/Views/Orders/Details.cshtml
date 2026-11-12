@@ -73,6 +73,17 @@
         <div class="card filter-card"><div class="card-body p-4">
             <h2 class="h5">@(ar ? "الملخص" : "Balance summary")</h2>
             <dl class="mb-0">
+                @if (Model.Order.DiscountAmount > 0)
+                {
+                    <div class="d-flex justify-content-between border-bottom py-3">
+                        <dt>@(ar ? "المجموع الفرعي" : "Subtotal")</dt>
+                        <dd class="mb-0">@Model.Order.Subtotal.ToString("0.000", CultureInfo.InvariantCulture)</dd>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-3">
+                        <dt>@(ar ? "خصم الطلب" : "Order discount")</dt>
+                        <dd class="mb-0">-@Model.Order.DiscountAmount.ToString("0.000", CultureInfo.InvariantCulture)</dd>
+                    </div>
+                }
                 <div class="d-flex justify-content-between border-bottom py-3">
                     <dt>@(ar ? "الإجمالي" : "Total")</dt>
                     <dd class="mb-0">@Model.Order.Total.ToString("0.000", CultureInfo.InvariantCulture)</dd>

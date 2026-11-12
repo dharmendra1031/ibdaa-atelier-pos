@@ -89,6 +89,7 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
         header["Refunded"] = Money(refunded);
         header["Balance"] = Money(balance);
         header["PaymentStatus"] = order.Status == "Cancelled" ? "CANCELLED / ملغى" :
+            order.Total == 0m ? "NO PAYMENT DUE / لا يوجد مبلغ مستحق" :
             netPaid <= 0m ? "UNPAID / غير مدفوع" :
             balance > 0m ? "PARTIALLY PAID / مدفوع جزئياً" : "PAID / مدفوع";
         header["ReceiptFooter"] = savedBrand?.ReceiptFooter ?? shop?.ReceiptFooter ?? "";
@@ -114,6 +115,9 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
                 string.Join(Environment.NewLine, details), item.Quantity,
                 Money(item.UnitPrice), Money(item.LineTotal));
         }
+        if (order.DiscountAmount > 0)
+            data.Lines.Rows.Add(++lineNumber, "Order discount", "خصم الطلب",
+                "", 1, "-" + Money(order.DiscountAmount), "-" + Money(order.DiscountAmount));
 
         foreach (var payment in payments)
         {

@@ -302,7 +302,29 @@ await ExpectFailureAsync<InvalidOperationException>(() =>
     }, user.UserId, CancellationToken.None),
     "Payment was accepted after the required register was closed.");
 
-Console.WriteLine("Domain integration passed: numeric order, snapshots, duplicate retries, split/partial/full payments, cash change, refunds status safeguards, cash register reconciliation and closing retries.");
+var discountRequestId = await orders.ReserveAsync(user.UserId, CancellationToken.None);
+var discountedForm = new OrderSaveForm
+{
+    RequestId = discountRequestId,
+    CustomerId = customer.CustomerId,
+    DeliveryDate = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3).AddDays(1)),
+    DiscountAmount = 1.000m,
+    Items = [new OrderLineInput { ItemType = "Service", ItemId = service.ServiceId, Quantity = 1 }]
+};
+await ExpectFailureAsync<InvalidOperationException>(() =>
+    orders.SaveAsync(discountedForm, user.UserId, CancellationToken.None),
+    "POS discount was accepted while the setting was disabled.");
+changedSettings.EnablePosDiscount = true;
+await db.SaveChangesAsync();
+var discounted = await orders.SaveAsync(discountedForm, user.UserId, CancellationToken.None);
+Check(discounted.Total == 1.500m &&
+    await db.Orders.AnyAsync(o => o.OrderId == discounted.OrderId &&
+        o.Subtotal == 2.500m && o.DiscountAmount == 1.000m && o.Total == 1.500m),
+    "Discounted order totals did not persist or reconcile.");
+Check((await payments.PrepareAsync(discounted.OrderId, user.UserId, CancellationToken.None)).Balance == 1.500m,
+    "Payment balance did not use the discounted total.");
+
+Console.WriteLine("Domain integration passed: orders, discounts, payments, refunds, status history and cash register.");
 
 static void Check(bool condition, string message)
 {

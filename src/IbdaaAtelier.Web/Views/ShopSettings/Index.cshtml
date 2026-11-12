@@ -77,6 +77,11 @@
                 </label>
                 <p class="small text-secondary mb-0">@(ar ? "عند إيقاف الإعداد يمكن قبول مدفوعات غير مرتبطة بجلسة الصندوق." : "When disabled, payments outside a register session remain possible and are not included in a session closing.")</p>
             </div>
+            <div class="form-check mt-4">
+                <input asp-for="EnablePosDiscount" class="form-check-input" />
+                <label asp-for="EnablePosDiscount" class="form-check-label">@(ar ? "السماح بخصم الطلب في نقطة البيع" : "Allow order discount in POS")</label>
+                <p class="small text-secondary mb-0">@(ar ? "عند الإيقاف لا يظهر حقل الخصم ويرفض الخادم أي خصم جديد." : "When off, the discount field is hidden and new discounts are rejected by the server.")</p>
+            </div>
             <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save settings")</button>
                 <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">@(ar ? "رجوع" : "Back")</a>

@@ -77,7 +77,9 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
             Search = search,
             Page = page,
             TotalPages = totalPages,
-            NextOrderNumber = "IA-" + ((await db.Orders.CountAsync(ct)) + 1)
+            NextOrderNumber = "IA-" + ((await db.Orders.CountAsync(ct)) + 1),
+            EnablePosDiscount = await db.ShopSettings.AsNoTracking()
+                .Select(s => s.EnablePosDiscount).SingleOrDefaultAsync(ct)
         });
     }
 

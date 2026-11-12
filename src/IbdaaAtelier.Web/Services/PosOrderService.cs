@@ -24,6 +24,8 @@ public sealed class PosOrderService(AtelierDbContext db, OrderLineBuilder lineBu
         if (form.RequestId <= 0 || form.CustomerId <= 0 ||
             form.Items is null || form.Items.Count is < 1 or > 30)
             throw new ArgumentException("Select a customer and at least one order item.");
+        if (form.DiscountAmount < 0 || form.DiscountAmount != decimal.Round(form.DiscountAmount, 3))
+            throw new ArgumentException("Discount must be a non-negative KWD amount with up to three decimals.");
 
         var todayInKuwait = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(3));
         if (form.DeliveryDate < todayInKuwait)
@@ -64,9 +66,16 @@ public sealed class PosOrderService(AtelierDbContext db, OrderLineBuilder lineBu
         if (lines.Any(x => x.Item.LineTotal > maxAmount))
             throw new ArgumentException("Order line exceeds the allowed amount.");
 
-        var total = lines.Aggregate(0m, (sum, x) => checked(sum + x.Item.LineTotal));
-        if (total > maxAmount)
+        var subtotal = lines.Aggregate(0m, (sum, x) => checked(sum + x.Item.LineTotal));
+        if (subtotal > maxAmount)
             throw new ArgumentException("Order total exceeds the allowed amount.");
+        var discountEnabled = await db.ShopSettings.AsNoTracking()
+            .Select(s => s.EnablePosDiscount).SingleOrDefaultAsync(ct);
+        if (form.DiscountAmount > 0 && !discountEnabled)
+            throw new InvalidOperationException("POS discounts are disabled in shop settings.");
+        if (form.DiscountAmount > subtotal)
+            throw new ArgumentException("Discount cannot exceed the order subtotal.");
+        var total = subtotal - form.DiscountAmount;
 
         var order = new Order
         {
@@ -77,6 +86,8 @@ public sealed class PosOrderService(AtelierDbContext db, OrderLineBuilder lineBu
             CustomerNameAr = customer.NameAr,
             CustomerMobile = customer.Mobile,
             DeliveryDate = form.DeliveryDate,
+            Subtotal = subtotal,
+            DiscountAmount = form.DiscountAmount,
             Total = total
         };
 
