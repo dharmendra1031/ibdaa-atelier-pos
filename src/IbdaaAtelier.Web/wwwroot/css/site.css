@@ -1364,4 +1364,81 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-cart-unit-price { display: none; }
     .pos-cart-actions { grid-column: 1 / -1; }
 }
+/* POS: invoice lookup stays in the header; no permanent search bar in the cart. */
+.pos-app-layout .pos-cart-header-actions {
+    display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px;
+}
+.pos-app-layout .pos-cart-header-actions .btn { min-height: 34px; padding: 5px 10px; font-size: 12px; white-space: nowrap; }
+.pos-find-invoice-dialog { width: min(400px, calc(100% - 24px)); }
+.pos-find-invoice-dialog .form-control { min-height: 46px; font-size: 16px; }
+.pos-find-invoice-dialog #findInvoiceButton { min-height: 44px; }
+.pos-cart-items-dialog { width: min(740px, calc(100% - 24px)); }
+.pos-cart-items-dialog #orderCart {
+    min-height: 0; max-height: calc(86dvh - 130px);
+    overflow-y: auto; overflow-x: hidden; display: block;
+}
+@media (max-width: 575.98px) {
+    .pos-app-layout .pos-cart-header { align-items: flex-start; flex-wrap: wrap; }
+    .pos-app-layout .pos-cart-header-actions { margin-inline-start: auto; }
+}
+/* On desktop the viewport holds the entire POS. Only the catalogue listing scrolls. */
+@media (min-width: 992px) and (min-height: 650px) {
+    body.pos-page { height: 100dvh; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .pos-page > .site-header { flex: 0 0 auto; }
+    .pos-page .app-layout.pos-app-layout { flex: 1 1 0; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+    .pos-app-layout .app-workspace { height: 100%; min-height: 0; overflow: hidden; }
+    .pos-app-layout .page-shell { height: 100%; min-height: 0; overflow: hidden; }
+    .pos-app-layout .pos-shell { height: 100%; min-height: 0; align-items: stretch; }
+    .pos-app-layout .pos-shell > .col-lg-7,
+    .pos-app-layout .pos-shell > .col-lg-5 {
+        display: flex; flex-direction: column; min-height: 0;
+    }
+    .pos-app-layout #catalogueProducts:not([hidden]) {
+        flex: 1 1 0; min-height: 0; overflow: hidden;
+    }
+    .pos-app-layout #catalogueProducts .pos-product-grid {
+        min-height: 0; overflow-y: auto; overflow-x: hidden;
+        align-content: flex-start; margin-inline: 0; padding-block: 3px;
+        scrollbar-width: thin;
+    }
+    .pos-app-layout #catalogueServices:not([hidden]) { flex: 1 1 0; min-height: 0; overflow: hidden; }
+    .pos-app-layout .pos-service-results { display: flex; flex-direction: column; min-height: 0; }
+    .pos-app-layout .pos-service-grid {
+        flex: 1 1 0; min-height: 0; overflow-y: auto; overflow-x: hidden;
+        align-content: flex-start; margin-inline: 0; padding-block: 3px; scrollbar-width: thin;
+    }
+    .pos-app-layout .pos-shell .pos-checkout {
+        flex: 1 1 0; height: 100%; min-height: 0; max-height: none;
+        position: static; overflow: hidden;
+    }
+    .pos-app-layout .pos-checkout .card-body {
+        display: flex; flex-direction: column; flex: 1 1 0;
+        height: 100%; min-height: 0; overflow: hidden;
+    }
+    .pos-app-layout #newOrderCart:not([hidden]) {
+        display: flex; flex: 1 1 0; flex-direction: column; min-height: 0; overflow: hidden;
+    }
+    .pos-app-layout .pos-checkout #orderCart {
+        flex: 1 1 0; min-height: 0; max-height: none; overflow: hidden;
+    }
+    .pos-app-layout .pos-checkout #boundInvoice:not([hidden]) {
+        display: flex; flex: 1 1 0; flex-direction: column; min-height: 0; overflow: hidden;
+    }
+    .pos-app-layout .pos-checkout #boundInvoiceItems {
+        flex: 1 1 0; min-height: 0; overflow: hidden;
+    }
+    .pos-app-layout .pos-checkout-actions { position: static; margin-top: 10px; flex: 0 0 auto; }
+    .pos-app-layout .pos-checkout .pos-customer-form,
+    .pos-app-layout .pos-checkout .pos-cart-columns,
+    .pos-app-layout .pos-checkout .pos-payment-choice { flex: 0 0 auto; }
+}
+@media (min-width: 1200px) and (min-height: 650px) {
+    .pos-app-layout #catalogueProducts:not([hidden]) {
+        grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+    .pos-app-layout #catalogueProducts > .pos-product-grid { grid-row: 2; }
+    .pos-app-layout #catalogueProducts > nav:not(.pos-categories) { grid-row: 3; }
+    .pos-app-layout #catalogueProducts .pos-categories { grid-row: 1 / span 3; }
+    .pos-app-layout #catalogueServices:not([hidden]) { grid-template-rows: minmax(0, 1fr); }
+}
 
