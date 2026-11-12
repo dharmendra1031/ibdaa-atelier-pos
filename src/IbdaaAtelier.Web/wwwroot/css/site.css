@@ -807,6 +807,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-shell > .col-lg-5 { align-self: stretch; }
     .pos-app-layout .pos-checkout { min-height: min(680px, calc(100dvh - 170px)); }
     .pos-app-layout .pos-checkout .card-body { display: flex; flex-direction: column; }
+    .pos-app-layout #newOrderCart:not([hidden]) { display: flex; flex: 1; flex-direction: column; }
     .pos-app-layout .pos-cart { flex: 1 0 auto; }
     .pos-app-layout .pos-checkout-actions { margin-top: auto; }
 }
@@ -1292,6 +1293,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-cart-quantity button { width: 29px; min-height: 32px; border: 0; background: #f9f1ef; color: #65132e; font-weight: 700; }
 .pos-cart-quantity button:disabled { opacity: .45; }
 .pos-cart-quantity span { flex: 1; min-width: 30px; text-align: center; font-size: 13px; }
+.pos-app-layout #boundInvoiceItems .pos-cart-quantity { justify-content: center; min-height: 32px; }
 .pos-cart-unit-price, .pos-cart-line-total { font-size: 12px; white-space: nowrap; }
 .pos-cart-actions { display: flex; gap: 4px; }
 .pos-cart-actions .btn { min-height: 32px; padding: 4px 6px; font-size: 11px; }
