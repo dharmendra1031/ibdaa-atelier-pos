@@ -1167,7 +1167,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 
 .pos-page { background: #fbf7f4; }
 .pos-page .site-header { padding-block: 12px; }
-.pos-page .site-footer { display: none; }
 .pos-app-layout { width: 100%; max-width: none; }
 .pos-app-layout .app-workspace { padding: 16px 18px 28px; }
 .pos-app-layout .page-shell { padding: 0; }
