@@ -69,7 +69,7 @@ test("saved invoice opens inline for printing rather than forced attachment", ()
     assert.doesNotMatch(invoices, /return File\(pdf, "application\/pdf", fileName\)/);
     assert.match(invoices, /invoices\.PrepareAsync\(id, ct\)/);
     assert.match(view, /data-print-preview-url=/);
-    assert.match(pos, /tab.location.replace\\(shell.dataset.printPreviewUrl/);
+    assert.match(pos, /tab.location.replace\(shell.dataset.printPreviewUrl/);
     assert.match(pos, /autoPrint=1/);
 });
 
