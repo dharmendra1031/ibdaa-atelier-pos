@@ -40,5 +40,7 @@ test("order service and monetary contract are unchanged by UI refactor", () => {
     assert.match(order, /UPDLOCK, HOLDLOCK/);
     assert.match(order, /transaction\.CommitAsync/);
     assert.match(js, /if \(!customerId\)/);
-    assert.match(view, /Save unpaid order/);
+    assert.match(view, /Save & Print/);
+    assert.match(view, /id="posChooseUnpaid"/);
+    assert.match(view, /id="posChoosePaid"/);
 });
