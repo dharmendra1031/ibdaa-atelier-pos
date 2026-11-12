@@ -37,7 +37,7 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
     {
         if (logo is null)
         {
-            TempData["Error"] = "Choose a JPEG, PNG or WebP logo.";
+            TempData["Error"] = "Choose a PNG or JPEG logo for invoices.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -57,6 +57,12 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
         catch (ArgumentException exception)
         {
             TempData["Error"] = exception.Message;
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (extension is not (".png" or ".jpg"))
+        {
+            TempData["Error"] = "Upload a PNG or JPEG logo to print it on invoices.";
             return RedirectToAction(nameof(Index));
         }
 

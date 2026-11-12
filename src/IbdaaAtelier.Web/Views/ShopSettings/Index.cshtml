@@ -55,6 +55,10 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.LogoPath))
             {
+                @if (Model.LogoPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase))
+                {
+                    <p class="alert alert-warning">@(ar ? "يُرجى رفع شعار PNG أو JPEG لطباعته في الفواتير." : "Re-upload this logo as PNG or JPEG so it can print on invoices.")</p>
+                }
                 <div class="mt-4">
                     <span class="form-label d-block">@(ar ? "الشعار الحالي" : "Current logo")</span>
                     <img src="@Model.LogoPath" alt="Business logo" loading="lazy" style="max-width:180px;max-height:100px;object-fit:contain" />
@@ -80,12 +84,12 @@
         </form>
         <hr class="my-4" />
         <h2 class="h5">@(ar ? "شعار المتجر" : "Shop logo")</h2>
-        <p class="small text-secondary">@(ar ? "JPEG أو PNG أو WebP، بحد أقصى 5 ميغابايت. احفظ بيانات المتجر أولاً." : "JPEG, PNG or WebP; maximum 5 MB. Save business details first.")</p>
+        <p class="small text-secondary">@(ar ? "JPEG أو PNG بحد أقصى 5 ميغابايت. احفظ بيانات المتجر أولاً." : "JPEG or PNG; maximum 5 MB. Save business details first.")</p>
         <form asp-controller="ShopSettings" asp-action="UploadLogo" method="post"
               enctype="multipart/form-data" asp-antiforgery="true" class="d-flex flex-wrap gap-2 align-items-end">
             <div class="flex-grow-1">
                 <label for="shopLogo" class="form-label">@(ar ? "صورة الشعار" : "Logo image")</label>
-                <input id="shopLogo" type="file" name="logo" class="form-control" accept="image/jpeg,image/png,image/webp" required />
+                <input id="shopLogo" type="file" name="logo" class="form-control" accept="image/jpeg,image/png" required />
             </div>
             <button type="submit" class="btn btn-outline-primary">@(ar ? "تحديث الشعار" : "Upload logo")</button>
         </form>

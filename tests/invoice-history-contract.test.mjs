@@ -10,6 +10,7 @@ const shop = read("src/IbdaaAtelier.Web/Controllers/ShopSettingsController.cs");
 const runner = read("tests/sql/run-smoke.sh");
 const project = read("src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj");
 const orders = read("src/IbdaaAtelier.Web/Views/Orders/Details.cshtml");
+const invoicePage = read("src/IbdaaAtelier.Web/Views/Invoices/Index.cshtml");
 
 test("immutable invoice branding uses one numeric snapshot row per order", () => {
     assert.match(sql, /InvoiceSnapshotId BIGINT IDENTITY\(1,1\)/);
@@ -20,6 +21,8 @@ test("immutable invoice branding uses one numeric snapshot row per order", () =>
     assert.match(mapper, /db\.OrderInvoiceSnapshots\.AsNoTracking\(\)/);
     assert.match(mapper, /savedBrand\?\.BusinessName/);
     assert.match(mapper, /savedBrand\?\.LogoPath/);
+    assert.match(mapper, /savedBrand\?\.ReceiptFooter/);
+    assert.match(save, /ReceiptFooter = shop\?\.ReceiptFooter/);
     assert.doesNotMatch(sql, /uniqueidentifier|NEWID/i);
 });
 
@@ -33,8 +36,9 @@ test("old uploaded logos remain on disk so past invoices can be reprinted", () =
 
 test("RDLC print actions and patched cryptography dependencies are wired", () => {
     assert.match(orders, /asp-controller="Invoices"/);
-    assert.match(orders, /asp-route-paper="80mm"/);
-    assert.match(orders, /asp-route-paper="a4"/);
+    assert.match(orders, /asp-controller="Invoices" asp-action="Index"/);
+    assert.match(invoicePage, /asp-route-paper="80mm"/);
+    assert.match(invoicePage, /asp-route-paper="a4"/);
     assert.match(project, /System\.Security\.Cryptography\.Xml" Version="10\.0\.13"/);
     assert.match(read("src/IbdaaAtelier.Web/Reports/DataSets/InvoiceDataSet.xsd"), /name="ShopEmail"/);
 });

@@ -49,6 +49,7 @@ db.ShopSettings.Add(new ShopSettings
 {
     BusinessName = "Integration Test Atelier",
     BusinessNameAr = "مشغل اختبار",
+    ReceiptFooter = "Thank you from TEST shop",
     RequireRegisterOpen = true
 });
 await db.SaveChangesAsync();
@@ -133,8 +134,16 @@ Check(await db.Orders.CountAsync() == 1 && await db.OrderItems.CountAsync() == 2
     "Order retry changed persisted item count.");
 Check(await db.OrderItemMeasurements.CountAsync() == 1,
     "Item-specific measurement snapshot is missing.");
-Check(await db.OrderInvoiceSnapshots.AnyAsync(s => s.OrderId == saved.OrderId),
-    "Invoice branding snapshot is missing.");
+Check(await db.OrderInvoiceSnapshots.AnyAsync(s =>
+    s.OrderId == saved.OrderId && s.ReceiptFooter == "Thank you from TEST shop"),
+    "Invoice branding and thank-you message snapshot is missing.");
+
+var changedSettings = await db.ShopSettings.SingleAsync();
+changedSettings.ReceiptFooter = "Later settings message";
+await db.SaveChangesAsync();
+Check(await db.OrderInvoiceSnapshots.AnyAsync(s =>
+    s.OrderId == saved.OrderId && s.ReceiptFooter == "Thank you from TEST shop"),
+    "Updating settings modified an existing invoice footer.");
 
 await ExpectFailureAsync<InvalidOperationException>(async () =>
 {
