@@ -7,6 +7,7 @@ namespace IbdaaAtelier.Web.Models.Orders;
 public sealed class Order
 {
     [Key] public long OrderId { get; set; }
+    [NotMapped] public string OrderNumber => OrderId.ToString(System.Globalization.CultureInfo.InvariantCulture);
     public long RequestId { get; set; }
     public long CustomerId { get; set; }
     public int CreatedByUserId { get; set; }
