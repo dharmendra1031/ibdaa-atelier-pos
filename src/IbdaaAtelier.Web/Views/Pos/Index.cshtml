@@ -339,12 +339,8 @@
         <button type="button" data-pos-method="Split" class="btn btn-outline-primary" aria-pressed="false">Split</button>
     </div>
     <div id="posSinglePayment">
-        <label for="posPaymentAmount" class="form-label">@(ar ? "مبلغ الدفع" : "Payment Amount (KWD)")</label>
+        <label for="posPaymentAmount" id="posPaymentAmountLabel" class="form-label">@(ar ? "النقد المستلم (د.ك)" : "Cash Received (KWD)")</label>
         <input id="posPaymentAmount" class="form-control mb-2" inputmode="decimal" autocomplete="off" placeholder="0.000" />
-        <div id="posCashReceivedRow">
-            <label for="posCashReceived" class="form-label">@(ar ? "النقد المستلم" : "Cash Received (KWD)")</label>
-            <input id="posCashReceived" class="form-control mb-2" inputmode="decimal" autocomplete="off" placeholder="0.000" />
-        </div>
     </div>
     <div id="posSplitPayment" hidden>
         <div class="row g-2">
