@@ -6,9 +6,9 @@ const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8"
 const controller = read("src/IbdaaAtelier.Web/Controllers/PosController.cs");
 const view = read("src/IbdaaAtelier.Web/Views/Pos/Index.cshtml");
 const pos = read("src/IbdaaAtelier.Web/wwwroot/js/pos.js");
+const lookup = controller.split("public async Task<IActionResult> FindInvoice")[1].split("[HttpPost")[0];
 
 test("cashier can find an existing invoice by its saved number", () => {
-    const lookup = controller.split("public async Task<IActionResult> FindInvoice")[1].split("[HttpPost")[0];
     assert.match(controller, /Authorize\(Roles = "Cashier"\)/);
     assert.match(lookup, /o\.OrderId == invoiceId/);
     assert.match(lookup, /db\.OrderItems\.AsNoTracking\(\)/);
