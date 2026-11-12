@@ -69,6 +69,30 @@ FROM (VALUES
 JOIN dbo.ProductCategories category ON category.Name = item.CategoryName
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Products existing WHERE existing.NameAr = item.NameAr);
 
+-- Historic measurement rows remain for existing invoices, but must not appear in new gents sales.
+UPDATE definition SET IsActive = 0
+FROM dbo.MeasurementDefinitions definition
+JOIN dbo.ProductCategories category ON category.CategoryId = definition.CategoryId
+WHERE definition.IsRequired = 1
+  AND category.Name IN (N'Abayas', N'Dresses', N'Jalabiyas')
+  AND definition.Name IN (N'Bust', N'Waist', N'Hips', N'Length')
+  AND definition.NameAr IN (N'الصدر', N'الخصر', N'الأرداف', N'الطول');
+
+INSERT dbo.MeasurementDefinitions (CategoryId, Name, NameAr, Unit, IsRequired, DisplayOrder)
+SELECT category.CategoryId, field.Name, field.NameAr, N'cm', 0, field.SortOrder
+FROM dbo.ProductCategories category
+CROSS JOIN (VALUES
+    (N'Chest', N'الصدر', 1),
+    (N'Shoulder', N'الكتف', 2),
+    (N'Sleeve Length', N'طول الكم', 3),
+    (N'Total Length', N'الطول الكلي', 4)
+) field(Name, NameAr, SortOrder)
+WHERE category.Name IN (N'Gandouras', N'Kaftans', N'Jabadors', N'Jalabiyas')
+  AND NOT EXISTS (
+      SELECT 1 FROM dbo.MeasurementDefinitions existing
+      WHERE existing.CategoryId = category.CategoryId AND existing.Name = field.Name
+  );
+
 -- Old ladies-only categories disappear from POS if they have no active products.
 UPDATE category SET IsActive = 0
 FROM dbo.ProductCategories category
