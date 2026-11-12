@@ -175,7 +175,7 @@
     function showInvoice(invoice) {
         boundInvoiceId = invoice.orderId;
         boundInvoiceBalance = invoice.balance;
-        invoiceNumberView.textContent = invoice.orderNumber;
+        invoiceNumberView.textContent = String(invoice.orderId);
         document.getElementById("boundInvoiceCustomer").textContent =
             arabic ? invoice.customerNameAr || invoice.customerName : invoice.customerName;
         document.getElementById("boundInvoiceMobile").textContent = invoice.customerMobile;
@@ -751,7 +751,7 @@
             });
             savedOrder = data;
             completed = true;
-            invoiceNumberView.textContent = data.orderNumber;
+            invoiceNumberView.textContent = String(data.orderId);
             if (discountInput) discountInput.disabled = true;
             try { sessionStorage.removeItem(pendingKey); } catch { /* In-memory fallback. */ }
             rememberCheckout();
@@ -959,7 +959,7 @@
         paymentError.textContent = "";
         try {
             const order = boundInvoiceId ? { orderId: boundInvoiceId,
-                orderNumber: invoiceNumberView.textContent } : await saveOrder();
+                orderId: boundInvoiceId } : await saveOrder();
             if (!paymentPayload) {
                 if (!paymentRequestId) {
                     const prepared = await getJson(shell.dataset.paymentPrepareUrl, {
@@ -979,7 +979,7 @@
                 body: JSON.stringify(paymentPayload)
             });
             paymentDialog.close();
-            finishSale(order.orderId, tab, order.orderNumber + " · " +
+            finishSale(order.orderId, tab, order.orderId + " · " +
                 text(result.balance > 0 ? "Partially paid" : "Paid",
                     result.balance > 0 ? "مدفوع جزئياً" : "مدفوع"), !!boundInvoiceId);
         } catch (error) {
@@ -1004,7 +1004,7 @@
         try {
             const order = await saveOrder();
             finishSale(order.orderId, tab, text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
-                order.orderNumber);
+                order.orderId);
         } catch (error) {
             if (tab && !tab.closed) tab.close();
             notice(error instanceof TypeError
@@ -1016,9 +1016,9 @@
 
     setPaidMode(paidMode);
     if (savedOrder) {
-        invoiceNumberView.textContent = savedOrder.orderNumber;
+        invoiceNumberView.textContent = String(savedOrder.orderId);
         notice(text("Payment pending for ", "الدفع معلق للفاتورة ") +
-            savedOrder.orderNumber + text(". Click PAID to retry.", ". اضغط PAID لإعادة المحاولة."), true);
+            savedOrder.orderId + text(". Click PAID to retry.", ". اضغط PAID لإعادة المحاولة."), true);
     } else if (recoveryInvoiceNumber) {
         invoiceInput.value = recoveryInvoiceNumber;
         getJson(shell.dataset.invoiceUrl + "?number=" + encodeURIComponent(recoveryInvoiceNumber))
