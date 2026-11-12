@@ -21,6 +21,7 @@
      data-product-url="@Url.Action("Product", "Pos")"
      data-customer-url="@Url.Action("FindCustomers", "Pos")"
      data-customer-create-url="@Url.Action("QuickCreate", "Customers")"
+     data-invoice-url="@Url.Action("FindInvoice", "Pos")"
      data-payment-url="@Url.Action("Take", "Payments")"
      data-reserve-url="@Url.Action("Reserve", "Pos")"
      data-save-url="@Url.Action("Save", "Pos")"
@@ -190,9 +191,19 @@
                     <h2 class="h5 mb-0 pos-order-heading"><svg class="pos-cart-heading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 3h2l2.5 12h12l2-9H5"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg> @(ar ? "عناصر السلة" : "Cart Items") (<span id="cartCount">0</span>)</h2>
                     <span class="pos-order-number" aria-live="polite">
                         <span>@(ar ? "فاتورة" : "Invoice")</span>
-                        <strong id="nextOrderNumber">@Model.NextOrderNumber.Replace("IA-", "NO-")</strong>
+                        <strong id="nextOrderNumber">@Model.NextOrderNumber</strong>
                     </span>
                 </div>
+                <form id="findInvoiceForm" class="d-flex align-items-end gap-2 mb-2" role="search">
+                    <div class="flex-grow-1">
+                        <label for="findInvoiceNumber" class="form-label">@(ar ? "البحث عن فاتورة" : "Find Invoice")</label>
+                        <input id="findInvoiceNumber" type="search" class="form-control" maxlength="24"
+                               autocomplete="off" placeholder="IA-105" required />
+                    </div>
+                    <button id="findInvoiceButton" type="submit" class="btn btn-outline-primary">@(ar ? "بحث" : "Find")</button>
+                </form>
+                <p id="findInvoiceMessage" class="small text-secondary mb-2" role="status" aria-live="polite"></p>
+                <div id="newOrderCart">
                 <form id="posCheckoutForm" asp-controller="Pos" asp-action="Save" method="post"
                       asp-antiforgery="true" class="pos-customer-form">
                     <div class="pos-customer-searches">
@@ -257,6 +268,48 @@
                     </a>
                     <button type="button" id="newOrderButton" class="btn btn-outline-secondary w-100 mt-2" hidden>@(ar ? "طلب جديد" : "Start another order")</button>
                     </div>
+                </div>
+                <section id="boundInvoice" hidden aria-label="@(ar ? "الفاتورة المحفوظة" : "Saved invoice")">
+                    <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+                        <strong id="boundInvoiceCustomer"></strong>
+                        <span id="boundInvoiceStatus" class="badge text-bg-light border text-dark"></span>
+                    </div>
+                    <p id="boundInvoiceMobile" class="small text-secondary mb-3"></p>
+                    <div class="pos-cart-columns" aria-hidden="true">
+                        <span>@(ar ? "العنصر" : "Item")</span>
+                        <span>@(ar ? "الكمية" : "Qty")</span>
+                        <span>@(ar ? "سعر الوحدة" : "Unit price")</span>
+                        <span>@(ar ? "المجموع" : "Total")</span>
+                        <span></span>
+                    </div>
+                    <div id="boundInvoiceItems" class="pos-cart"></div>
+                    <hr />
+                    <div class="d-flex justify-content-between small mb-2">
+                        <span>@(ar ? "المجموع الفرعي" : "Subtotal")</span>
+                        <span id="boundInvoiceSubtotal"></span>
+                    </div>
+                    <div id="boundInvoiceDiscountRow" class="d-flex justify-content-between small mb-2" hidden>
+                        <span>@(ar ? "خصم الطلب" : "Order discount")</span>
+                        <span id="boundInvoiceDiscount"></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>@(ar ? "المجموع" : "Total")</span>
+                        <strong id="boundInvoiceTotal"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-2">
+                        <span>@(ar ? "المدفوع" : "Paid")</span>
+                        <span id="boundInvoicePaid"></span>
+                    </div>
+                    <div class="pos-total-summary d-flex justify-content-between mb-3">
+                        <span>@(ar ? "المتبقي" : "Balance due")</span>
+                        <strong id="boundInvoiceBalance"></strong>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a id="boundInvoicePayment" class="btn btn-primary">@(ar ? "استلام الدفعة" : "Receive Balance")</a>
+                        <a id="boundInvoiceDetails" class="btn btn-outline-primary">@(ar ? "عرض الفاتورة والطباعة" : "View invoice / Print")</a>
+                        <button id="closeInvoiceButton" type="button" class="btn btn-outline-secondary">@(ar ? "العودة إلى الطلب الجديد" : "Back to new order")</button>
+                    </div>
+                </section>
             </div>
         </section>
     </div>
