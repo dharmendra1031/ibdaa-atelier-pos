@@ -15,7 +15,8 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
 {
     [HttpGet]
     public async Task<IActionResult> Index(int? categoryId, string? search, int page = 1,
-        string? serviceSearch = null, int servicePage = 1, bool services = false, CancellationToken ct = default)
+        string? serviceSearch = null, int? serviceCategoryId = null, int servicePage = 1,
+        bool services = false, CancellationToken ct = default)
     {
         search = search?.Trim() ?? "";
         if (search.Length > 100) search = search[..100];
@@ -39,6 +40,8 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
         var serviceQuery = db.AlterationServices.AsNoTracking()
             .Where(s => s.IsActive && db.ServiceCategories.Any(c =>
                 c.ServiceCategoryId == s.ServiceCategoryId && c.IsActive));
+        if (serviceCategoryId is > 0)
+            serviceQuery = serviceQuery.Where(s => s.ServiceCategoryId == serviceCategoryId);
         if (serviceSearch.Length > 0)
             serviceQuery = serviceQuery.Where(s => s.Name.Contains(serviceSearch) ||
                 s.NameAr.Contains(serviceSearch));
@@ -63,7 +66,10 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
                 .Where(c => c.IsActive).OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name).ToListAsync(ct),
             Services = await serviceQuery.OrderBy(s => s.Name).ThenBy(s => s.ServiceId)
                 .Skip((servicePage - 1) * 24).Take(24).ToListAsync(ct),
+            ServiceCategories = await db.ServiceCategories.AsNoTracking()
+                .Where(c => c.IsActive).OrderBy(c => c.ServiceCategoryId).ToListAsync(ct),
             ServiceSearch = serviceSearch,
+            ServiceCategoryId = serviceCategoryId,
             ServicePage = servicePage,
             ServiceTotalPages = serviceTotalPages,
             ShowServices = services,

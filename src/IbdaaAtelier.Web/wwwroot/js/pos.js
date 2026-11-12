@@ -562,7 +562,10 @@
             });
             completed = true;
             const nextOrderNumber = document.getElementById("nextOrderNumber");
-            if (nextOrderNumber) nextOrderNumber.textContent = data.orderNumber;
+            if (nextOrderNumber) {
+                const number = /^IA-(\d+)$/.exec(nextOrderNumber.textContent.trim());
+                if (number) nextOrderNumber.textContent = "IA-" + (Number(number[1]) + 1);
+            }
             try {
                 sessionStorage.removeItem(pendingKey);
                 sessionStorage.removeItem(cartKey);

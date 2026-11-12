@@ -125,9 +125,21 @@
             </nav>
         }
         </div>
-        <section id="catalogueServices" class="mt-3" hidden>
+        <section id="catalogueServices" class="pos-service-layout" hidden>
+            <nav class="pos-service-categories" aria-label="@(ar ? "فئات الخدمات" : "Alteration categories")">
+                <a asp-action="Index" asp-route-services="true" asp-route-serviceSearch="@Model.ServiceSearch"
+                   class="pos-category @(Model.ServiceCategoryId == null ? "active" : "")">@(ar ? "كل الخدمات" : "All Services")</a>
+                @foreach (var category in Model.ServiceCategories)
+                {
+                    <a asp-action="Index" asp-route-services="true" asp-route-serviceCategoryId="@category.ServiceCategoryId"
+                       asp-route-serviceSearch="@Model.ServiceSearch"
+                       class="pos-category @(Model.ServiceCategoryId == category.ServiceCategoryId ? "active" : "")">@(ar ? category.NameAr : category.Name)</a>
+                }
+            </nav>
+            <div class="pos-service-results">
             <form asp-action="Index" method="get" class="d-flex gap-2 mb-3" role="search">
                 <input type="hidden" name="services" value="true" />
+                <input type="hidden" name="serviceCategoryId" value="@Model.ServiceCategoryId" />
                 <input type="hidden" name="categoryId" value="@Model.CategoryId" />
                 <input type="hidden" name="search" value="@Model.Search" />
                 <label class="visually-hidden" for="serviceSearch">@(ar ? "البحث عن خدمة" : "Search alterations")</label>
@@ -136,17 +148,28 @@
                        placeholder="@(ar ? "اسم خدمة التعديل" : "Find alteration service")" />
                 <button class="btn btn-primary" type="submit">@(ar ? "بحث" : "Search")</button>
             </form>
-            <div class="row row-cols-1 row-cols-sm-2 g-2">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-xxl-4 g-2 pos-service-grid">
                 @foreach (var service in Model.Services)
                 {
+                    var photoClass = service.Name switch
+                    {
+                        "Dress hem" => "pos-service-photo-1",
+                        "Abaya hem" => "pos-service-photo-2",
+                        "Waist adjustment" => "pos-service-photo-3",
+                        "Sleeve adjustment" => "pos-service-photo-4",
+                        "Zip replacement" => "pos-service-photo-5",
+                        "Seam repair" => "pos-service-photo-6",
+                        _ => "pos-service-photo-default"
+                    };
                     <div class="col">
-                        <button type="button" class="btn btn-outline-primary w-100 text-start pos-service"
+                        <button type="button" class="card pos-service w-100 h-100 text-start"
                                 data-service-id="@service.ServiceId"
                                 data-name="@service.Name" data-name-ar="@service.NameAr"
                                 data-price="@service.Price.ToString("0.000", CultureInfo.InvariantCulture)">
-                            <span class="d-flex justify-content-between align-items-center gap-2">
-                                <span>@(ar ? service.NameAr : service.Name)</span>
-                                <strong class="text-nowrap">@service.Price.ToString("0.000", CultureInfo.InvariantCulture)</strong>
+                            <span class="pos-service-photo @photoClass" aria-hidden="true"></span>
+                            <span class="pos-service-card-body">
+                                <strong>@(ar ? service.NameAr : service.Name)</strong>
+                                <small>@service.Price.ToString("0.000", CultureInfo.InvariantCulture) KWD</small>
                             </span>
                         </button>
                     </div>
@@ -165,17 +188,18 @@
                         {
                             <a asp-action="Index" asp-route-services="true" asp-route-serviceSearch="@Model.ServiceSearch"
                                asp-route-servicePage="@(Model.ServicePage - 1)" asp-route-search="@Model.Search"
-                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "السابق" : "Previous")</a>
+                               asp-route-categoryId="@Model.CategoryId" asp-route-serviceCategoryId="@Model.ServiceCategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "السابق" : "Previous")</a>
                         }
                         @if (Model.ServicePage < Model.ServiceTotalPages)
                         {
                             <a asp-action="Index" asp-route-services="true" asp-route-serviceSearch="@Model.ServiceSearch"
                                asp-route-servicePage="@(Model.ServicePage + 1)" asp-route-search="@Model.Search"
-                               asp-route-categoryId="@Model.CategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "التالي" : "Next")</a>
+                               asp-route-categoryId="@Model.CategoryId" asp-route-serviceCategoryId="@Model.ServiceCategoryId" class="btn btn-outline-primary btn-sm">@(ar ? "التالي" : "Next")</a>
                         }
                     </div>
                 </nav>
             }
+            </div>
         </section>
     </div>
 

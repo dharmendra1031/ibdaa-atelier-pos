@@ -1176,6 +1176,35 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     color: #6b4250; font-size: 27px; line-height: 1; pointer-events: none;
 }
 .pos-app-layout #catalogSearch { padding-inline-start: 42px; }
+
+.pos-service-layout { display: grid; gap: 10px; }
+.pos-service-layout[hidden] { display: none !important; }
+.pos-service-categories { display: flex; gap: 7px; overflow-x: auto; }
+.pos-service-categories .pos-category { white-space: nowrap; background: #fff; }
+.pos-service-results { min-width: 0; }
+.pos-service-results > form { padding: 6px; background: #fff; border: 1px solid var(--atelier-border); border-radius: 12px; }
+.pos-app-layout .pos-service { padding: 0 !important; overflow: hidden; border: 1px solid #e6d9d3; border-radius: 12px; background: #fff; color: #33262b; cursor: pointer; }
+.pos-app-layout .pos-service:hover { border-color: #a4566f; box-shadow: 0 8px 20px rgb(100 30 55 / 12%); }
+.pos-service-photo {
+    display: block; width: 100%; height: clamp(108px, 18dvh, 165px);
+    background-image: url('/images/alteration-service-tiles.png');
+    background-size: 300% 200%; background-repeat: no-repeat;
+}
+.pos-service-photo-1 { background-position: 0 0; }
+.pos-service-photo-2 { background-position: 50% 0; }
+.pos-service-photo-3 { background-position: 100% 0; }
+.pos-service-photo-4 { background-position: 0 100%; }
+.pos-service-photo-5 { background-position: 50% 100%; }
+.pos-service-photo-6 { background-position: 100% 100%; }
+.pos-service-photo-default { background-position: 50% 50%; }
+.pos-service-card-body { display: flex; flex-direction: column; min-height: 64px; padding: 8px 10px; }
+.pos-service-card-body strong { font-size: 13px; line-height: 1.25; }
+.pos-service-card-body small { margin-top: auto; padding-top: 5px; color: #862344; font-size: 11px; font-weight: 700; }
+@media (min-width: 1200px) {
+    .pos-service-layout { grid-template-columns: 185px minmax(0, 1fr); }
+    .pos-service-categories { flex-direction: column; overflow: visible; }
+    .pos-service-categories .pos-category { padding: 10px 11px; white-space: normal; border-radius: 11px; font-weight: 600; }
+}
 @media (max-width: 1499.98px) {
     .pos-cart-columns { display: none; }
     .pos-cart-item { grid-template-columns: minmax(0, 1fr) auto auto; }
