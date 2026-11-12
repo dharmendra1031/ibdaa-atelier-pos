@@ -417,7 +417,7 @@ Permissions should be configurable for module access, discounts, order editing, 
 
 - Currency (default KWD), measurement unit (default cm), date/time and language settings.
 
-- Invoice/order number prefixes and invoice footer/terms.
+- Numeric invoice ID (existing auto-increment order ID) and invoice footer/terms; no invoice prefix.
 
 - Default delivery settings and configurable payment methods/order statuses.
 
@@ -636,7 +636,7 @@ The database design should include, at minimum, the following logical entities. 
 
 - Documented restore procedure.
 
-- Unique order and invoice numbers.
+- One unique numeric invoice number equal to the auto-increment order ID.
 
 - Preserve historical transaction details and measurement snapshots.
 
