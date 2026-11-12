@@ -149,8 +149,13 @@
         document.getElementById("boundInvoiceCustomer").textContent =
             arabic ? invoice.customerNameAr || invoice.customerName : invoice.customerName;
         document.getElementById("boundInvoiceMobile").textContent = invoice.customerMobile;
+        document.getElementById("boundInvoiceDelivery").textContent =
+            text("Delivery: ", "التسليم: ") + String(invoice.deliveryDate).split("-").reverse().join("-");
+        document.getElementById("boundOrderStatus").textContent =
+            text("Order: ", "الطلب: ") + invoice.status;
         document.getElementById("boundInvoiceStatus").textContent =
             invoice.status === "Cancelled" ? text("CANCELLED", "ملغى") :
+            invoice.total <= 0 ? text("NO PAYMENT DUE", "لا يوجد مبلغ مستحق") :
             invoice.balance <= 0 ? text("PAID", "مدفوع") :
             invoice.paid > 0 ? text("PARTIALLY PAID", "مدفوع جزئياً") : text("UNPAID", "غير مدفوع");
 
