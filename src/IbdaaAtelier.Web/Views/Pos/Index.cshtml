@@ -133,22 +133,12 @@
             <div class="row row-cols-2 row-cols-md-3 row-cols-xxl-4 g-2 pos-service-grid">
                 @foreach (var service in Model.Services)
                 {
-                    var photoClass = service.Name switch
-                    {
-                        "Dress hem" => "pos-service-photo-1",
-                        "Abaya hem" => "pos-service-photo-2",
-                        "Waist adjustment" => "pos-service-photo-3",
-                        "Sleeve adjustment" => "pos-service-photo-4",
-                        "Zip replacement" => "pos-service-photo-5",
-                        "Seam repair" => "pos-service-photo-6",
-                        _ => "pos-service-photo-default"
-                    };
                     <div class="col">
                         <button type="button" class="card pos-service w-100 h-100 text-start"
                                 data-service-id="@service.ServiceId"
                                 data-name="@service.Name" data-name-ar="@service.NameAr"
                                 data-price="@service.Price.ToString("0.000", CultureInfo.InvariantCulture)">
-                            <span class="pos-service-photo @photoClass" aria-hidden="true"></span>
+                            <span class="pos-service-photo" aria-hidden="true">✂</span>
                             <span class="pos-service-card-body">
                                 <strong>@(ar ? service.NameAr : service.Name)</strong>
                                 <small>@service.Price.ToString("0.000", CultureInfo.InvariantCulture) KWD</small>
