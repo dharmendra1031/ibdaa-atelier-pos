@@ -177,12 +177,7 @@
     <div class="col-lg-5">
         <section class="card filter-card pos-checkout">
             <div class="card-body p-3 p-md-4">
-                <h2 class="h5 mb-3 pos-order-heading">@(ar ? "الطلب الحالي" : "Current order")</h2>
-
-                    <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                        <h3 class="h6 mb-0">@(ar ? "العناصر" : "Items")</h3>
-                        <span id="cartCount" class="small text-secondary">0</span>
-                    </div>
+                <h2 class="h5 mb-3 pos-order-heading">@(ar ? "عناصر السلة" : "Cart Items") (<span id="cartCount">0</span>)</h2>
                     <div id="orderCart" class="pos-cart" aria-live="polite">
                         <p class="pos-empty-cart">@(ar ? "اختر العميل ثم اضغط على المنتج لإضافته." : "Choose a customer, then tap a product to add it.")</p>
                     </div>

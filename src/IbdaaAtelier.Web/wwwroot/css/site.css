@@ -1086,3 +1086,21 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-customer-bar .pos-order-preview { grid-column: 1; }
 }
 
+/* POS reference proportions: wide customer strip above catalogue and cart. */
+@media (min-width: 1200px) {
+    .pos-page .site-header .container-xxl,
+    .pos-page .app-layout { max-width: none; }
+    .pos-page .site-header .container-xxl { padding-inline: 28px; }
+    .pos-page .app-layout { padding-inline: 20px; }
+    .pos-page .app-workspace, .pos-page .page-shell { width: 100%; max-width: none; }
+    .pos-page .site-header { min-height: 88px; display: flex; align-items: center; }
+    .pos-page .site-header .brand-copy { font-size: 1.25rem; }
+    .pos-page .workspace-header-title { font-size: 1.8rem; }
+    .pos-app-layout .pos-shell > .col-lg-7 { width: 54%; flex-basis: 54%; max-width: 54%; }
+    .pos-app-layout .pos-shell > .col-lg-5 { width: 46%; flex-basis: 46%; max-width: 46%; }
+    .pos-app-layout #catalogueProducts { grid-template-columns: 185px minmax(0, 1fr); }
+    .pos-app-layout .pos-customer-bar { padding: 18px 22px; }
+    .pos-app-layout .pos-checkout { min-height: min(720px, calc(100dvh - 225px)); }
+    .pos-app-layout .pos-checkout .card-body { padding: 24px !important; }
+}
+
