@@ -21,7 +21,6 @@ CREATE INDEX IX_OrderRequests_User ON dbo.OrderRequests(UserId, CreatedAtUtc DES
 CREATE TABLE dbo.Orders
 (
     OrderId BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Orders PRIMARY KEY,
-    OrderNumber AS ('IA-' + CONVERT(VARCHAR(20), OrderId)) PERSISTED,
     RequestId BIGINT NOT NULL REFERENCES dbo.OrderRequests(RequestId),
     CustomerId BIGINT NOT NULL REFERENCES dbo.Customers(CustomerId),
     CreatedByUserId INT NOT NULL REFERENCES dbo.Users(UserId),
@@ -37,7 +36,6 @@ CREATE TABLE dbo.Orders
         (N'New', N'Confirmed', N'In Processing', N'Ready for Delivery', N'Delivered', N'Cancelled'))
 );
 CREATE UNIQUE INDEX UX_Orders_RequestId ON dbo.Orders(RequestId);
-CREATE UNIQUE INDEX UX_Orders_Number ON dbo.Orders(OrderNumber);
 CREATE INDEX IX_Orders_Customer ON dbo.Orders(CustomerId, CreatedAtUtc DESC);
 CREATE INDEX IX_Orders_Delivery ON dbo.Orders(DeliveryDate, Status);
 
