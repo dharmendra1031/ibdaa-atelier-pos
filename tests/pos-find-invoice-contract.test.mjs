@@ -33,8 +33,8 @@ test("invoice binding stays in the cart and never creates or edits an order", ()
 });
 
 test("returning invoice uses the original payment and print routes", () => {
-    assert.match(pos, /receive\.href = shell\.dataset\.paymentUrl \+ id/);
-    assert.match(pos, /receive\.hidden = invoice\.balance <= 0 \|\| invoice\.status === "Cancelled"/);
+    assert.match(pos, /receive\.hidden = \(invoice\.balance <= 0 && !paymentPayload\) \|\| invoice\.status === "Cancelled"/);
+    assert.match(pos, /boundInvoiceBalance = invoice\.balance/);
     assert.match(view, /id="boundInvoicePayment"/);
     assert.match(pos, /getElementById\("boundInvoicePayment"\)\.addEventListener\("click", openPaymentDialog\)/);
     assert.match(view, /data-payment-prepare-url=/);
