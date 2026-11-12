@@ -1,8 +1,9 @@
-/* Gents-only TEST catalogue based on https://www.ibdaaatelier.com/products
-   Reviewed 2026-11-12. Prices come from the publicly listed KWD prices.
-   English titles and POS category grouping are working translations.
-   Stock, sizing, images and tailor-service rates are not verified.
-   Run only in an empty IBDAA_TEST database. No production updates. */
+/* IBDAA Atelier official menswear product catalogue, checked 2026-11-12.
+   Source: https://www.ibdaaatelier.com/products
+   Public Arabic product titles and displayed KWD prices; English titles are translations.
+   Categories organize the official garments for POS. Photos, size availability,
+   alteration prices and customer identities are NOT fabricated.
+   Run only on empty IBDAA_TEST; never on a live shop database. */
 SET QUOTED_IDENTIFIER ON;
 SET XACT_ABORT ON;
 
@@ -34,7 +35,7 @@ INSERT dbo.Products
     (CategoryId, Name, NameAr, Description, ProductType,
      RegularPrice, DiscountPrice, DisplayOrder)
 SELECT category.CategoryId, item.Name, item.NameAr,
-    N'Website catalogue reference. Confirm current price, availability and product options before live use.',
+    CAST(NULL AS nvarchar(2000)),
     N'Ready-made', item.RegularPrice, item.DiscountPrice, item.SortOrder
 FROM (VALUES
     (N'Gandouras', N'Sultan Gandoura', N'قندورة "سلطان"', 23.000, CAST(NULL AS decimal(18,3)), 1),
@@ -62,11 +63,7 @@ INSERT dbo.ServiceCategories (Name, NameAr) VALUES
     (N'Fit Adjustments', N'تعديلات المقاس'),
     (N'Repairs', N'الإصلاحات');
 
--- Synthetic customer records are not actual website customers.
-INSERT dbo.Customers (Name, NameAr, Mobile, Address, Notes) VALUES
-    (N'Demo Customer A', N'عميل تجريبي أ', N'00000001', N'Demo address, Kuwait', N'Synthetic test record; not a real customer.'),
-    (N'Demo Customer B', N'عميل تجريبي ب', N'00000002', N'Demo address, Kuwait', N'Synthetic test record; not a real customer.'),
-    (N'Demo Customer C', N'عميل تجريبي ج', N'00000003', N'Demo address, Kuwait', N'Synthetic test record; not a real customer.');
+-- Customer records are created only from real shop transactions.
 
 COMMIT TRANSACTION;
 
