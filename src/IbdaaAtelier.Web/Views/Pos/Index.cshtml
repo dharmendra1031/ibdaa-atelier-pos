@@ -190,20 +190,18 @@
             <div class="card-body p-3 p-md-4">
                 <div class="pos-cart-header">
                     <h2 class="h5 mb-0 pos-order-heading"><svg class="pos-cart-heading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 3h2l2.5 12h12l2-9H5"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg> @(ar ? "عناصر السلة" : "Cart Items") (<span id="cartCount">0</span>)</h2>
-                    <span class="pos-order-number" aria-live="polite">
-                        <span>@(ar ? "فاتورة" : "Invoice")</span>
-                        <strong id="nextOrderNumber">@Model.NextInvoiceNumber</strong>
-                    </span>
-                </div>
-                <form id="findInvoiceForm" class="d-flex align-items-end gap-2 mb-2" role="search">
-                    <div class="flex-grow-1">
-                        <label for="findInvoiceNumber" class="form-label">@(ar ? "البحث عن فاتورة" : "Find Invoice")</label>
-                        <input id="findInvoiceNumber" type="search" class="form-control" maxlength="20"
-                               inputmode="numeric" pattern="[0-9]+" autocomplete="off" placeholder="105" required />
+                    <div class="pos-cart-header-actions">
+                        <span class="pos-order-number" aria-live="polite">
+                            <span>@(ar ? "فاتورة" : "Invoice")</span>
+                            <strong id="nextOrderNumber">@Model.NextInvoiceNumber</strong>
+                        </span>
+                        <button id="openFindInvoice" type="button" class="btn btn-outline-primary btn-sm"
+                                aria-haspopup="dialog" aria-controls="findInvoiceDialog">@(ar ? "بحث عن فاتورة" : "Find Invoice")</button>
+                        <button id="closeInvoiceButton" type="button" class="btn btn-outline-secondary btn-sm" hidden>
+                            @(ar ? "فاتورة جديدة" : "New Bill")
+                        </button>
                     </div>
-                    <button id="findInvoiceButton" type="submit" class="btn btn-outline-primary">@(ar ? "بحث" : "Find")</button>
-                </form>
-                <p id="findInvoiceMessage" class="small text-secondary mb-2" role="status" aria-live="polite"></p>
+                </div>
                 <div id="newOrderCart">
                 <form id="posCheckoutForm" asp-controller="Pos" asp-action="Save" method="post"
                       asp-antiforgery="true" class="pos-customer-form">
@@ -272,11 +270,7 @@
                 <section id="boundInvoice" hidden aria-label="@(ar ? "الفاتورة المحفوظة" : "Saved invoice")">
                     <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
                         <strong id="boundInvoiceCustomer"></strong>
-                        <div class="d-flex align-items-center gap-2">
-                            <span id="boundInvoiceStatus" class="badge text-bg-light border text-dark"></span>
-                            <button id="closeInvoiceButton" class="btn btn-sm btn-outline-secondary" type="button"
-                                    aria-label="@(ar ? "إغلاق الفاتورة" : "Close invoice")">×</button>
-                        </div>
+                        <span id="boundInvoiceStatus" class="badge text-bg-light border text-dark"></span>
                     </div>
                     <p class="small text-secondary mb-3">
                         <span id="boundInvoiceMobile"></span>
@@ -322,6 +316,20 @@
     <span id="posToastText"></span>
     <button id="closePosToast" type="button" class="btn-close" aria-label="@(ar ? "إغلاق الرسالة" : "Dismiss message")"></button>
 </div>
+<dialog id="findInvoiceDialog" class="pos-dialog pos-find-invoice-dialog" aria-labelledby="findInvoiceTitle">
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+        <h2 id="findInvoiceTitle" class="h5 mb-0">@(ar ? "البحث عن فاتورة" : "Find Invoice")</h2>
+        <button id="cancelFindInvoice" type="button" class="btn btn-outline-secondary btn-sm"
+                aria-label="@(ar ? "إغلاق" : "Close")">×</button>
+    </div>
+    <form id="findInvoiceForm" role="search">
+        <label for="findInvoiceNumber" class="form-label">@(ar ? "رقم الفاتورة" : "Invoice Number")</label>
+        <input id="findInvoiceNumber" type="search" class="form-control" maxlength="20"
+               inputmode="numeric" pattern="[0-9]+" autocomplete="off" placeholder="105" required />
+        <p id="findInvoiceMessage" class="small text-secondary mt-2 mb-3" role="status" aria-live="polite"></p>
+        <button id="findInvoiceButton" type="submit" class="btn btn-primary w-100">@(ar ? "فتح الفاتورة" : "Open Invoice")</button>
+    </form>
+</dialog>
 <dialog id="posPaymentDialog" class="pos-dialog pos-payment-dialog" aria-labelledby="posPaymentTitle">
     <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
         <div><span class="eyebrow">@(ar ? "تحصيل الدفع" : "COLLECT PAYMENT")</span>
