@@ -10,8 +10,8 @@ test("invoice number is the numeric SQL identity, without a second sequence", ()
     const saved = read("src/IbdaaAtelier.Web/Models/Orders/OrderSaveForm.cs");
     assert.match(schema, /OrderId BIGINT IDENTITY\(1,1\)/);
     assert.doesNotMatch(schema, /OrderNumber|IA-|NO-/);
-    assert.match(order, /\\[NotMapped\\] public string OrderNumber => OrderId\\.ToString/);
-    assert.doesNotMatch(order, /public string OrderNumber \\{ get; set; \\}/);
+    assert.match(order, /\[NotMapped\] public string OrderNumber => OrderId\.ToString/);
+    assert.doesNotMatch(order, /public string OrderNumber \{ get; set; \}/);
     assert.match(saved, /record SavedOrder\(long OrderId, decimal Total, bool Replayed\)/);
 });
 
