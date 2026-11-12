@@ -11,10 +11,12 @@
     const customerSearch = document.getElementById("customerSearch");
     const customerResults = document.getElementById("customerResults");
     const customerLabel = document.getElementById("selectedCustomer");
+    const customerMobileDisplay = document.getElementById("customerMobileDisplay");
     const message = document.getElementById("posMessage");
     const toast = document.getElementById("posToast");
     const toastText = document.getElementById("posToastText");
     const saveButton = document.getElementById("saveOrderButton");
+    const clearCartButton = document.getElementById("clearCartButton");
     const newButton = document.getElementById("newOrderButton");
     const savedOrderLink = document.getElementById("savedOrderLink");
     const viewSavedOrderLink = document.getElementById("viewSavedOrderLink");
@@ -31,6 +33,7 @@
     const cartKey = "ibdaa.current-cart";
     let customerId = 0;
     let customerName = "";
+    let customerMobile = "";
     let items = [];
     let selectedProduct = null;
     let editingIndex = -1;
@@ -48,11 +51,13 @@
             items = saved.items;
             customerId = saved.customerId || 0;
             customerName = saved.customerName || "";
+            customerMobile = saved.customerMobile || "";
             if (saved.deliveryDate && saved.deliveryDate >= deliveryDate.min)
                 deliveryDate.value = saved.deliveryDate;
             if (customerId) {
                 customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
                 customerSearch.value = customerName;
+                customerMobileDisplay.textContent = customerMobile || text("Mobile number", "رقم الهاتف");
             }
         }
     } catch { /* In-memory fallback when browser storage is unavailable. */ }
@@ -102,7 +107,7 @@
 
     function persistCart() {
         try { sessionStorage.setItem(cartKey, JSON.stringify({
-            items, customerId, customerName, deliveryDate: deliveryDate.value
+            items, customerId, customerName, customerMobile, deliveryDate: deliveryDate.value
         })); }
         catch { /* Keep the current in-memory order. */ }
     }
@@ -128,15 +133,36 @@
         cartView.replaceChildren();
         cartCount.textContent = String(items.length);
         if (items.length === 0) {
-            cartView.append(element("p", "pos-empty-cart", text(
-                "Choose a customer, then tap a product to add it.",
-                "اختر العميل ثم اضغط على المنتج لإضافته.")));
+            cartView.append(element("p", "pos-empty-cart", customerId
+                ? text("Tap a product or alteration to add it.", "اضغط على منتج أو خدمة تعديل لإضافتها.")
+                : text("Choose a customer, then tap a product to add it.", "اختر العميل ثم اضغط على المنتج لإضافته.")));
         }
         items.forEach((line, index) => {
-            const row = element("div", "pos-cart-item border-bottom py-2");
-            const title = element("div", "d-flex justify-content-between gap-2");
-            title.append(element("strong", "", (arabic ? line.nameAr || line.name : line.name) + " × " + line.quantity));
-            const actions = element("div", "d-inline-flex gap-1");
+            const row = element("div", "pos-cart-item");
+            const item = element("div", "pos-cart-item-name");
+            item.append(element("strong", "", arabic ? line.nameAr || line.name : line.name));
+            const details = [line.sizeName, ...line.measurementLabels].filter(Boolean).join(" · ");
+            if (details) item.append(element("small", "d-block text-secondary", details));
+            row.append(item);
+
+            const quantity = element("div", "pos-cart-quantity");
+            const decrease = element("button", "", "−");
+            decrease.type = "button";
+            decrease.setAttribute("aria-label", text("Decrease quantity", "تقليل الكمية"));
+            decrease.disabled = saving || completed || line.quantity <= 1;
+            decrease.addEventListener("click", () => { line.quantity--; renderCart(); });
+            const count = element("span", "", String(line.quantity));
+            const increase = element("button", "", "+");
+            increase.type = "button";
+            increase.setAttribute("aria-label", text("Increase quantity", "زيادة الكمية"));
+            increase.disabled = saving || completed || line.quantity >= 100;
+            increase.addEventListener("click", () => { line.quantity++; renderCart(); });
+            quantity.append(decrease, count, increase);
+            row.append(quantity);
+            row.append(element("span", "pos-cart-unit-price", money(line.price)));
+            row.append(element("strong", "pos-cart-line-total", money(line.price * line.quantity)));
+
+            const actions = element("div", "pos-cart-actions");
             const edit = element("button", "btn btn-sm btn-outline-primary", text("Edit", "تعديل"));
             edit.type = "button";
             edit.addEventListener("click", () => {
@@ -153,17 +179,20 @@
                 renderCart();
             });
             actions.append(remove);
-            title.append(actions);
-            row.append(title);
-            const details = [line.sizeName, ...line.measurementLabels].filter(Boolean).join(" · ");
-            if (details) row.append(element("small", "d-block text-secondary", details));
-            row.append(element("small", "d-block product-pricing", money(line.price * line.quantity)));
+            row.append(actions);
             cartView.append(row);
         });
         totalView.textContent = money(items.reduce((sum, line) => sum + line.price * line.quantity, 0));
+        clearCartButton.disabled = saving || completed || items.length === 0;
         saveButton.disabled = saving || completed || !customerId || items.length === 0;
         persistCart();
     }
+
+    clearCartButton.addEventListener("click", () => {
+        if (saving || completed || items.length === 0) return;
+        items = [];
+        renderCart();
+    });
 
     deliveryDate.addEventListener("change", persistCart);
 
@@ -196,8 +225,10 @@
             items = [];
             customerId = customer.customerId;
             customerName = arabic ? customer.nameAr || customer.name : customer.name;
+            customerMobile = customer.mobile;
             customerSearch.value = customerName + " · " + customer.mobile;
             customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
+            customerMobileDisplay.textContent = customerMobile;
             customerResults.replaceChildren();
             quickCustomerDialog.close();
             renderCart();
@@ -227,6 +258,8 @@
         }
         customerId = 0;
         customerName = "";
+        customerMobile = "";
+        customerMobileDisplay.textContent = text("Mobile number", "رقم الهاتف");
         persistCart();
         customerLabel.textContent = text("No customer selected", "لم يتم اختيار عميل");
         saveButton.disabled = true;
@@ -255,8 +288,10 @@
                     if (saving || completed) return;
                     customerId = customer.customerId;
                     customerName = name;
+                    customerMobile = customer.mobile;
                     customerSearch.value = name + " · " + customer.mobile;
                     customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
+                    customerMobileDisplay.textContent = customerMobile;
                     persistCart();
                     customerAbort?.abort();
                     customerResults.replaceChildren();
@@ -500,6 +535,7 @@
             return;
         }
         saving = true;
+        clearCartButton.disabled = true;
         setBusy(saveButton, true, text("Processing order...", "جار معالجة الطلب..."));
         notice(text("Saving order...", "جار حفظ الطلب..."));
         try {
@@ -544,6 +580,7 @@
                 saveButton.disabled = true;
             } else {
                 saveButton.disabled = !customerId || items.length === 0;
+                clearCartButton.disabled = items.length === 0;
             }
         }
     });
