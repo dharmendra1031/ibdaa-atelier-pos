@@ -150,13 +150,21 @@
             decrease.type = "button";
             decrease.setAttribute("aria-label", text("Decrease quantity", "تقليل الكمية"));
             decrease.disabled = saving || completed || line.quantity <= 1;
-            decrease.addEventListener("click", () => { line.quantity--; renderCart(); });
+            decrease.addEventListener("click", () => {
+                if (saving || completed || line.quantity <= 1) return;
+                line.quantity--;
+                renderCart();
+            });
             const count = element("span", "", String(line.quantity));
             const increase = element("button", "", "+");
             increase.type = "button";
             increase.setAttribute("aria-label", text("Increase quantity", "زيادة الكمية"));
             increase.disabled = saving || completed || line.quantity >= 100;
-            increase.addEventListener("click", () => { line.quantity++; renderCart(); });
+            increase.addEventListener("click", () => {
+                if (saving || completed || line.quantity >= 100) return;
+                line.quantity++;
+                renderCart();
+            });
             quantity.append(decrease, count, increase);
             row.append(quantity);
             row.append(element("span", "pos-cart-unit-price", money(line.price)));
