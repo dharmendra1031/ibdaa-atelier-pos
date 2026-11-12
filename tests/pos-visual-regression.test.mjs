@@ -59,7 +59,7 @@ test("cart header shows customer search and actual saved invoice number", () => 
 
     assert.ok(checkout >= 0 && checkout < name && name < mobile && mobile < cart);
     assert.match(view, /class="pos-cart-header"[\s\S]*?id="cartCount"[\s\S]*?id="nextOrderNumber"/);
-    assert.match(view, /id="nextOrderNumber">—/);
+    assert.match(view, /id="nextOrderNumber">@Model.NextInvoiceNumber/);
     assert.match(view, /\? "فاتورة" : "Invoice"/);
     assert.doesNotMatch(view, /pos-customer-bar|pos-order-preview|customerMobileDisplay/);
     assert.match(js, /async function searchCustomers\(input\)/);
