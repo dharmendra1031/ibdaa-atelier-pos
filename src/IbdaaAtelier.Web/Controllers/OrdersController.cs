@@ -19,9 +19,13 @@ public sealed class OrdersController(AtelierDbContext db) : Controller
 
         var query = db.Orders.AsNoTracking();
         if (search.Length > 0)
-            query = query.Where(order => order.OrderNumber.Contains(search) ||
+        {
+            var invoiceId = search.All(char.IsAsciiDigit) && long.TryParse(search, out var id)
+                ? id : 0;
+            query = query.Where(order => (invoiceId > 0 && order.OrderId == invoiceId) ||
                 order.CustomerName.Contains(search) || order.CustomerNameAr.Contains(search) ||
                 order.CustomerMobile.Contains(search));
+        }
 
         var count = await query.CountAsync(ct);
         var totalPages = Math.Max(1, (count + 24) / 25);
