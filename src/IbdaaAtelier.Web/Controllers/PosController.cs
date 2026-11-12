@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IbdaaAtelier.Web.Controllers;
 
 [Authorize(Roles = "Cashier")]
-public sealed class PosController(AtelierDbContext db, PosOrderService orders) : Controller
+public sealed class PosController(AtelierDbContext db, PosOrderService orders, PaymentService payments) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(int? categoryId, string? search, int page = 1,
@@ -161,13 +161,7 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
             .OrderBy(i => i.OrderItemId)
             .Select(i => new { i.Name, i.NameAr, i.SizeName, i.Quantity, i.UnitPrice, i.LineTotal })
             .ToListAsync(ct);
-        var received = await db.OrderPayments.AsNoTracking()
-            .Where(p => p.OrderId == order.OrderId)
-            .SumAsync(p => (decimal?)p.Amount, ct) ?? 0m;
-        var refunded = await db.OrderRefunds.AsNoTracking()
-            .Where(r => r.OrderId == order.OrderId)
-            .SumAsync(r => (decimal?)r.Amount, ct) ?? 0m;
-        var paid = received - refunded;
+        var paid = await payments.GetPaidAsync(order.OrderId, ct);
 
         return Json(new
         {
