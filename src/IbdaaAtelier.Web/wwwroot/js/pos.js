@@ -684,13 +684,16 @@
         return requestId;
     }
 
-    form.addEventListener("submit", async event => {
-        event.preventDefault();
-        if (saving || completed || boundInvoiceId) return;
+    function orderTotal() {
+        const subtotal = items.reduce((sum, line) => sum + line.price * line.quantity, 0);
+        return Math.round((subtotal - Number(discountInput?.value || 0)) * 1000);
+    }
+
+    function validateOrder() {
         const date = deliveryDate.value;
         if (!customerId || items.length < 1 || !date) {
-            notice(text("Select a customer, delivery date and at least one item.", "اختر العميل وتاريخ التسليم وأضف عنصراً."), true);
-            return;
+            throw new Error(text("Select a customer, delivery date and at least one item.",
+                "اختر العميل وتاريخ التسليم وأضف عنصراً."));
         }
         const subtotal = items.reduce((sum, line) => sum + line.price * line.quantity, 0);
         const discountAmount = Number(discountInput?.value || 0);
@@ -698,11 +701,27 @@
             (discountInput.value.trim() !== "" &&
                 !/^(\d+(\.\d{1,3})?|\.\d{1,3})$/.test(discountInput.value.trim())) ||
             discountAmount > subtotal)) {
-            notice(text("Discount must be between zero and the subtotal with up to three decimals.",
-                "يجب أن يكون الخصم بين الصفر والمجموع الفرعي وبحد أقصى ثلاث منازل عشرية."), true);
-            discountInput.focus();
-            return;
+            throw new Error(text("Discount must be between zero and the subtotal with up to three decimals.",
+                "يجب أن يكون الخصم بين الصفر والمجموع الفرعي وبحد أقصى ثلاث منازل عشرية."));
         }
+        return { date, discountAmount };
+    }
+
+    function rememberCheckout() {
+        try {
+            if (savedOrder || paymentPayload) {
+                sessionStorage.setItem(checkoutKey, JSON.stringify({
+                    order: savedOrder, previousNumber: boundInvoiceId ? invoiceNumberView.textContent : null,
+                    requestId: paymentRequestId, payload: paymentPayload
+                }));
+            }
+        } catch { /* The current request remains available in memory. */ }
+    }
+
+    async function saveOrder() {
+        if (savedOrder) return savedOrder;
+        if (saving || completed || boundInvoiceId) throw new Error("An order is already being saved.");
+        const { date, discountAmount } = validateOrder();
         saving = true;
         clearCartButton.disabled = true;
         setBusy(saveButton, true, text("Processing order...", "جار معالجة الطلب..."));
@@ -721,44 +740,284 @@
                     }))
                 })
             });
+            savedOrder = data;
             completed = true;
+            invoiceNumberView.textContent = data.orderNumber;
             if (discountInput) discountInput.disabled = true;
-            const nextOrderNumber = document.getElementById("nextOrderNumber");
-            if (nextOrderNumber) {
-                const number = /^IA-(\d+)$/.exec(data.orderNumber);
-                if (number) nextOrderNumber.textContent = data.orderNumber;
-                newInvoiceNumber = nextOrderNumber.textContent;
-            }
-            try {
+            try { sessionStorage.removeItem(pendingKey); } catch { /* In-memory fallback. */ }
+            rememberCheckout();
+            return data;
+        } finally {
+            saving = false;
+            setBusy(saveButton, false);
+            saveButton.disabled = completed || !customerId || items.length === 0;
+            clearCartButton.disabled = completed || items.length === 0;
+        }
+    }
+
+    function openPrintTab() {
+        const tab = window.open("", "_blank");
+        if (tab) {
+            tab.document.title = "Preparing invoice";
+            tab.document.body.textContent = text("Preparing RDLC invoice...", "جار تجهيز الفاتورة...");
+        }
+        return tab;
+    }
+
+    function printInvoice(orderId, tab) {
+        if (!tab || tab.closed) return false;
+        tab.location.replace(shell.dataset.printUrl + "?id=" + encodeURIComponent(orderId) + "&paper=80mm");
+        return true;
+    }
+
+    function finishSale(orderId, tab, savedMessage, isPrevious = false) {
+        const printOpened = printInvoice(orderId, tab);
+        try {
+            sessionStorage.removeItem(checkoutKey);
+            if (!isPrevious) {
                 sessionStorage.removeItem(pendingKey);
                 sessionStorage.removeItem(cartKey);
-            } catch { /* Ignore storage restrictions. */ }
-            notice(text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
-                data.orderNumber + " · " + money(data.total), false, true);
-            const savedId = "?id=" + encodeURIComponent(data.orderId);
-            savedOrderLink.href = shell.dataset.paymentUrl + savedId;
-            viewSavedOrderLink.href = shell.dataset.orderUrl + savedId;
-            savedOrderLink.hidden = Number(data.total) <= 0;
-            viewSavedOrderLink.hidden = false;
-            newButton.hidden = false;
+            }
+            sessionStorage.setItem(lastSaleKey, savedMessage +
+                (printOpened ? "" : text(" · Print from Orders.", " · اطبع من الطلبات.")));
+        } catch { /* No financial change depends on browser storage. */ }
+        window.location.reload();
+    }
+
+    function setPaidMode(paid) {
+        paidMode = paid;
+        unpaidButton.className = paid ? "btn btn-outline-primary" : "btn btn-primary";
+        paidButton.className = paid ? "btn btn-primary" : "btn btn-outline-primary";
+        unpaidButton.setAttribute("aria-pressed", String(!paid));
+        paidButton.setAttribute("aria-pressed", String(paid));
+        saveButton.hidden = paid;
+        unpaidButton.disabled = completed || saving || paymentBusy;
+    }
+
+    const paymentInputs = ["posPaymentAmount", "posCashReceived", "posSplitCash",
+        "posSplitKnet", "posSplitWamd", "posSplitCashReceived"]
+        .map(id => document.getElementById(id));
+
+    function parseMills(value, required = false) {
+        const raw = String(value || "").trim();
+        if (!raw && !required) return 0;
+        if (!/^\d+(\.\d{1,3})?$/.test(raw)) throw new Error(text(
+            "Enter a valid KWD amount (up to three decimals).",
+            "أدخل مبلغاً صحيحاً بالدينار الكويتي حتى ثلاث منازل عشرية."));
+        const [whole, fraction = ""] = raw.split(".");
+        const mills = Number(whole) * 1000 + Number(fraction.padEnd(3, "0"));
+        if (!Number.isSafeInteger(mills)) throw new Error("Payment amount is too large.");
+        return mills;
+    }
+
+    function paymentDue() {
+        return Math.round(Number(boundInvoiceId ? boundInvoiceBalance :
+            savedOrder ? savedOrder.total : orderTotal() / 1000) * 1000);
+    }
+
+    function paymentLines() {
+        const due = paymentDue();
+        const lines = [];
+        const add = (method, amount, received = "") => {
+            const mills = parseMills(amount);
+            const tendered = method === "Cash" && received.trim()
+                ? parseMills(received) : mills;
+            if (tendered < mills) throw new Error(text(
+                "Cash received must be at least the cash payment amount.",
+                "يجب أن يكون النقد المستلم مساوياً أو أكبر من مبلغ الدفع النقدي."));
+            if (mills > 0) lines.push({
+                method, amount: mills / 1000,
+                ...(method === "Cash" ? { tendered: tendered / 1000 } : {})
+            });
+            else if (method === "Cash" && tendered > 0)
+                throw new Error("Enter the cash payment amount.");
+        };
+        if (paymentMethod === "Split") {
+            add("Cash", document.getElementById("posSplitCash").value,
+                document.getElementById("posSplitCashReceived").value);
+            add("KNET", document.getElementById("posSplitKnet").value);
+            add("Card", document.getElementById("posSplitWamd").value);
+            if (lines.length < 2) throw new Error(text(
+                "Enter amounts in at least two payment methods.",
+                "أدخل مبالغ في طريقتي دفع على الأقل."));
+        } else {
+            add(paymentMethod, paymentAmount.value,
+                paymentMethod === "Cash" ? document.getElementById("posCashReceived").value : "");
+        }
+        const total = lines.reduce((sum, line) => sum + Math.round(line.amount * 1000), 0);
+        if (total <= 0 || total > due) throw new Error(text(
+            "Payment must be greater than zero and cannot exceed the balance.",
+            "يجب أن يكون الدفع أكبر من صفر ولا يتجاوز الرصيد."));
+        const cash = lines.find(line => line.method === "Cash");
+        const change = cash ? Math.round((cash.tendered - cash.amount) * 1000) : 0;
+        return { lines, total, change, due };
+    }
+
+    function updatePaymentPreview() {
+        const due = paymentDue();
+        document.getElementById("posPaymentDue").textContent = money(due / 1000);
+        let total = 0;
+        let change = 0;
+        let error = "";
+        try {
+            const result = paymentPayload
+                ? { total: paymentPayload.lines.reduce((sum, line) => sum + Math.round(line.amount * 1000), 0),
+                    change: Math.round(paymentPayload.lines.reduce((sum, line) =>
+                        sum + (line.method === "Cash" ? (line.tendered - line.amount) : 0), 0) * 1000) }
+                : paymentLines();
+            total = result.total;
+            change = result.change;
+        } catch (exception) {
+            if (paymentInputs.some(input => input.value.trim())) error = exception.message;
+        }
+        document.getElementById("posPaymentEntered").textContent = money(total / 1000);
+        document.getElementById("posPaymentRemaining").textContent = money(Math.max(0, due - total) / 1000);
+        document.getElementById("posPaymentChange").textContent = money(change / 1000);
+        paymentError.textContent = paymentPayload ? text(
+            "Retrying the original payment request to prevent duplicates.",
+            "تتم إعادة محاولة طلب الدفع نفسه لمنع التكرار.") : error;
+        paymentConfirm.disabled = paymentBusy || (total <= 0 && !paymentPayload) || !!error;
+    }
+
+    function setPaymentMethod(method) {
+        if (paymentPayload || paymentBusy) return;
+        paymentMethod = method;
+        document.querySelectorAll("[data-pos-method]").forEach(button => {
+            const active = button.dataset.posMethod === method;
+            button.className = active ? "btn btn-primary" : "btn btn-outline-primary";
+            button.setAttribute("aria-pressed", String(active));
+        });
+        document.getElementById("posSinglePayment").hidden = method === "Split";
+        document.getElementById("posSplitPayment").hidden = method !== "Split";
+        document.getElementById("posCashReceivedRow").hidden = method !== "Cash";
+        updatePaymentPreview();
+    }
+
+    function openPaymentDialog() {
+        if (saving || paymentBusy || (!boundInvoiceId && completed && !savedOrder)) return;
+        if (!boundInvoiceId && !savedOrder) {
+            try { validateOrder(); } catch (error) { notice(error.message, true); return; }
+        }
+        if (boundInvoiceId && boundInvoiceBalance <= 0 && !paymentPayload) return;
+        if (!boundInvoiceId && paymentDue() <= 0) {
+            notice(text("No payment is due. Use UNPAID to save this order.",
+                "لا يوجد مبلغ مستحق. احفظ الفاتورة دون دفع."), true);
+            return;
+        }
+        if (!paymentPayload) {
+            paymentMethod = "Cash";
+            paymentInputs.forEach(input => { input.value = ""; input.disabled = false; });
+            paymentAmount.value = (paymentDue() / 1000).toFixed(3);
+        } else paymentInputs.forEach(input => { input.disabled = true; });
+        setPaymentMethod(paymentMethod);
+        document.getElementById("posPaymentTitle").textContent = boundInvoiceId
+            ? text("Receive Balance", "تحصيل المتبقي") : text("Collect Payment", "تحصيل الدفع");
+        updatePaymentPreview();
+        paymentDialog.showModal();
+    }
+
+    unpaidButton.addEventListener("click", () => {
+        if (completed || paymentBusy) return;
+        setPaidMode(false);
+    });
+    paidButton.addEventListener("click", () => {
+        setPaidMode(true);
+        openPaymentDialog();
+    });
+    document.getElementById("boundInvoicePayment").addEventListener("click", openPaymentDialog);
+    document.getElementById("closePaymentDialog").addEventListener("click", () => {
+        if (!paymentBusy) paymentDialog.close();
+    });
+    paymentDialog.addEventListener("cancel", event => {
+        if (paymentBusy) event.preventDefault();
+    });
+    paymentDialog.addEventListener("close", () => {
+        if (!savedOrder && !paymentPayload && !boundInvoiceId) setPaidMode(false);
+    });
+    document.querySelectorAll("[data-pos-method]").forEach(button =>
+        button.addEventListener("click", () => setPaymentMethod(button.dataset.posMethod)));
+    paymentInputs.forEach(input => input.addEventListener("input", updatePaymentPreview));
+
+    paymentConfirm.addEventListener("click", async () => {
+        if (paymentBusy || paymentConfirm.disabled) return;
+        let lines;
+        try { lines = paymentPayload?.lines ?? paymentLines().lines; }
+        catch (error) { paymentError.textContent = error.message; return; }
+
+        const tab = openPrintTab();
+        paymentBusy = true;
+        setBusy(paymentConfirm, true, text("Processing payment...", "جار حفظ الدفعة..."));
+        paymentError.textContent = "";
+        try {
+            const order = boundInvoiceId ? { orderId: boundInvoiceId,
+                orderNumber: invoiceNumberView.textContent } : await saveOrder();
+            if (!paymentPayload) {
+                if (!paymentRequestId) {
+                    const prepared = await getJson(shell.dataset.paymentPrepareUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", RequestVerificationToken: token },
+                        body: JSON.stringify(order.orderId)
+                    });
+                    paymentRequestId = prepared.requestId;
+                    rememberCheckout();
+                }
+                paymentPayload = { requestId: paymentRequestId, orderId: order.orderId, lines };
+                rememberCheckout();
+            }
+            const result = await getJson(shell.dataset.paymentRecordUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", RequestVerificationToken: token },
+                body: JSON.stringify(paymentPayload)
+            });
+            paymentDialog.close();
+            finishSale(order.orderId, tab, order.orderNumber + " · " +
+                text(result.balance > 0 ? "Partially paid" : "Paid",
+                    result.balance > 0 ? "مدفوع جزئياً" : "مدفوع"), !!boundInvoiceId);
         } catch (error) {
+            if (tab && !tab.closed) tab.close();
+            paymentError.textContent = error instanceof TypeError
+                ? text("Unable to confirm. Retry Confirm Payment without changing amounts.",
+                    "تعذر التأكد من الدفع. أعد المحاولة بنفس المبالغ.")
+                : error.message;
+            notice(paymentError.textContent, true);
+        } finally {
+            paymentBusy = false;
+            setBusy(paymentConfirm, false);
+            updatePaymentPreview();
+        }
+    });
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (paidMode || saving || completed || boundInvoiceId) return;
+        try { validateOrder(); } catch (error) { notice(error.message, true); return; }
+        const tab = openPrintTab();
+        try {
+            const order = await saveOrder();
+            finishSale(order.orderId, tab, text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
+                order.orderNumber);
+        } catch (error) {
+            if (tab && !tab.closed) tab.close();
             notice(error instanceof TypeError
                 ? text("Save status could not be confirmed. Retry Save safely; do not start a new order.",
                     "تعذر التأكد من الحفظ. أعد المحاولة بأمان ولا تبدأ طلباً جديداً.")
                 : error.message, true);
-        } finally {
-            saving = false;
-            setBusy(saveButton, false);
-            if (completed) {
-                saveButton.textContent = text("Order saved", "تم حفظ الطلب");
-                saveButton.disabled = true;
-            } else {
-                saveButton.disabled = !customerId || items.length === 0;
-                clearCartButton.disabled = items.length === 0;
-            }
         }
     });
 
-    newButton.addEventListener("click", () => window.location.reload());
-    if (!completed) renderCart();
+    setPaidMode(paidMode);
+    if (savedOrder) {
+        invoiceNumberView.textContent = savedOrder.orderNumber;
+        notice(text("Payment pending for ", "الدفع معلق للفاتورة ") +
+            savedOrder.orderNumber + text(". Click PAID to retry.", ". اضغط PAID لإعادة المحاولة."), true);
+    } else {
+        try {
+            const status = sessionStorage.getItem(lastSaleKey);
+            if (status) {
+                sessionStorage.removeItem(lastSaleKey);
+                notice(status, false, true);
+            }
+        } catch { /* Storage unavailable. */ }
+    }
+    renderCart();
 })();
