@@ -42,12 +42,14 @@ test("product modal shows gallery but keeps order-item measurements separate", (
     assert.match(pos, /measurementId: Number\(field.dataset.measurementId\)/);
 });
 
-test("after unpaid save cashier can go directly to payment or print", () => {
-    assert.match(view, /data-payment-url=/);
-    assert.match(view, /id="viewSavedOrderLink"/);
-    assert.match(pos, /savedOrderLink.href = shell.dataset.paymentUrl \+ savedId/);
-    assert.match(pos, /viewSavedOrderLink.href = shell.dataset.orderUrl \+ savedId/);
+test("unpaid saves and prints, while paid opens the payment popup", () => {
+    assert.match(view, /id="posChooseUnpaid"/);
+    assert.match(view, /id="posChoosePaid"/);
+    assert.match(view, /id="posPaymentDialog"/);
+    assert.match(pos, /paymentDialog.showModal\(\)/);
+    assert.match(pos, /finishSale\(order.orderId, tab/);
     assert.match(pos, /requestId: id, customerId, deliveryDate: date/);
+    assert.doesNotMatch(view, /id="newOrderButton"/);
 });
 
 test("premium POS uses two full-width work areas without a persistent sidebar", () => {
