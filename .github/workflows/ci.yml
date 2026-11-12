@@ -20,6 +20,12 @@ jobs:
         run: dotnet restore src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj
       - name: Build
         run: dotnet build src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj --configuration Release --no-restore
+      - name: Verify invoice files in published application
+        run: |
+          dotnet publish src/IbdaaAtelier.Web/IbdaaAtelier.Web.csproj --configuration Release --no-restore --output "$RUNNER_TEMP/ibdaa-publish"
+          test -s "$RUNNER_TEMP/ibdaa-publish/Reports/DataSets/InvoiceDataSet.xsd"
+          test -s "$RUNNER_TEMP/ibdaa-publish/Reports/InvoiceA4.rdlc"
+          test -s "$RUNNER_TEMP/ibdaa-publish/Reports/Invoice80mm.rdlc"
       - name: Public-page HTTP and RTL smoke
         run: bash tests/http-smoke.sh
       - name: POS JavaScript syntax
