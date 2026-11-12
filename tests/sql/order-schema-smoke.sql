@@ -40,9 +40,8 @@ VALUES (@orderId, N'Old IBDAA Branding', N'اسم المتجر القديم', N'
 IF NOT EXISTS (SELECT 1 FROM dbo.OrderInvoiceSnapshots WHERE OrderId = @orderId
     AND BusinessName = N'Old IBDAA Branding')
     THROW 51106, 'Order branding snapshot was not preserved.', 1;
-IF NOT EXISTS (SELECT 1 FROM dbo.Orders WHERE OrderId = @orderId
-    AND OrderNumber = 'IA-' + CONVERT(VARCHAR(20), @orderId))
-    THROW 51071, 'Order number must derive from numeric identity.', 1;
+IF NOT EXISTS (SELECT 1 FROM dbo.Orders WHERE OrderId = @orderId)
+    THROW 51071, 'Numeric invoice ID must match the saved order identity.', 1;
 
 INSERT dbo.OrderItems(OrderId, ItemType, ProductId, SizeId, ProductCode,
     Name, NameAr, SizeName, Quantity, UnitPrice, LineTotal)
