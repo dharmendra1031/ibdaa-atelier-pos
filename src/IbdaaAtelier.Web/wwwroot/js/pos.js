@@ -689,6 +689,10 @@
             headers: { RequestVerificationToken: token }
         });
         requestId = data.requestId;
+        if (Number.isSafeInteger(data.nextInvoiceNumber) && data.nextInvoiceNumber > 0) {
+            newInvoiceNumber = String(data.nextInvoiceNumber);
+            invoiceNumberView.textContent = newInvoiceNumber;
+        }
         try { sessionStorage.setItem(pendingKey, String(requestId)); } catch { /* In-memory fallback. */ }
         return requestId;
     }
