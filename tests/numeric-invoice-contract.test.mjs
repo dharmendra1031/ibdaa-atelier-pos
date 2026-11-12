@@ -41,8 +41,11 @@ test("POS, orders, payment and both RDLC print modes use numeric IDs", () => {
     assert.match(details, /@Model\.Order\.OrderId/);
     assert.match(list, /@order\.OrderId/);
     assert.match(print, /Model\.OrderId/);
-    for (const paper of ["Invoice80mm.rdlc", "InvoiceA4.rdlc"])
-        assert.match(read("src/IbdaaAtelier.Web/Reports/" + paper), /Fields!OrderNumber\.Value/);
+    for (const report of [
+        read("src/IbdaaAtelier.Web/Reports/Invoice80mm.rdlc"),
+        read("src/IbdaaAtelier.Web/Reports/InvoiceA4.rdlc")
+    ])
+        assert.match(report, /Fields!OrderNumber\.Value/);
     assert.doesNotMatch(pos + orders + invoice + details + list + print, /IA-|NO-/);
 });
 
