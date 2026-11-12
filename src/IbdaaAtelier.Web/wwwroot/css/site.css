@@ -1373,7 +1373,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-find-invoice-dialog .form-control { min-height: 46px; font-size: 16px; }
 .pos-find-invoice-dialog #findInvoiceButton { min-height: 44px; }
 .pos-cart-items-dialog { width: min(740px, calc(100% - 24px)); }
-.pos-cart-items-dialog #orderCart {
+.pos-cart-items-dialog .pos-cart {
     min-height: 0; max-height: calc(86dvh - 130px);
     overflow-y: auto; overflow-x: hidden; display: block;
 }
@@ -1442,3 +1442,11 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout #catalogueServices:not([hidden]) { grid-template-rows: minmax(0, 1fr); }
 }
 
+
+@media (min-width: 992px) and (max-width: 1199.98px) and (min-height: 650px) {
+    .pos-app-layout #catalogueProducts:not([hidden]) {
+        display: flex; flex-direction: column;
+    }
+    .pos-app-layout #catalogueProducts .pos-catalogue-tools { flex: 0 0 auto; }
+    .pos-app-layout #catalogueProducts .pos-product-grid { flex: 1 1 0; }
+}
