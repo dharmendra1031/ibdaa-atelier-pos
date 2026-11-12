@@ -471,8 +471,6 @@ a:focus-visible, button:focus-visible {
 }
 
 /* POS: clearer catalogue density and empty states on desktop and tablet. */
-.pos-heading .section-title { margin-block: 4px !important; }
-.pos-heading .eyebrow { font-size: 10px; }
 .pos-shell .pos-product .card-body { padding: 12px !important; }
 .pos-shell .pos-product .product-title { font-size: .87rem; line-height: 1.35; }
 .pos-shell .pos-product .product-pricing { font-weight: 650; }
@@ -507,13 +505,7 @@ a:focus-visible, button:focus-visible {
     background: var(--atelier-bg);
 }
 .app-layout.pos-app-layout { max-width: 1700px; grid-template-columns: minmax(0, 1fr); }
-.pos-app-layout .app-sidebar,
-.pos-app-layout .mobile-menu,
-.pos-app-layout .workspace-breadcrumb { display: none; }
 .pos-app-layout .app-workspace { padding-block: 18px 32px; }
-.pos-app-layout .pos-heading .section-title { font-size: 1.75rem; }
-.pos-app-layout .pos-heading p { font-size: .86rem; }
-.pos-app-layout .pos-shortcuts .btn { min-height: 38px; padding: 7px 13px; font-size: .85rem; }
 .pos-app-layout .pos-catalogue-tools { background: #fff; padding: 14px; border: 1px solid var(--atelier-border); border-radius: 12px; }
 .pos-app-layout .pos-categories { overflow-x: auto; padding-bottom: 3px; scrollbar-width: thin; }
 .pos-app-layout .pos-category {
@@ -606,8 +598,6 @@ a:focus-visible, button:focus-visible {
 }
 
 @media (max-width: 575.98px) {
-    .pos-app-layout .pos-shortcuts { max-width: 100%; }
-    .pos-app-layout .pos-shortcuts .btn { padding: 6px 10px; }
     .pos-app-layout .pos-catalogue-tools { padding: 10px; }
 }
 
@@ -716,8 +706,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .admin-master-link:hover, .admin-master-link:focus-visible { border-color: #b77c91; color: var(--atelier-primary); }
 
 /* Cashier billing: two clear working areas, compact cart, no nested cart scrollbar. */
-.pos-app-layout .pos-heading .section-title { font-family: system-ui, sans-serif; font-weight: 750; }
-.pos-app-layout .pos-heading .eyebrow { color: #a77d5b; }
 .pos-app-layout .pos-checkout {
     background: #fffdfb; border: 1px solid #eadbd6; border-top: 3px solid var(--atelier-primary);
 }
@@ -916,7 +904,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-page .site-header .language-button { min-width: 0; padding-inline: 9px; }
     .pos-page .site-header .btn-outline-secondary { padding-inline: 9px; }
 }
-.pos-app-layout .pos-heading { margin-bottom: 14px !important; }
 .pos-app-layout .pos-shell .pos-checkout { box-shadow: 0 10px 30px rgb(93 23 49 / 6%); }
 .pos-app-layout .pos-shell .pos-checkout-actions .btn-primary:disabled {
     background: #762c48; border-color: #762c48; color: #fff; opacity: .62;
@@ -982,7 +969,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout #catalogueProducts > p {
         grid-column: 2; min-width: 0;
     }
-    .pos-app-layout .pos-heading { margin-top: 0; }
 }
 @media (max-width: 767.98px) {
     .workspace-header-title:not(.pos-header-title) { display: none; }
@@ -1185,7 +1171,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-app-layout { width: 100%; max-width: none; }
 .pos-app-layout .app-workspace { padding: 16px 18px 28px; }
 .pos-app-layout .page-shell { padding: 0; }
-.pos-app-layout .pos-heading { display: none !important; }
 .pos-app-layout .pos-shell { --bs-gutter-x: 16px; }
 .pos-app-layout .pos-shell > .col-lg-7 { width: 54%; flex: 0 0 54%; max-width: 54%; }
 .pos-app-layout .pos-shell > .col-lg-5 { width: 46%; flex: 0 0 46%; max-width: 46%; }
