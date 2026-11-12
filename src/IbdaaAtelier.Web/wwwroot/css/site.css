@@ -1168,6 +1168,14 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     background: #f9e9e8; color: #5f0c2c; font-weight: 700;
 }
 .pos-total-summary strong { color: #5f0c2c; }
+.pos-order-icon { flex: 0 0 auto; width: 28px; height: 28px; }
+.pos-cart-heading-icon { width: 27px; height: 27px; margin-inline-end: 8px; vertical-align: -5px; }
+.pos-app-layout #catalogueProducts .pos-catalogue-tools > form { position: relative; }
+.pos-search-icon {
+    position: absolute; inset-inline-start: 18px; top: 50%; transform: translateY(-50%);
+    color: #6b4250; font-size: 27px; line-height: 1; pointer-events: none;
+}
+.pos-app-layout #catalogSearch { padding-inline-start: 42px; }
 @media (max-width: 1499.98px) {
     .pos-cart-columns { display: none; }
     .pos-cart-item { grid-template-columns: minmax(0, 1fr) auto auto; }
