@@ -238,6 +238,9 @@
                     <div id="orderCart" class="pos-cart" aria-live="polite">
                         <p class="pos-empty-cart">@(ar ? "اختر العميل ثم اضغط على المنتج لإضافته." : "Choose a customer, then tap a product to add it.")</p>
                     </div>
+                    <button id="viewAllCartItems" type="button" class="btn btn-outline-primary btn-sm align-self-start mt-1" hidden>
+                        @(ar ? "عرض جميع العناصر" : "View All Items") (<span id="allCartItemCount">0</span>)
+                    </button>
                     <hr />
                     @if (Model.EnablePosDiscount)
                     {
@@ -329,6 +332,14 @@
         <p id="findInvoiceMessage" class="small text-secondary mt-2 mb-3" role="status" aria-live="polite"></p>
         <button id="findInvoiceButton" type="submit" class="btn btn-primary w-100">@(ar ? "فتح الفاتورة" : "Open Invoice")</button>
     </form>
+</dialog>
+<dialog id="cartItemsDialog" class="pos-dialog pos-cart-items-dialog" aria-labelledby="allCartTitle">
+    <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+        <h2 id="allCartTitle" class="h5 mb-0">@(ar ? "جميع عناصر السلة" : "All Cart Items")</h2>
+        <button id="closeCartItemsDialog" type="button" class="btn btn-outline-secondary btn-sm"
+                aria-label="@(ar ? "إغلاق" : "Close")">×</button>
+    </div>
+    <div id="allCartItemsContainer"></div>
 </dialog>
 <dialog id="posPaymentDialog" class="pos-dialog pos-payment-dialog" aria-labelledby="posPaymentTitle">
     <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
