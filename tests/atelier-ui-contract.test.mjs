@@ -38,7 +38,7 @@ test("login preserves the real credential form and role-based redirection", () =
 
 test("two-section cashier POS has no nested scrolling cart and retains saved actions", () => {
     assert.match(pos, /class="pos-shell row g-4"/);
-    assert.match(pos, /class="pos-checkout-actions(?:\\s|")/);
+    assert.match(pos, /class="pos-checkout-actions(?:\s|")/);
     assert.match(pos, /id="orderCart"/);
     assert.match(pos, /id="saveOrderButton"/);
     assert.match(pos, /id="savedOrderLink"/);
