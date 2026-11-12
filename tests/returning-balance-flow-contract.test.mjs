@@ -15,7 +15,7 @@ const report = read("src/IbdaaAtelier.Web/Services/InvoiceReportService.cs");
 const srs = read("docs/IBDAA-Atelier-SRS-2026-11-10.md");
 
 test("cashier finds a saved invoice and receives only its outstanding balance", () => {
-    assert.match(orders, /order\.OrderNumber\.Contains\(search\)/);
+    assert.match(orders, /order\.OrderId == invoiceId/);
     assert.match(orders, /order\.CustomerMobile\.Contains\(search\)/);
     assert.match(list, /User\.IsInRole\("Cashier"\)/);
     assert.match(list, /Model\.BalanceByOrder\.GetValueOrDefault\(order\.OrderId\) > 0m/);
@@ -46,7 +46,7 @@ test("saving a balance returns to updated invoice, without creating a new order 
     assert.match(invoice, /TempData\["Message"\]/);
     assert.match(invoice, /asp-route-paper="80mm"/);
     assert.match(invoice, /asp-route-paper="a4"/);
-    assert.match(report, /header\["OrderNumber"\] = order\.OrderNumber/);
+    assert.match(report, /header\["OrderNumber"\] = order\.OrderId\.ToString\(CultureInfo\.InvariantCulture\)/);
     assert.match(report, /payment\.Change > 0m/);
     assert.match(srs, /Returning Customer - Remaining Balance Payment/);
 });
