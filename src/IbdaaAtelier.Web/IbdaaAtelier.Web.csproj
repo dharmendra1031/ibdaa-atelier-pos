@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Reports\**\*.rdlc" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Reports\DataSets\InvoiceDataSet.xsd" CopyToPublishDirectory="PreserveNewest" />
     <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 </Project>
