@@ -922,35 +922,68 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .admin-page .app-layout { margin-inline-start: 0; }
 }
 
-/* Customer strip is above the two POS working columns, like the approved reference. */
-.pos-app-layout .pos-customer-bar {
-    background: #fffdfb; border: 1px solid var(--atelier-border);
-    border-radius: 14px; padding: 14px 18px;
-    box-shadow: 0 5px 20px rgb(84 22 43 / 5%);
+/* Compact customer lookup lives inside the checkout panel, above the cart. */
+.pos-app-layout .pos-cart-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 12px;
 }
+.pos-app-layout .pos-cart-header .pos-order-heading { margin: 0; }
+.pos-order-number {
+    display: inline-flex; align-items: baseline; justify-content: flex-end;
+    gap: 6px; flex: 0 0 auto; color: #5f0c2c;
+    font-size: 22px; font-weight: 650; white-space: nowrap;
+}
+.pos-order-number strong { color: #5f0c2c; font-size: inherit; font-weight: inherit; font-variant-numeric: tabular-nums; }
 .pos-app-layout .pos-customer-form {
-    display: grid; grid-template-columns: minmax(0, 1.7fr) auto minmax(210px, 1fr);
-    align-items: center; gap: 15px;
+    min-width: 0; margin-bottom: 12px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--atelier-border);
 }
-.pos-app-layout .pos-customer-form .form-label { display: block; margin-bottom: 6px; font-weight: 650; }
-.pos-app-layout .pos-new-customer { white-space: nowrap; align-self: center; }
-.pos-app-layout .pos-customer-field, .pos-app-layout .pos-delivery-field { min-width: 0; }
-.pos-app-layout .pos-customer-field #selectedCustomer { min-height: 18px; }
-.pos-app-layout .pos-checkout { min-height: min(650px, calc(100dvh - 290px)); }
-.pos-app-layout .pos-checkout .card-body { height: 100%; }
-.pos-app-layout .pos-checkout-actions { margin-top: auto; }
-.pos-app-layout .pos-checkout-actions .btn-primary { min-height: 50px; }
-@media (max-width: 991.98px) {
-    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr) auto; }
+.pos-app-layout .pos-customer-searches {
+    position: relative; display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+}
+.pos-app-layout .pos-customer-field,
+.pos-app-layout .pos-delivery-field { min-width: 0; }
+.pos-app-layout .pos-customer-form .form-label {
+    display: block; margin-bottom: 4px; color: #654251;
+    font-size: 12px; font-weight: 650;
+}
+.pos-app-layout .pos-customer-form .form-control {
+    min-height: 38px; padding: 7px 10px; font-size: 13px;
+}
+.pos-app-layout .pos-customer-results {
+    position: absolute; z-index: 25; inset-inline: 0; top: 100%;
+    max-height: 240px; overflow-y: auto;
+    box-shadow: 0 10px 24px rgb(55 7 27 / 15%);
+}
+.pos-app-layout .pos-customer-details {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(140px, 180px);
+    align-items: end; gap: 8px; margin-top: 8px;
+}
+.pos-app-layout .pos-selected-customer {
+    min-width: 0; padding-bottom: 8px; color: #825663;
+    font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pos-app-layout .pos-new-customer {
+    align-self: end; min-height: 38px; padding: 7px 10px;
+    font-size: 12px; white-space: nowrap;
+}
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .pos-app-layout .pos-customer-details { grid-template-columns: minmax(0, 1fr) auto; }
     .pos-app-layout .pos-delivery-field { grid-column: 1 / -1; }
-    .pos-app-layout .pos-checkout { min-height: 0; }
 }
 @media (max-width: 575.98px) {
-    .pos-app-layout .pos-customer-bar { padding: 12px; }
-    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr); gap: 9px; }
-    .pos-app-layout .pos-delivery-field { grid-column: auto; }
-    .pos-app-layout .pos-new-customer { justify-self: start; }
+    .pos-app-layout .pos-cart-header .pos-order-heading,
+    .pos-order-number { font-size: clamp(15px, 4vw, 18px); }
+    .pos-order-number { gap: 4px; }
+    .pos-app-layout .pos-customer-details { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .pos-app-layout .pos-selected-customer { grid-column: 1 / -1; padding-bottom: 0; }
+    .pos-app-layout .pos-new-customer { width: 100%; }
 }
+@media (max-width: 420px) {
+    .pos-app-layout .pos-customer-searches { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* Reference composition: full-bleed atelier login, photographic admin hero, compact POS. */
 .auth-page { background: #f7f0eb; }
 .auth-page .site-header,
@@ -1055,13 +1088,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-app-layout .app-workspace { padding: 16px 18px 28px; }
 .pos-app-layout .page-shell { padding: 0; }
 .pos-app-layout .pos-heading { display: none !important; }
-.pos-new-customer { white-space: nowrap; align-self: center; }
-.pos-order-preview {
-    display: flex; justify-content: center; align-items: center; gap: 12px;
-    min-height: 62px; margin: 0; padding: 10px 14px; border-radius: 12px;
-    background: #f7e9e7; color: #65132e;
-}
-.pos-order-preview strong { font-size: 20px; font-variant-numeric: tabular-nums; }
 .pos-app-layout .pos-shell { --bs-gutter-x: 16px; }
 .pos-app-layout .pos-shell > .col-lg-7 { width: 54%; flex: 0 0 54%; max-width: 54%; }
 .pos-app-layout .pos-shell > .col-lg-5 { width: 46%; flex: 0 0 46%; max-width: 46%; }
@@ -1076,13 +1102,11 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-app-layout .pos-order-heading { font-size: 22px; color: #5f0c2c; }
 .pos-app-layout .pos-catalogue-tools > form { box-shadow: none; }
 @media (max-width: 1199.98px) {
-    .pos-order-preview { grid-column: 1 / -1; }
     .pos-app-layout .pos-shell > .col-lg-7 { width: 55%; flex-basis: 55%; max-width: 55%; }
     .pos-app-layout .pos-shell > .col-lg-5 { width: 45%; flex-basis: 45%; max-width: 45%; }
     .pos-app-layout #catalogueProducts { display: block; }
 }
 @media (max-width: 991.98px) {
-    .pos-order-preview { grid-column: 2; }
     .auth-wrap { grid-template-columns: 1fr; }
     .auth-showcase { min-height: 330px; padding: 35px; background-position: center 38%; }
     .auth-showcase-content { margin: 28px 0 0; }
@@ -1099,7 +1123,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-shell > .col-lg-5 { width: 100%; flex-basis: 100%; max-width: 100%; }
 }
 @media (max-width: 575.98px) {
-    .pos-order-preview { grid-column: 1; }
     .pos-new-customer { justify-self: stretch; }
     .auth-wrap { min-height: 100dvh; }
     .auth-showcase { min-height: 150px; padding: 20px 24px; background-position: center 35%; }
@@ -1117,7 +1140,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .admin-page .admin-hero { margin-inline: -14px; min-height: 170px; padding: 20px; background-position: 70% center; }
     .admin-page .admin-hero .section-title { font-size: 31px; }
     .pos-app-layout .app-workspace { padding-inline: 10px; }
-    .pos-order-preview { justify-content: space-between; font-size: 13px; }
 }
 @media (min-width: 992px) and (max-width: 1023.98px) {
     .admin-page .site-header { margin-inline-start: 0; }
@@ -1126,22 +1148,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .admin-page .app-sidebar { display: none; }
     .admin-page .dashboard-main-grid { grid-template-columns: 1fr; }
 }
-.pos-app-layout .pos-customer-form {
-    grid-template-columns: minmax(230px, 1.6fr) auto minmax(205px, 1fr) minmax(175px, .75fr);
-}
-.pos-app-layout .pos-customer-bar .pos-order-preview { min-width: 0; }
-@media (max-width: 1199.98px) {
-    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr) auto minmax(190px, 1fr); }
-    .pos-app-layout .pos-customer-bar .pos-order-preview { grid-column: 1 / -1; }
-}
-@media (max-width: 991.98px) {
-    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr) auto; }
-}
-@media (max-width: 575.98px) {
-    .pos-app-layout .pos-customer-form { grid-template-columns: minmax(0, 1fr); }
-    .pos-app-layout .pos-customer-bar .pos-order-preview { grid-column: 1; }
-}
-
 /* POS reference proportions: wide customer strip above catalogue and cart. */
 @media (min-width: 1200px) {
     .pos-page .site-header .container-xxl,
@@ -1155,7 +1161,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-shell > .col-lg-7 { width: 54%; flex-basis: 54%; max-width: 54%; }
     .pos-app-layout .pos-shell > .col-lg-5 { width: 46%; flex-basis: 46%; max-width: 46%; }
     .pos-app-layout #catalogueProducts { grid-template-columns: 185px minmax(0, 1fr); }
-    .pos-app-layout .pos-customer-bar { padding: 18px 22px; }
     .pos-app-layout .pos-checkout { min-height: min(720px, calc(100dvh - 225px)); }
     .pos-app-layout .pos-checkout .card-body { padding: 24px !important; }
 }
@@ -1163,18 +1168,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 @media (min-width: 1200px) {
     .pos-app-layout .app-workspace { padding: 8px 14px 8px; }
     .pos-app-layout .pos-shell { --bs-gutter-y: 12px; }
-    .pos-app-layout .pos-customer-bar { padding: 10px 16px; }
-    .pos-app-layout .pos-customer-form {
-        grid-template-columns: minmax(0, 1.5fr) auto minmax(130px, .4fr) minmax(190px, .8fr) minmax(175px, .7fr);
-        gap: 10px;
-    }
-    .pos-app-layout .pos-customer-form .form-label { margin-bottom: 3px; }
-    .pos-app-layout .pos-customer-field #selectedCustomer {
-        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px !important;
-        overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap;
-    }
-    .pos-app-layout .pos-customer-form .form-control { min-height: 42px; }
-    .pos-app-layout .pos-order-preview { min-height: 52px; }
     .pos-app-layout .pos-catalogue-switch .btn { min-height: 40px; padding-block: 7px; }
     .pos-app-layout #catalogueProducts { gap: 10px; }
     .pos-app-layout #catalogueProducts .pos-catalogue-tools > form { padding: 6px; }
@@ -1182,16 +1175,10 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-product-grid { --bs-gutter-y: 10px; }
     .pos-app-layout .pos-product-grid .product-media { height: clamp(108px, 18dvh, 165px); aspect-ratio: auto; }
     .pos-app-layout .pos-product .card-body { min-height: 64px; padding: 8px 10px !important; }
-    .pos-app-layout .pos-checkout { min-height: min(600px, calc(100dvh - 335px)); }
+    .pos-app-layout .pos-checkout { min-height: min(720px, calc(100dvh - 165px)); }
     .pos-app-layout .pos-checkout .card-body { padding: 18px !important; }
 }
 
-.pos-customer-mobile {
-    display: flex; align-items: center; min-width: 0; min-height: 42px;
-    padding: 8px 12px; border: 1px solid #e8dcd8; border-radius: 11px;
-    background: #fff; color: #5f0c2c; font-weight: 650; overflow-wrap: anywhere;
-}
-@media (max-width: 1199.98px) { .pos-customer-mobile { display: none; } }
 
 .pos-cart-columns,
 .pos-cart-item {

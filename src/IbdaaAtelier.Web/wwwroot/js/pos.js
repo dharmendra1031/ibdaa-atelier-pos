@@ -11,7 +11,7 @@
     const customerSearch = document.getElementById("customerSearch");
     const customerResults = document.getElementById("customerResults");
     const customerLabel = document.getElementById("selectedCustomer");
-    const customerMobileDisplay = document.getElementById("customerMobileDisplay");
+    const customerMobileSearch = document.getElementById("customerMobileSearch");
     const message = document.getElementById("posMessage");
     const toast = document.getElementById("posToast");
     const toastText = document.getElementById("posToastText");
@@ -57,7 +57,7 @@
             if (customerId) {
                 customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
                 customerSearch.value = customerName;
-                customerMobileDisplay.textContent = customerMobile || text("Mobile number", "رقم الهاتف");
+                customerMobileSearch.value = customerMobile;
             }
         }
     } catch { /* In-memory fallback when browser storage is unavailable. */ }
@@ -211,7 +211,7 @@
             "تغيير العميل يمسح عناصر الطلب. متابعة?"))) return;
         quickCustomerError.textContent = "";
         quickCustomerForm.reset();
-        const typed = customerSearch.value.trim();
+        const typed = customerMobileSearch.value.trim() || customerSearch.value.trim();
         if (/^[+\d\s()-]{8,20}$/.test(typed))
             document.getElementById("quickCustomerMobile").value = typed;
         quickCustomerDialog.showModal();
@@ -234,9 +234,9 @@
             customerId = customer.customerId;
             customerName = arabic ? customer.nameAr || customer.name : customer.name;
             customerMobile = customer.mobile;
-            customerSearch.value = customerName + " · " + customer.mobile;
+            customerSearch.value = customerName;
+            customerMobileSearch.value = customer.mobile;
             customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
-            customerMobileDisplay.textContent = customerMobile;
             customerResults.replaceChildren();
             quickCustomerDialog.close();
             renderCart();
@@ -253,12 +253,13 @@
         }
     });
 
-    customerSearch.addEventListener("input", async () => {
+    async function searchCustomers(input) {
         if (saving || completed) return;
         if (customerId && items.length > 0) {
             if (!window.confirm(text("Changing customer clears the cart. Continue?",
                 "تغيير العميل يمسح عناصر الطلب. متابعة؟"))) {
                 customerSearch.value = customerName;
+                customerMobileSearch.value = customerMobile;
                 return;
             }
             items = [];
@@ -267,13 +268,14 @@
         customerId = 0;
         customerName = "";
         customerMobile = "";
-        customerMobileDisplay.textContent = text("Mobile number", "رقم الهاتف");
+        if (input === customerSearch) customerMobileSearch.value = "";
+        else customerSearch.value = "";
         persistCart();
         customerLabel.textContent = text("No customer selected", "لم يتم اختيار عميل");
         saveButton.disabled = true;
         customerResults.replaceChildren();
         customerAbort?.abort();
-        const search = customerSearch.value.trim();
+        const search = input.value.trim();
         if (search.length < 2) return;
         customerResults.append(element("div", "list-group-item text-secondary",
             text("Searching customers...", "جار البحث عن العملاء...")));
@@ -297,9 +299,9 @@
                     customerId = customer.customerId;
                     customerName = name;
                     customerMobile = customer.mobile;
-                    customerSearch.value = name + " · " + customer.mobile;
+                    customerSearch.value = name;
+                    customerMobileSearch.value = customer.mobile;
                     customerLabel.textContent = text("Selected: ", "العميل: ") + customerName;
-                    customerMobileDisplay.textContent = customerMobile;
                     persistCart();
                     customerAbort?.abort();
                     customerResults.replaceChildren();
@@ -314,7 +316,10 @@
                 notice(error.message, true);
             }
         }
-    });
+    }
+
+    customerSearch.addEventListener("input", () => searchCustomers(customerSearch));
+    customerMobileSearch.addEventListener("input", () => searchCustomers(customerMobileSearch));
 
     async function openProduct(productId, index = -1) {
         if (saving || completed) return;
@@ -563,8 +568,8 @@
             completed = true;
             const nextOrderNumber = document.getElementById("nextOrderNumber");
             if (nextOrderNumber) {
-                const number = /^IA-(\d+)$/.exec(nextOrderNumber.textContent.trim());
-                if (number) nextOrderNumber.textContent = "IA-" + (Number(number[1]) + 1);
+                const number = /^IA-(\d+)$/.exec(data.orderNumber);
+                if (number) nextOrderNumber.textContent = "NO-" + number[1];
             }
             try {
                 sessionStorage.removeItem(pendingKey);

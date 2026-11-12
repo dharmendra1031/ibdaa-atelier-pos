@@ -49,3 +49,26 @@ test("cashier POS header shows authenticated role and username without changing 
     assert.match(css, /@media \(max-width: 575\.98px\)/);
     assert.match(auth, /new Claim\(ClaimTypes\.Role, user\.Role\)/);
 });
+
+test("cart header shows compact customer searches and Invoice NO with matched heading size", () => {
+    const checkout = view.indexOf('class="card filter-card pos-checkout"');
+    const name = view.indexOf('id="customerSearch"');
+    const mobile = view.indexOf('id="customerMobileSearch"');
+    const cart = view.indexOf('id="orderCart"');
+
+    assert.ok(checkout >= 0 && checkout < name && name < mobile && mobile < cart);
+    assert.match(view, /class="pos-cart-header"[\s\S]*?id="cartCount"[\s\S]*?id="nextOrderNumber"/);
+    assert.match(view, /NextOrderNumber\.Replace\("IA-", "NO-"\)/);
+    assert.match(view, /\? "فاتورة" : "Invoice"/);
+    assert.doesNotMatch(view, /pos-customer-bar|pos-order-preview|customerMobileDisplay/);
+    assert.match(js, /async function searchCustomers\(input\)/);
+    assert.match(js, /customerSearch\.addEventListener\("input", \(\) => searchCustomers\(customerSearch\)\)/);
+    assert.match(js, /customerMobileSearch\.addEventListener\("input", \(\) => searchCustomers\(customerMobileSearch\)\)/);
+    assert.match(js, /nextOrderNumber\.textContent = "NO-" \+ number\[1\]/);
+    assert.match(css, /\.pos-app-layout \.pos-cart-header/);
+    assert.match(css, /\.pos-order-number \{/);
+    assert.match(css, /font-size: 22px; font-weight: 650; white-space: nowrap/);
+    assert.match(css, /\.pos-app-layout \.pos-cart-header \.pos-order-heading,\s*\.pos-order-number \{ font-size: clamp\(15px, 4vw, 18px\); \}/);
+    assert.match(css, /@media \(max-width: 420px\)/);
+    assert.doesNotMatch(css, /pos-order-preview|pos-customer-bar|pos-customer-mobile/);
+});

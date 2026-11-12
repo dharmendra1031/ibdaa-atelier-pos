@@ -7,7 +7,7 @@ Scope: verify each component against the approved reference and real browser beh
 | Component | Verification | Status |
 | --- | --- | --- |
 | Header / branding | Premium spacing, real cashier role and username, sign-out, language switch, RTL, mobile | Code updated; browser screenshot review pending |
-| Customer toolbar | Customer search/selection, quick add, mobile and delivery alignment | Pending |
+| Customer toolbar / cart header | Name and mobile lookup above cart, selected customer, delivery date, Invoice NO label, mobile/RTL | Code updated; browser screenshot review pending |
 | Catalogue tabs | Products / Alterations layout and active state | Pending |
 | Categories | Width, spacing, selection and scroll | Pending |
 | Product cards | Real images, consistent card heights, titles and prices | Pending |
