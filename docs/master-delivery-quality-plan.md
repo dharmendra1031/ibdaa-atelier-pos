@@ -12,7 +12,7 @@ Build a **new**, lightweight IBDAA Atelier shop management and POS system. Use t
 - Implement **only** SRS v1: administrator, products/categories/gallery, sizes/measurements, alterations, customers, POS orders, payments/refunds, deliveries, cash-register closing, bilingual invoices, reports, roles/settings/audit, verified one-time website catalogue import.
 - **Out of scope** unless requirements change: workshop production/assignment, piece-rate salary/payroll, supervisor QC, multibranch consolidation, inventory ledger, loyalty, WhatsApp/SMS, offline POS, customer ecommerce storefront or automatic website order sync. The existing ecommerce website remains live and unchanged.
 - Single shop in v1; multiple cashier users and their collection reports are in scope. **Do not import** old branch-specific tables, `StoreCode` compatibility logic or terminal-selection screens without a confirmed requirement.
-- Every persisted primary key and transactional request key is **numeric SQL `IDENTITY(1,1)`**, with clear `int`/`bigint` types; never GUID/UUID keys. A human-readable invoice number is separate from its immutable numeric row ID.
+- Every persisted primary key and transactional request key is **numeric SQL `IDENTITY(1,1)`**, with clear `int`/`bigint` types; never GUID/UUID keys. The immutable numeric `OrderId` is also the customer-facing invoice number, without a prefix or separate counter.
 - Minimal readable developer-style changes. Before each feature, inspect relevant existing code, remove proven dead/duplicate code in the same scoped change, and avoid speculative abstractions. No generic repositories/unit-of-work wrappers, frontend state framework, redundant CSS themes, dynamic SQL builders or duplicate masters.
 - **No changes to** the old Tailor repository, the client's live website, live orders or production SQL data. No EF `EnsureCreated`/`Migrate` at startup. Database scripts are explicit, reviewed, guarded and tested against an isolated database.
 
@@ -45,7 +45,7 @@ Build a **new**, lightweight IBDAA Atelier shop management and POS system. Use t
 | Service/category images differ between POS and Admin | Different fallback and upload paths | One authoritative product/image mapping, stable primary gallery image and image fallback tests |
 | Wrong user sees delivery/refund actions | UI hides buttons but backend permission not checked | Matrix of role permissions with direct API 403 tests; no stale form actions |
 | Old async API response repaints wrong order | Fetch state not invalidated on new selection | Abort/discard stale requests; loading, failure, empty and rapid-switch tests |
-| Invoice number reappears after data deletion | Calculating next number with `MAX + 1` | Monotonic SQL counter/sequence, no reuse, unique index, concurrent save test |
+| Invoice number reappears after data deletion | Calculating next number with `MAX + 1` | Use SQL `IDENTITY` OrderId directly, do not reseed, concurrent save test |
 | Branch code/string mismatch, unnecessary screens | Adapting old multi-branch design into single-shop POS | Use numeric IDs directly; no branch code compatibility layer in v1 |
 | A source test passes but browser/DB flow fails | Tests don't prove runtime and devices | Require build + isolated DB + logged-in browser + real print evidence for relevant features |
 
@@ -75,7 +75,7 @@ This list is derived from the project's previous issue discussions and documente
 - Numeric `RequestIds` issued by DB and scoped to actor/action/order; `UNIQUE` constraints + transaction locks. Duplicate identical requests return the saved result; conflicting retry payload returns conflict. Each split-payment submission is **one atomic transaction**.
 - Separate **UNPAID save**, **PAID/advance/split collection**, **print/reprint** states. "Add payment" in a dialog stages a list only. Once committed, show persisted amount and issue receipt from saved data. Payment method restrictions enforced on server.
 - Record cash tendered, change returned and actual posted cash as separate values. Don't post received cash in excess of balance as revenue.
-- Invoice/order public numbers have explicit prefix and a **monotonic counter** under transaction with uniqueness; never use `MAX + 1`, even after cancelling/testing/deletion.
+- The public invoice number is the auto-increment numeric `OrderId` primary key, with no prefix or separate counter; never use `MAX + 1` or reseed after deleting data.
 - Register session uses one clear open/close state, opening cash, allowed expenses/refunds and counted closing; one close per session with audit and retry protection. Closed session postings require explicit business rule and server enforcement.
 - A4 and 80mm templates, full bilingual item measurements, receipt company branding, controlled printing and accurate white-space/margins.
 
