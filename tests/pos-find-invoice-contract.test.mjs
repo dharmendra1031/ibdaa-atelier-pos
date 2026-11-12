@@ -10,7 +10,7 @@ const pos = read("src/IbdaaAtelier.Web/wwwroot/js/pos.js");
 test("cashier can find an existing invoice by its saved number", () => {
     const lookup = controller.split("public async Task<IActionResult> FindInvoice")[1].split("[HttpPost")[0];
     assert.match(controller, /Authorize\(Roles = "Cashier"\)/);
-    assert.match(lookup, /o\.OrderNumber == invoiceNumber/);
+    assert.match(lookup, /o\.OrderId == invoiceId/);
     assert.match(lookup, /db\.OrderItems\.AsNoTracking\(\)/);
     assert.match(lookup, /payments\.GetPaidAsync\(order\.OrderId, ct\)/);
     assert.doesNotMatch(lookup, /db\.OrderPayments|db\.OrderRefunds/);
@@ -20,11 +20,13 @@ test("cashier can find an existing invoice by its saved number", () => {
 
 test("invoice binding stays in the cart and never creates or edits an order", () => {
     assert.match(view, /id="findInvoiceNumber"/);
+    assert.match(view, /pattern="\[0-9\]\+"/);
+    assert.match(lookup, /long\.TryParse\(input, out var invoiceId\)/);
     assert.match(view, /data-invoice-url=/);
     assert.match(view, /id="boundInvoice" hidden/);
     assert.match(view, /id="boundInvoiceItems"/);
     assert.match(pos, /function showInvoice\(invoice\)/);
-    assert.match(pos, /invoiceNumberView\.textContent = invoice\.orderNumber/);
+    assert.match(pos, /invoiceNumberView\.textContent = String\(invoice\.orderId\)/);
     assert.match(pos, /newOrderCart\.hidden = true/);
     assert.match(pos, /boundInvoiceView\.hidden = false/);
     assert.match(pos, /if \(paidMode \|\| saving \|\| completed \|\| boundInvoiceId\) return/);
