@@ -45,7 +45,8 @@ test("Cashier POS is customer-first and safely saves unpaid orders", () => {
     assert.equal((controller.match(/ValidateAntiForgeryToken/g) || []).length, 2);
     assert.match(pos, /col-lg-7/);
     assert.match(pos, /col-lg-5/);
-    assert.match(pos, /Save unpaid order/);
+    assert.match(pos, /Save & Print/);
+    assert.match(pos, /id="posChooseUnpaid"/);
     assert.match(js, /if \(!customerId\)/);
     assert.match(js, /sessionStorage\.setItem\(pendingKey/);
     assert.match(js, /Changing customer clears the cart/);
