@@ -1,7 +1,7 @@
 name: Build and source checks
 on:
   push:
-    branches: [development]
+    branches: [development, fix]
   pull_request:
     branches: [development, main]
   workflow_dispatch:
