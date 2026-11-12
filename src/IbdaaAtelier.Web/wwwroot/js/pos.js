@@ -64,6 +64,7 @@
     let paymentRequestId = 0;
     let paymentPayload = null;
     let paymentBusy = false;
+    let recoveryInvoiceNumber = "";
     let newInvoiceNumber = invoiceNumberView.textContent;
     const text = (en, ar) => arabic ? ar : en;
 
@@ -76,6 +77,14 @@
             paymentPayload = pending.payload || null;
             completed = true;
             paidMode = true;
+        } else if (pending?.previousNumber && pending.payload) {
+            recoveryInvoiceNumber = pending.previousNumber;
+            paymentRequestId = pending.requestId || 0;
+            paymentPayload = pending.payload;
+        }
+        if (paymentPayload) {
+            paymentMethod = paymentPayload.lines.length > 1 ? "Split" :
+                paymentPayload.lines[0]?.method || "Cash";
         }
         const saved = JSON.parse(sessionStorage.getItem(cartKey) || "null");
         if (saved && Array.isArray(saved.items)) {
@@ -202,7 +211,7 @@
         document.getElementById("boundInvoicePaid").textContent = money(invoice.paid);
         document.getElementById("boundInvoiceBalance").textContent = money(invoice.balance);
         const receive = document.getElementById("boundInvoicePayment");
-        receive.hidden = invoice.balance <= 0 || invoice.status === "Cancelled";
+        receive.hidden = (invoice.balance <= 0 && !paymentPayload) || invoice.status === "Cancelled";
         newOrderCart.hidden = true;
         boundInvoiceView.hidden = false;
         notice("");
@@ -880,7 +889,7 @@
     }
 
     function setPaymentMethod(method) {
-        if (paymentPayload || paymentBusy) return;
+        if (paymentBusy || (paymentPayload && method !== paymentMethod)) return;
         paymentMethod = method;
         document.querySelectorAll("[data-pos-method]").forEach(button => {
             const active = button.dataset.posMethod === method;
@@ -1010,6 +1019,15 @@
         invoiceNumberView.textContent = savedOrder.orderNumber;
         notice(text("Payment pending for ", "الدفع معلق للفاتورة ") +
             savedOrder.orderNumber + text(". Click PAID to retry.", ". اضغط PAID لإعادة المحاولة."), true);
+    } else if (recoveryInvoiceNumber) {
+        invoiceInput.value = recoveryInvoiceNumber;
+        getJson(shell.dataset.invoiceUrl + "?number=" + encodeURIComponent(recoveryInvoiceNumber))
+            .then(invoice => {
+                showInvoice(invoice);
+                notice(text("Previous payment needs confirmation. Use Receive Balance to retry safely.",
+                    "يحتاج الدفع السابق إلى تأكيد. أعد المحاولة من تحصيل المتبقي."), true);
+            })
+            .catch(error => notice(error.message, true));
     } else {
         try {
             const status = sessionStorage.getItem(lastSaleKey);
