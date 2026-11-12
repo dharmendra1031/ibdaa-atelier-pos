@@ -1343,17 +1343,11 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .pos-app-layout .pos-service { padding: 0 !important; overflow: hidden; border: 1px solid #e6d9d3; border-radius: 12px; background: #fff; color: #33262b; cursor: pointer; }
 .pos-app-layout .pos-service:hover { border-color: #a4566f; box-shadow: 0 8px 20px rgb(100 30 55 / 12%); }
 .pos-service-photo {
-    display: block; width: 100%; height: clamp(108px, 18dvh, 165px);
-    background-image: url('/images/alteration-service-tiles.png');
-    background-size: 300% 200%; background-repeat: no-repeat;
+    display: flex; justify-content: center; align-items: center;
+    width: 100%; height: clamp(108px, 18dvh, 165px);
+    background: linear-gradient(145deg, #f5eae4, #e9d5ce);
+    color: #81354f; font-size: clamp(35px, 5vw, 55px);
 }
-.pos-service-photo-1 { background-position: 0 0; }
-.pos-service-photo-2 { background-position: 50% 0; }
-.pos-service-photo-3 { background-position: 100% 0; }
-.pos-service-photo-4 { background-position: 0 100%; }
-.pos-service-photo-5 { background-position: 50% 100%; }
-.pos-service-photo-6 { background-position: 100% 100%; }
-.pos-service-photo-default { background-position: 50% 50%; }
 .pos-service-card-body { display: flex; flex-direction: column; min-height: 64px; padding: 8px 10px; }
 .pos-service-card-body strong { font-size: 13px; line-height: 1.25; }
 .pos-service-card-body small { margin-top: auto; padding-top: 5px; color: #862344; font-size: 11px; font-weight: 700; }
