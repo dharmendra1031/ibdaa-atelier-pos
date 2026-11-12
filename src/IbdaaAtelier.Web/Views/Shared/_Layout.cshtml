@@ -90,21 +90,27 @@
     @if (authenticated)
     {
         <div class="container-xxl app-layout @(controller == "Pos" ? "pos-app-layout" : "")">
-            <aside class="app-sidebar" aria-label="@(isArabic ? "تنقل المتجر" : "Shop navigation")">
-                <partial name="_Navigation" />
-                @if (User.IsInRole("Admin"))
-                {
-                    <div class="sidebar-keifac-credit"><partial name="_KeifacCredit" /></div>
-                }
-            </aside>
-            <div class="app-workspace">
-                <details class="mobile-menu mb-3">
-                    <summary>@(isArabic ? "القائمة والأقسام" : "Menu & sections")</summary>
+            @if (controller != "Pos")
+            {
+                <aside class="app-sidebar" aria-label="@(isArabic ? "تنقل المتجر" : "Shop navigation")">
                     <partial name="_Navigation" />
-                </details>
-                <nav aria-label="Breadcrumb" class="workspace-breadcrumb mb-3">
-                    <span>IBDAA ATELIER</span><span aria-hidden="true">/</span><span aria-current="page">@areaLabel</span>
-                </nav>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="sidebar-keifac-credit"><partial name="_KeifacCredit" /></div>
+                    }
+                </aside>
+            }
+            <div class="app-workspace">
+                @if (controller != "Pos")
+                {
+                    <details class="mobile-menu mb-3">
+                        <summary>@(isArabic ? "القائمة والأقسام" : "Menu & sections")</summary>
+                        <partial name="_Navigation" />
+                    </details>
+                    <nav aria-label="Breadcrumb" class="workspace-breadcrumb mb-3">
+                        <span>IBDAA ATELIER</span><span aria-hidden="true">/</span><span aria-current="page">@areaLabel</span>
+                    </nav>
+                }
                 <main id="mainContent" class="page-shell">
                     @RenderBody()
                 </main>
