@@ -867,6 +867,23 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     box-shadow: inset 0 0 0 3px #690a2b, inset 0 0 0 7px #f0d0a4;
 }
 .pos-header-actions { flex: 0 0 auto; }
+.pos-quick-menu { position: relative; z-index: 20; }
+.pos-quick-menu > summary { list-style: none; cursor: pointer; }
+.pos-quick-menu > summary::-webkit-details-marker { display: none; }
+.pos-quick-menu[open] > summary { background: #8a2849; }
+.pos-quick-menu-links {
+    position: absolute; z-index: 30; inset-block-start: calc(100% + 6px);
+    inset-inline-end: 0; min-width: 190px; display: grid; padding: 6px;
+    border: 1px solid #e2cdd3; border-radius: 10px; background: #fffaf7;
+    box-shadow: 0 12px 28px #320a1826;
+}
+.pos-quick-menu-links a {
+    padding: 10px 12px; border-radius: 6px; color: #5f0c2c;
+    text-decoration: none; white-space: nowrap;
+}
+.pos-quick-menu-links a:hover,
+.pos-quick-menu-links a:focus-visible { background: #f5e6e9; }
+
 .pos-header-account {
     display: flex; align-items: center; gap: 9px; min-width: 0;
     padding: 5px 14px 5px 6px; border: 1px solid rgb(243 205 137 / 28%);
