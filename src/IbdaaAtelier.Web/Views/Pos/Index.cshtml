@@ -22,6 +22,9 @@
      data-customer-url="@Url.Action("FindCustomers", "Pos")"
      data-customer-create-url="@Url.Action("QuickCreate", "Customers")"
      data-invoice-url="@Url.Action("FindInvoice", "Pos")"
+     data-payment-prepare-url="@Url.Action("Prepare", "Payments")"
+     data-payment-record-url="@Url.Action("Record", "Payments")"
+     data-print-url="@Url.Action("Print", "Invoices")"
      data-payment-url="@Url.Action("Take", "Payments")"
      data-reserve-url="@Url.Action("Reserve", "Pos")"
      data-save-url="@Url.Action("Save", "Pos")"
@@ -257,22 +260,25 @@
                     </div>
                     
                     <div id="posMessage" class="small mb-3" role="status" aria-live="polite"></div>
-                    <div class="pos-checkout-actions">
-                    <button type="button" id="clearCartButton" class="btn btn-outline-primary" disabled>@(ar ? "إفراغ السلة" : "Clear Cart")</button>
-                    <button type="submit" form="posCheckoutForm" id="saveOrderButton" class="btn btn-primary w-100" disabled>@(ar ? "حفظ طلب غير مدفوع" : "Save unpaid order")</button>
-                    <a id="savedOrderLink" class="btn btn-outline-primary w-100 mt-2" hidden>
-                        @(ar ? "استلام الدفعة" : "Take payment")
-                    </a>
-                    <a id="viewSavedOrderLink" class="btn btn-outline-secondary w-100 mt-2" hidden>
-                        @(ar ? "عرض الطلب والطباعة" : "View order / Print")
-                    </a>
-                    <button type="button" id="newOrderButton" class="btn btn-outline-secondary w-100 mt-2" hidden>@(ar ? "طلب جديد" : "Start another order")</button>
+                    <div class="pos-payment-choice mt-3" role="group" aria-label="@(ar ? "حالة الدفع" : "Payment status")">
+                        <button id="posChooseUnpaid" type="button" class="btn btn-primary" aria-pressed="true">UNPAID</button>
+                        <button id="posChoosePaid" type="button" class="btn btn-outline-primary" aria-pressed="false">PAID</button>
+                    </div>
+                    <div class="pos-checkout-actions mt-2">
+                        <button type="button" id="clearCartButton" class="btn btn-outline-secondary" disabled
+                                title="@(ar ? "إفراغ السلة" : "Clear cart")" aria-label="@(ar ? "إفراغ السلة" : "Clear cart")">×</button>
+                        <button type="submit" form="posCheckoutForm" id="saveOrderButton" class="btn btn-primary w-100"
+                                disabled>@(ar ? "حفظ وطباعة" : "Save & Print")</button>
                     </div>
                 </div>
                 <section id="boundInvoice" hidden aria-label="@(ar ? "الفاتورة المحفوظة" : "Saved invoice")">
                     <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
                         <strong id="boundInvoiceCustomer"></strong>
-                        <span id="boundInvoiceStatus" class="badge text-bg-light border text-dark"></span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span id="boundInvoiceStatus" class="badge text-bg-light border text-dark"></span>
+                            <button id="closeInvoiceButton" class="btn btn-sm btn-outline-secondary" type="button"
+                                    aria-label="@(ar ? "إغلاق الفاتورة" : "Close invoice")">×</button>
+                        </div>
                     </div>
                     <p class="small text-secondary mb-3">
                         <span id="boundInvoiceMobile"></span>
@@ -308,11 +314,7 @@
                         <span>@(ar ? "المتبقي" : "Balance due")</span>
                         <strong id="boundInvoiceBalance"></strong>
                     </div>
-                    <div class="d-grid gap-2">
-                        <a id="boundInvoicePayment" class="btn btn-primary">@(ar ? "استلام الدفعة" : "Receive Balance")</a>
-                        <a id="boundInvoiceDetails" class="btn btn-outline-primary">@(ar ? "عرض الفاتورة والطباعة" : "View invoice / Print")</a>
-                        <button id="closeInvoiceButton" type="button" class="btn btn-outline-secondary">@(ar ? "العودة إلى الطلب الجديد" : "Back to new order")</button>
-                    </div>
+                    <button id="boundInvoicePayment" type="button" class="btn btn-primary w-100">@(ar ? "تحصيل المتبقي" : "Receive Balance")</button>
                 </section>
             </div>
         </section>
@@ -322,6 +324,50 @@
     <span id="posToastText"></span>
     <button id="closePosToast" type="button" class="btn-close" aria-label="@(ar ? "إغلاق الرسالة" : "Dismiss message")"></button>
 </div>
+<dialog id="posPaymentDialog" class="pos-dialog pos-payment-dialog" aria-labelledby="posPaymentTitle">
+    <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+        <div><span class="eyebrow">@(ar ? "تحصيل الدفع" : "COLLECT PAYMENT")</span>
+            <h2 id="posPaymentTitle" class="h5 mt-1 mb-0">@(ar ? "الدفع" : "Payment")</h2></div>
+        <button id="closePaymentDialog" type="button" class="btn btn-outline-secondary btn-sm" aria-label="@(ar ? "إغلاق" : "Close")">×</button>
+    </div>
+    <div class="pos-payment-total mb-3">
+        <span>@(ar ? "المبلغ المستحق" : "Net Payable")</span>
+        <strong id="posPaymentDue">0.000 KWD</strong>
+    </div>
+    <div id="posPaymentMethods" class="pos-payment-methods mb-3" role="group" aria-label="@(ar ? "طريقة الدفع" : "Payment method")">
+        <button type="button" data-pos-method="Cash" class="btn btn-primary" aria-pressed="true">Cash</button>
+        <button type="button" data-pos-method="KNET" class="btn btn-outline-primary" aria-pressed="false">KNET</button>
+        <button type="button" data-pos-method="Card" class="btn btn-outline-primary" aria-pressed="false">WAMD</button>
+        <button type="button" data-pos-method="Split" class="btn btn-outline-primary" aria-pressed="false">Split</button>
+    </div>
+    <div id="posSinglePayment">
+        <label for="posPaymentAmount" class="form-label">@(ar ? "مبلغ الدفع" : "Payment Amount (KWD)")</label>
+        <input id="posPaymentAmount" class="form-control mb-2" inputmode="decimal" autocomplete="off" placeholder="0.000" />
+        <div id="posCashReceivedRow">
+            <label for="posCashReceived" class="form-label">@(ar ? "النقد المستلم" : "Cash Received (KWD)")</label>
+            <input id="posCashReceived" class="form-control mb-2" inputmode="decimal" autocomplete="off" placeholder="0.000" />
+        </div>
+    </div>
+    <div id="posSplitPayment" hidden>
+        <div class="row g-2">
+            <div class="col-12"><label for="posSplitCash" class="form-label">Cash (KWD)</label>
+                <input id="posSplitCash" class="form-control" inputmode="decimal" placeholder="0.000" /></div>
+            <div class="col-6"><label for="posSplitKnet" class="form-label">KNET (KWD)</label>
+                <input id="posSplitKnet" class="form-control" inputmode="decimal" placeholder="0.000" /></div>
+            <div class="col-6"><label for="posSplitWamd" class="form-label">WAMD (KWD)</label>
+                <input id="posSplitWamd" class="form-control" inputmode="decimal" placeholder="0.000" /></div>
+        </div>
+        <div class="mt-2"><label for="posSplitCashReceived" class="form-label">@(ar ? "النقد المستلم (اختياري)" : "Cash Received (optional)")</label>
+            <input id="posSplitCashReceived" class="form-control" inputmode="decimal" placeholder="0.000" /></div>
+    </div>
+    <div class="d-flex justify-content-between mt-3"><span>@(ar ? "المدفوع" : "Payment Total")</span><strong id="posPaymentEntered">0.000 KWD</strong></div>
+    <div class="d-flex justify-content-between mt-2"><span>@(ar ? "المتبقي" : "Remaining Balance")</span><strong id="posPaymentRemaining">0.000 KWD</strong></div>
+    <div class="d-flex justify-content-between mt-2"><span>@(ar ? "الباقي للعميل" : "Cash Change")</span><strong id="posPaymentChange">0.000 KWD</strong></div>
+    <p id="posPaymentError" class="small text-danger mt-2" role="alert" aria-live="polite"></p>
+    <button id="confirmPosPayment" type="button" class="btn btn-primary w-100" disabled>
+        @(ar ? "تأكيد الدفع والطباعة" : "Confirm Payment & Print")
+    </button>
+</dialog>
 <dialog id="productDialog" class="pos-dialog" aria-labelledby="dialogTitle">
     <form method="dialog" class="pos-dialog-header d-flex justify-content-between align-items-center gap-3">
         <h2 id="dialogTitle" class="h5 mb-0"></h2>
