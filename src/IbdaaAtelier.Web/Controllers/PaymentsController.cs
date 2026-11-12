@@ -32,6 +32,52 @@ public sealed class PaymentsController(PaymentService payments) : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Prepare([FromBody] long orderId, CancellationToken ct)
+    {
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            return Unauthorized();
+        if (orderId <= 0)
+            return BadRequest(new { error = "Invalid invoice." });
+
+        try
+        {
+            var page = await payments.PrepareAsync(orderId, userId, ct);
+            return Ok(new { page.Form.RequestId, page.OrderId, page.Balance });
+        }
+        catch (ArgumentException exception)
+        {
+            return BadRequest(new { error = exception.Message });
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Conflict(new { error = exception.Message });
+        }
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Record([FromBody] PaymentForm form, CancellationToken ct)
+    {
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
+            return Unauthorized();
+        if (form is null || !ModelState.IsValid)
+            return BadRequest(new { error = "Invalid payment details." });
+
+        try
+        {
+            var receipt = await payments.SaveAsync(form, userId, ct);
+            return Ok(receipt);
+        }
+        catch (ArgumentException exception)
+        {
+            return BadRequest(new { error = exception.Message });
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Conflict(new { error = exception.Message });
+        }
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Take(PaymentForm form, CancellationToken ct)
     {
         if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
