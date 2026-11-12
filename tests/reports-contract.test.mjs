@@ -38,6 +38,10 @@ test("bilingual report labels outstanding and exposes bounded CSV sales export",
     assert.match(controller, /Take\(250\)/);
     assert.match(controller, /CsvCell/);
     assert.match(controller, /Response\.Headers\.CacheControl = "no-store"/);
+    assert.match(controller, /Invoice Number,Order Date \(Kuwait\),Customer,Mobile,Status/);
+    assert.doesNotMatch(controller, /Order ID,Order Number,Order Date/);
+    assert.doesNotMatch(controller, /order\.OrderNumber/);
+    assert.match(view, /Product & service totals before order discounts/);
     assert.match(view, /CultureInfo\.InvariantCulture/);
     assert.doesNotMatch(view, /asp-action="Pdf"/);
 });
