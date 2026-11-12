@@ -24,7 +24,11 @@ test("Find Invoice accepts numeric IDs and queries the original order", () => {
     assert.doesNotMatch(lookup, /OrderNumber|IA-|NO-/);
     assert.match(view, /id="findInvoiceNumber"[^>]*type="search"[^>]*maxlength="20"/);
     assert.match(view, /inputmode="numeric" pattern="\[0-9\]\+"/);
-    assert.match(view, /id="nextOrderNumber">—/);
+    assert.match(view, /id="nextOrderNumber">@Model.NextInvoiceNumber/);
+    assert.match(controller, /NextInvoiceNumber = await GetNextInvoiceNumberAsync\(ct\)/);
+    assert.match(controller, /MaxAsync\(order => \(long\?\)order.OrderId, ct\) \?\? 0/);
+    assert.match(controller, /return checked\(lastInvoiceId \+ 1\)/);
+    assert.match(controller, /return Json\(new \{ requestId, nextInvoiceNumber = await GetNextInvoiceNumberAsync\(ct\) \}\)/);
 });
 
 test("POS, orders, payment and both RDLC print modes use numeric IDs", () => {
@@ -34,6 +38,7 @@ test("POS, orders, payment and both RDLC print modes use numeric IDs", () => {
     const details = read("src/IbdaaAtelier.Web/Views/Orders/Details.cshtml");
     const list = read("src/IbdaaAtelier.Web/Views/Orders/Index.cshtml");
     const print = read("src/IbdaaAtelier.Web/Views/Invoices/Index.cshtml");
+    assert.match(pos, /newInvoiceNumber = String\(data\.nextInvoiceNumber\)/);
     assert.match(pos, /invoiceNumberView\.textContent = String\(data\.orderId\)/);
     assert.match(pos, /invoiceNumberView\.textContent = String\(invoice\.orderId\)/);
     assert.match(orders, /order\.OrderId == invoiceId/);
