@@ -88,3 +88,29 @@ test("product dialog has fixed visible actions and responsive measurement fields
     assert.match(js, /productDialogBody"\)\.scrollTop = 0/);
     assert.match(js, /input\.required = measurement\.isRequired/);
 });
+
+test("desktop POS fills the viewport; only product and alteration lists scroll", () => {
+    assert.match(css, /body\.pos-page \{ height: 100dvh/);
+    assert.match(css, /\.pos-page \.app-layout\.pos-app-layout \{ flex: 1 1 0; min-height: 0/);
+    assert.match(css, /\.pos-app-layout \.pos-shell \{ height: 100%; min-height: 0/);
+    assert.match(css, /\.pos-app-layout #catalogueProducts \.pos-product-grid \{\s*min-height: 0; overflow-y: auto/);
+    assert.match(css, /\.pos-app-layout \.pos-service-grid \{\s*flex: 1 1 0; min-height: 0; overflow-y: auto/);
+    assert.match(css, /\.pos-app-layout \.pos-checkout #orderCart \{\s*flex: 1 1 0; min-height: 0; max-height: none; overflow: hidden/);
+    assert.match(css, /\.pos-app-layout \.pos-checkout #boundInvoiceItems \{\s*flex: 1 1 0; min-height: 0; overflow: hidden/);
+    assert.match(css, /max-width: 1199\.98px\) and \(min-height: 650px/);
+    assert.match(view, /id="cartItemsDialog"/);
+    assert.match(view, /id="viewAllCartItems"[^>]*hidden/);
+    assert.match(view, /id="viewAllInvoiceItems"[^>]*hidden/);
+    assert.match(js, /cartView\.scrollHeight <= cartView\.clientHeight/);
+    assert.match(js, /boundItemsView\.scrollHeight <= boundItemsView\.clientHeight/);
+    assert.match(js, /expandedParent\.insertBefore\(expandedItems, expandedNext\)/);
+});
+
+test("invoice action stays beside the numeric header at desktop and mobile widths", () => {
+    assert.match(view, /class="pos-cart-header-actions"/);
+    assert.match(view, /id="openFindInvoice"/);
+    assert.match(view, /id="closeInvoiceButton"/);
+    assert.match(css, /\.pos-app-layout \.pos-cart-header-actions \{\s*display: flex/);
+    assert.match(css, /\.pos-find-invoice-dialog \{ width: min\(400px/);
+    assert.match(css, /@media \(max-width: 575\.98px\) \{\s*\.pos-app-layout \.pos-cart-header/);
+});
