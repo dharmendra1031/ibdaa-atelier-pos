@@ -40,7 +40,6 @@ public sealed class PaymentService(AtelierDbContext db)
         return new PaymentEntryPage
         {
             OrderId = orderId,
-            OrderNumber = order.OrderNumber,
             Total = order.Total,
             Paid = paid,
             Balance = balance,
