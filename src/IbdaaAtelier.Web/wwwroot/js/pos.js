@@ -220,6 +220,7 @@
         openInvoiceButton.hidden = true;
         backToNewBill.hidden = false;
         if (invoiceDialog.open) invoiceDialog.close();
+        window.requestAnimationFrame(updateCartOverflow);
         notice("");
     }
 
@@ -290,22 +291,38 @@
     const allItemsDialog = document.getElementById("cartItemsDialog");
     const allItemsContainer = document.getElementById("allCartItemsContainer");
     const viewAllItemsButton = document.getElementById("viewAllCartItems");
+    const viewAllInvoiceButton = document.getElementById("viewAllInvoiceItems");
+    const boundItemsView = document.getElementById("boundInvoiceItems");
+    let expandedItems = null;
+    let expandedParent = null;
+    let expandedNext = null;
 
     function updateCartOverflow() {
         if (allItemsDialog.open) return;
         viewAllItemsButton.hidden = items.length === 0 ||
             cartView.scrollHeight <= cartView.clientHeight + 2;
+        viewAllInvoiceButton.hidden = !boundInvoiceId || boundItemsView.children.length === 0 ||
+            boundItemsView.scrollHeight <= boundItemsView.clientHeight + 2;
         document.getElementById("allCartItemCount").textContent = String(items.length);
+        document.getElementById("allInvoiceItemCount").textContent = String(boundItemsView.children.length);
     }
 
-    viewAllItemsButton.addEventListener("click", () => {
-        allItemsContainer.append(cartView);
+    function showAllItems(list) {
+        expandedItems = list;
+        expandedParent = list.parentElement;
+        expandedNext = list.nextSibling;
+        allItemsContainer.append(list);
         allItemsDialog.showModal();
-    });
+    }
+
+    viewAllItemsButton.addEventListener("click", () => showAllItems(cartView));
+    viewAllInvoiceButton.addEventListener("click", () => showAllItems(boundItemsView));
     document.getElementById("closeCartItemsDialog").addEventListener("click", () => allItemsDialog.close());
     allItemsDialog.addEventListener("close", () => {
-        if (cartView.parentElement === allItemsContainer)
-            viewAllItemsButton.parentElement.insertBefore(cartView, viewAllItemsButton);
+        if (expandedItems && expandedParent) expandedParent.insertBefore(expandedItems, expandedNext);
+        expandedItems = null;
+        expandedParent = null;
+        expandedNext = null;
         window.requestAnimationFrame(updateCartOverflow);
     });
     window.addEventListener("resize", () => window.requestAnimationFrame(updateCartOverflow));
