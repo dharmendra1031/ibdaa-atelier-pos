@@ -1,38 +1,40 @@
-/* Local IBDAA_TEST demo data only. Image files live under wwwroot/uploads/products/<id>/demo.png. */
+/* Optional gents measurement labels for the website-based IBDAA_TEST seed.
+   Product images, available sizes and size chart values are NOT published reliably
+   at /products. Add verified images via Admin instead of inserting fake demo.png paths.
+   All measurement fields are optional until the shop approves its tailoring form. */
 SET XACT_ABORT ON;
-IF DB_NAME() <> N'IBDAA_TEST' THROW 51200, 'Demo script runs only in IBDAA_TEST.', 1;
-IF (SELECT COUNT(*) FROM dbo.Products WHERE ProductId BETWEEN 1 AND 8) <> 8
-    THROW 51201, 'Expected eight demo products with IDs 1-8.', 1;
+IF DB_NAME() <> N'IBDAA_TEST'
+    THROW 51200, 'Details script runs only in IBDAA_TEST.', 1;
+IF (SELECT COUNT(*) FROM dbo.Products) <> 16
+    OR NOT EXISTS (SELECT 1 FROM dbo.Products WHERE NameAr = N'قندورة "سلطان"')
+    OR NOT EXISTS (SELECT 1 FROM dbo.Products WHERE NameAr = N'"نسمات الصيف" Summer Breeze')
+    THROW 51201, 'Expected the 16-item gents demo seed; no data changed.', 1;
 
 BEGIN TRANSACTION;
 
-INSERT dbo.ProductImages (ProductId, ImagePath, IsPrimary, DisplayOrder)
-SELECT p.ProductId, CONCAT(N'/uploads/products/', p.ProductId, N'/demo.png'), 1, 0
-FROM dbo.Products p
-WHERE p.ProductId BETWEEN 1 AND 8
-  AND NOT EXISTS (SELECT 1 FROM dbo.ProductImages i WHERE i.ProductId = p.ProductId);
-
-INSERT dbo.SizeChartValues (SizeId, MeasurementId, Value)
-SELECT s.SizeId, m.MeasurementId,
-    CASE m.Name
-        WHEN N'Bust' THEN CHOOSE(s.DisplayOrder, 88, 94, 100, 106)
-        WHEN N'Waist' THEN CHOOSE(s.DisplayOrder, 70, 76, 82, 88)
-        WHEN N'Hips' THEN CHOOSE(s.DisplayOrder, 96, 102, 108, 114)
-        WHEN N'Length' THEN CHOOSE(s.DisplayOrder, 138, 140, 142, 144)
-    END
-FROM dbo.ProductSizes s
-JOIN dbo.Products p ON p.ProductId = s.ProductId
-JOIN dbo.MeasurementDefinitions m ON m.CategoryId = p.CategoryId
-WHERE s.DisplayOrder BETWEEN 1 AND 4
-  AND m.Name IN (N'Bust', N'Waist', N'Hips', N'Length')
-  AND NOT EXISTS (SELECT 1 FROM dbo.SizeChartValues v
-                  WHERE v.SizeId = s.SizeId AND v.MeasurementId = m.MeasurementId);
+INSERT dbo.MeasurementDefinitions
+    (CategoryId, Name, NameAr, Unit, IsRequired, DisplayOrder)
+SELECT category.CategoryId, field.Name, field.NameAr, N'cm', 0, field.SortOrder
+FROM dbo.ProductCategories category
+CROSS JOIN (VALUES
+    (N'Chest', N'الصدر', 1),
+    (N'Shoulder', N'الكتف', 2),
+    (N'Sleeve Length', N'طول الكم', 3),
+    (N'Total Length', N'الطول الكلي', 4)
+) field(Name, NameAr, SortOrder)
+WHERE category.Name IN (N'Gandouras', N'Kaftans', N'Jabadors', N'Jalabiyas')
+    AND NOT EXISTS (
+        SELECT 1 FROM dbo.MeasurementDefinitions existing
+        WHERE existing.CategoryId = category.CategoryId AND existing.Name = field.Name
+    );
 
 IF NOT EXISTS (SELECT 1 FROM dbo.ShopSettings)
     INSERT dbo.ShopSettings (BusinessName, BusinessNameAr)
     VALUES (N'IBDAA Atelier', N'إبداع أتيليه');
 
 COMMIT TRANSACTION;
-SELECT (SELECT COUNT(*) FROM dbo.ProductImages) AS ProductImages,
-       (SELECT COUNT(*) FROM dbo.SizeChartValues) AS SizeChartValues,
-       (SELECT COUNT(*) FROM dbo.ShopSettings) AS ShopSettings;
+
+SELECT (SELECT COUNT(*) FROM dbo.Products) AS Products,
+       (SELECT COUNT(*) FROM dbo.MeasurementDefinitions) AS OptionalMeasurementFields,
+       (SELECT COUNT(*) FROM dbo.ProductImages) AS VerifiedProductImages,
+       (SELECT COUNT(*) FROM dbo.SizeChartValues) AS ApprovedSizeChartValues;
