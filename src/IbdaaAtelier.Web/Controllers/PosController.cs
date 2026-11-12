@@ -134,6 +134,52 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders) :
         return Json(customers);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> FindInvoice(string? number, CancellationToken ct)
+    {
+        var invoiceNumber = number?.Trim().ToUpperInvariant() ?? "";
+        if (invoiceNumber.StartsWith("NO-", StringComparison.Ordinal))
+            invoiceNumber = "IA-" + invoiceNumber[3..];
+        if (invoiceNumber.Length is < 4 or > 24 ||
+            !invoiceNumber.StartsWith("IA-", StringComparison.Ordinal))
+            return BadRequest(new { error = "Enter a valid invoice number." });
+
+        var order = await db.Orders.AsNoTracking()
+            .Where(o => o.OrderNumber == invoiceNumber)
+            .Select(o => new
+            {
+                o.OrderId, o.OrderNumber, o.CustomerName, o.CustomerNameAr,
+                o.CustomerMobile, o.DeliveryDate, o.Status,
+                o.Subtotal, o.DiscountAmount, o.Total
+            })
+            .SingleOrDefaultAsync(ct);
+        if (order is null)
+            return NotFound(new { error = "Invoice not found." });
+
+        var items = await db.OrderItems.AsNoTracking()
+            .Where(i => i.OrderId == order.OrderId)
+            .OrderBy(i => i.OrderItemId)
+            .Select(i => new { i.Name, i.NameAr, i.SizeName, i.Quantity, i.UnitPrice, i.LineTotal })
+            .ToListAsync(ct);
+        var received = await db.OrderPayments.AsNoTracking()
+            .Where(p => p.OrderId == order.OrderId)
+            .SumAsync(p => (decimal?)p.Amount, ct) ?? 0m;
+        var refunded = await db.OrderRefunds.AsNoTracking()
+            .Where(r => r.OrderId == order.OrderId)
+            .SumAsync(r => (decimal?)r.Amount, ct) ?? 0m;
+        var paid = received - refunded;
+
+        return Json(new
+        {
+            order.OrderId, order.OrderNumber, order.CustomerName, order.CustomerNameAr,
+            order.CustomerMobile, order.DeliveryDate, order.Status,
+            order.Subtotal, order.DiscountAmount, order.Total,
+            Paid = paid,
+            Balance = order.Status == "Cancelled" ? 0m : Math.Max(0m, order.Total - paid),
+            Items = items
+        });
+    }
+
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Reserve(CancellationToken ct)
     {
