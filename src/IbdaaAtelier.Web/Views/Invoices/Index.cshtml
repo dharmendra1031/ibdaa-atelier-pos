@@ -1,0 +1,24 @@
+@model IbdaaAtelier.Web.Models.Orders.InvoicePreviewPage
+@using System.Globalization
+@{
+    var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    ViewData["Title"] = (ar ? "فاتورة " : "Invoice ") + Model.InvoiceNumber;
+    var pdfUrl = Url.Action("Print", "Invoices", new { id = Model.OrderId, paper = Model.Paper });
+}
+<section class="mb-4">
+    <span class="eyebrow">IBDAA ATELIER · INVOICE</span>
+    <h1 class="section-title mt-2 mb-2">@(ar ? "رقم الفاتورة" : "Invoice No.") @Model.InvoiceNumber</h1>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <a asp-action="Index" asp-route-id="@Model.OrderId" asp-route-paper="80mm"
+           class="btn @(Model.Paper == "80mm" ? "btn-primary" : "btn-outline-primary")">80mm</a>
+        <a asp-action="Index" asp-route-id="@Model.OrderId" asp-route-paper="a4"
+           class="btn @(Model.Paper == "a4" ? "btn-primary" : "btn-outline-primary")">A4</a>
+        <a href="@pdfUrl" target="_blank" rel="noopener" class="btn btn-outline-primary">
+            @(ar ? "طباعة الفاتورة" : "Open PDF / Print")
+        </a>
+        <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.OrderId"
+           class="btn btn-outline-secondary">@(ar ? "رجوع" : "Back to order")</a>
+    </div>
+</section>
+<iframe src="@pdfUrl" title="@(ar ? "معاينة الفاتورة" : "Invoice preview")"
+        class="w-100 border rounded" style="height:75vh; min-height:500px"></iframe>

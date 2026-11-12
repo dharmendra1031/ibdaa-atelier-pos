@@ -88,6 +88,10 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
         header["Paid"] = Money(netPaid);
         header["Refunded"] = Money(refunded);
         header["Balance"] = Money(balance);
+        header["PaymentStatus"] = order.Status == "Cancelled" ? "CANCELLED / ملغى" :
+            netPaid <= 0m ? "UNPAID / غير مدفوع" :
+            balance > 0m ? "PARTIALLY PAID / مدفوع جزئياً" : "PAID / مدفوع";
+        header["ReceiptFooter"] = savedBrand?.ReceiptFooter ?? shop?.ReceiptFooter ?? "";
         header["LogoMime"] = logoMime;
         header["Logo"] = logo is null ? DBNull.Value : logo;
         data.Header.Rows.Add(header);
@@ -112,11 +116,18 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
         }
 
         foreach (var payment in payments)
-            data.Payments.Rows.Add(payment.Method, Money(payment.Amount),
-                payment.CreatedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", MoneyCulture));
+        {
+            var method = payment.Method == "Card" ? "WAMD" : payment.Method;
+            var hasChange = payment.Method == "Cash" && payment.Change > 0m;
+            data.Payments.Rows.Add(payment.PaymentId, method, Money(payment.Amount),
+                payment.CreatedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", MoneyCulture),
+                hasChange ? Money(payment.Tendered) : "", hasChange ? Money(payment.Change) : "");
+        }
         foreach (var refund in refunds)
-            data.Payments.Rows.Add("REFUND " + refund.Method, "-" + Money(refund.Amount),
-                refund.CreatedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", MoneyCulture));
+            data.Payments.Rows.Add(-refund.RefundId,
+                "REFUND " + (refund.Method == "Card" ? "WAMD" : refund.Method),
+                "-" + Money(refund.Amount),
+                refund.CreatedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", MoneyCulture), "", "");
 
         return data;
     }

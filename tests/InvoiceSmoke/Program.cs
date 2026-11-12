@@ -23,6 +23,8 @@ foreach (System.Data.DataColumn column in data.Header.Columns)
         "Refunded" => "0.000",
         "Balance" => "55.000",
         "LogoMime" => "image/png",
+        "PaymentStatus" => "PARTIALLY PAID / مدفوع جزئياً",
+        "ReceiptFooter" => "Thank you for visiting IBDAA Atelier / شكراً لزيارتكم",
         _ => "11-11-2026"
     };
 }
@@ -32,7 +34,9 @@ header["Logo"] = Convert.FromBase64String(
 data.Header.Rows.Add(header);
 data.Lines.Rows.Add(1, "Long dress alteration with custom sleeves", "تعديل فستان بأكمام مخصصة",
     "Size: XL\nChest / الصدر: 100 cm\nWaist / الخصر: 85 cm", 2, "40.000", "80.000");
-data.Payments.Rows.Add("KNET", "25.000", "11-11-2026 10:00");
+data.Payments.Rows.Add(1L, "Cash", "10.000", "11-11-2026 10:00", "15.000", "5.000");
+data.Payments.Rows.Add(2L, "WAMD", "5.000", "11-11-2026 10:01", "", "");
+data.Payments.Rows.Add(3L, "KNET", "10.000", "11-11-2026 10:02", "", "");
 
 foreach (var name in new[] { "InvoiceA4.rdlc", "Invoice80mm.rdlc" })
 {

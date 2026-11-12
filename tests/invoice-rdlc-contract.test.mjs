@@ -44,3 +44,39 @@ test("Windows CI attempts real RDLC PDF rendering, not just source checks", () =
     assert.match(ci, /dotnet run --project tests\/InvoiceSmoke\/InvoiceSmoke.csproj/);
     assert.match(read("tests/InvoiceSmoke/Program.cs"), /%PDF/);
 });
+
+test("invoice uses one number, settings branding and typed payment/change fields", () => {
+    const settings = read("src/IbdaaAtelier.Web/Models/Masters/ShopSettings.cs");
+    const snapshot = read("src/IbdaaAtelier.Web/Models/Orders/OrderInvoiceSnapshot.cs");
+    const controller = read("src/IbdaaAtelier.Web/Controllers/ShopSettingsController.cs");
+    const preview = read("src/IbdaaAtelier.Web/Views/Invoices/Index.cshtml");
+    const invoiceSmoke = read("tests/InvoiceSmoke/Program.cs");
+    assert.match(settings, /ReceiptFooter/);
+    assert.match(snapshot, /ReceiptFooter/);
+    assert.match(controller, /settings\.ReceiptFooter =/);
+    assert.match(mapper, /savedBrand\?\.ReceiptFooter \?\? shop\?\.ReceiptFooter/);
+    assert.match(mapper, /payment\.Change > 0m/);
+    assert.match(mapper, /payment\.Method == "Card" \? "WAMD"/);
+    assert.match(mapper, /payment\.PaymentId/);
+    assert.match(xsd, /name="PaymentStatus"/);
+    assert.match(xsd, /name="ReceiptFooter"/);
+    assert.match(xsd, /name="PaymentId" type="xs:long"/);
+    for (const field of ["Tendered", "Change"]) {
+        assert.match(xsd, new RegExp('name="' + field + '"'));
+    }
+    for (const report of [a4, receipt]) {
+        assert.match(report, /Invoice No \/ رقم الفاتورة/);
+        assert.match(report, /Fields!PaymentStatus\.Value/);
+        assert.match(report, /Fields!ReceiptFooter\.Value/);
+        assert.match(report, /Fields!Tendered\.Value/);
+        assert.match(report, /Fields!Change\.Value/);
+        assert.match(report, /GroupExpression>=Fields!PaymentId\.Value/);
+        assert.doesNotMatch(report, /Order No \/ رقم الطلب/);
+    }
+    assert.match(receipt, /<Image Name="ShopLogo">/);
+    assert.match(preview, /asp-route-paper="80mm"/);
+    assert.match(preview, /asp-route-paper="a4"/);
+    assert.match(invoiceSmoke, /"Cash", "10\.000"/);
+    assert.match(invoiceSmoke, /"WAMD", "5\.000"/);
+    assert.match(invoiceSmoke, /"KNET", "10\.000"/);
+});

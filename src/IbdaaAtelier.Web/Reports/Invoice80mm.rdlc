@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
 <DataSources><DataSource Name="LocalData"><ConnectionProperties><DataProvider>System.Data.DataSet</DataProvider><ConnectString>/* local */</ConnectString></ConnectionProperties></DataSource></DataSources>
-<DataSets><DataSet Name="InvoiceHeader"><Fields><Field Name="OrderNumber"><DataField>OrderNumber</DataField></Field><Field Name="OrderDate"><DataField>OrderDate</DataField></Field><Field Name="DeliveryDate"><DataField>DeliveryDate</DataField></Field><Field Name="BusinessName"><DataField>BusinessName</DataField></Field><Field Name="BusinessNameAr"><DataField>BusinessNameAr</DataField></Field><Field Name="ShopAddress"><DataField>ShopAddress</DataField></Field><Field Name="ShopAddressAr"><DataField>ShopAddressAr</DataField></Field><Field Name="ShopMobile"><DataField>ShopMobile</DataField></Field><Field Name="ShopEmail"><DataField>ShopEmail</DataField></Field><Field Name="CustomerName"><DataField>CustomerName</DataField></Field><Field Name="CustomerNameAr"><DataField>CustomerNameAr</DataField></Field><Field Name="CustomerMobile"><DataField>CustomerMobile</DataField></Field><Field Name="Total"><DataField>Total</DataField></Field><Field Name="Paid"><DataField>Paid</DataField></Field><Field Name="Refunded"><DataField>Refunded</DataField></Field><Field Name="Balance"><DataField>Balance</DataField></Field><Field Name="Logo"><DataField>Logo</DataField></Field><Field Name="LogoMime"><DataField>LogoMime</DataField></Field></Fields><Query><DataSourceName>LocalData</DataSourceName><CommandText>/* local data */</CommandText></Query></DataSet>
+<DataSets><DataSet Name="InvoiceHeader"><Fields><Field Name="OrderNumber"><DataField>OrderNumber</DataField></Field><Field Name="OrderDate"><DataField>OrderDate</DataField></Field><Field Name="DeliveryDate"><DataField>DeliveryDate</DataField></Field><Field Name="BusinessName"><DataField>BusinessName</DataField></Field><Field Name="BusinessNameAr"><DataField>BusinessNameAr</DataField></Field><Field Name="ShopAddress"><DataField>ShopAddress</DataField></Field><Field Name="ShopAddressAr"><DataField>ShopAddressAr</DataField></Field><Field Name="ShopMobile"><DataField>ShopMobile</DataField></Field><Field Name="ShopEmail"><DataField>ShopEmail</DataField></Field><Field Name="CustomerName"><DataField>CustomerName</DataField></Field><Field Name="CustomerNameAr"><DataField>CustomerNameAr</DataField></Field><Field Name="CustomerMobile"><DataField>CustomerMobile</DataField></Field><Field Name="Total"><DataField>Total</DataField></Field><Field Name="Paid"><DataField>Paid</DataField></Field><Field Name="Refunded"><DataField>Refunded</DataField></Field><Field Name="Balance"><DataField>Balance</DataField></Field><Field Name="Logo"><DataField>Logo</DataField></Field><Field Name="LogoMime"><DataField>LogoMime</DataField></Field><Field Name="PaymentStatus"><DataField>PaymentStatus</DataField></Field><Field Name="ReceiptFooter"><DataField>ReceiptFooter</DataField></Field></Fields><Query><DataSourceName>LocalData</DataSourceName><CommandText>/* local data */</CommandText></Query></DataSet>
 <DataSet Name="InvoiceLines"><Fields><Field Name="LineNumber"><DataField>LineNumber</DataField></Field><Field Name="Name"><DataField>Name</DataField></Field><Field Name="NameAr"><DataField>NameAr</DataField></Field><Field Name="Details"><DataField>Details</DataField></Field><Field Name="Quantity"><DataField>Quantity</DataField></Field><Field Name="UnitPrice"><DataField>UnitPrice</DataField></Field><Field Name="LineTotal"><DataField>LineTotal</DataField></Field></Fields><Query><DataSourceName>LocalData</DataSourceName><CommandText>/* local data */</CommandText></Query></DataSet>
-<DataSet Name="InvoicePayments"><Fields><Field Name="Method"><DataField>Method</DataField></Field><Field Name="Paid"><DataField>Paid</DataField></Field><Field Name="PaymentDate"><DataField>PaymentDate</DataField></Field></Fields><Query><DataSourceName>LocalData</DataSourceName><CommandText>/* local data */</CommandText></Query></DataSet></DataSets>
-<Body><ReportItems><Textbox Name="BusinessName">
+<DataSet Name="InvoicePayments"><Fields><Field Name="PaymentId"><DataField>PaymentId</DataField></Field><Field Name="Method"><DataField>Method</DataField></Field><Field Name="Paid"><DataField>Paid</DataField></Field><Field Name="PaymentDate"><DataField>PaymentDate</DataField></Field><Field Name="Tendered"><DataField>Tendered</DataField></Field><Field Name="Change"><DataField>Change</DataField></Field></Fields><Query><DataSourceName>LocalData</DataSourceName><CommandText>/* local data */</CommandText></Query></DataSet></DataSets>
+<Body><ReportItems><Image Name="ShopLogo"><Source>Database</Source><Value>=First(Fields!Logo.Value,"InvoiceHeader")</Value><MIMEType>=First(Fields!LogoMime.Value,"InvoiceHeader")</MIMEType><Sizing>FitProportional</Sizing><Visibility><Hidden>=IsNothing(First(Fields!Logo.Value,"InvoiceHeader"))</Hidden></Visibility><Top>0cm</Top><Left>0.10cm</Left><Height>0.90cm</Height><Width>1.45cm</Width><Style><Border><Style>None</Style></Border></Style></Image>
+<Textbox Name="BusinessName">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!BusinessName.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>12pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs>
-<Top>0.00cm</Top><Left>0.00cm</Left><Height>0.48cm</Height><Width>7.30cm</Width>
+<Top>0.00cm</Top><Left>1.75cm</Left><Height>0.48cm</Height><Width>5.55cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="BusinessNameAr">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!BusinessNameAr.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs>
-<Top>0.50cm</Top><Left>0.00cm</Left><Height>0.38cm</Height><Width>7.30cm</Width>
+<Top>0.50cm</Top><Left>1.75cm</Left><Height>0.38cm</Height><Width>5.55cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="ShopContact">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
@@ -26,7 +27,7 @@
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="InvoiceNumber">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
-<Paragraphs><Paragraph><TextRuns><TextRun><Value>=&quot;No / الرقم: &quot; &amp; First(Fields!OrderNumber.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>9pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
+<Paragraphs><Paragraph><TextRuns><TextRun><Value>=&quot;Invoice No / رقم الفاتورة: &quot; &amp; First(Fields!OrderNumber.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>9pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
 <Top>1.94cm</Top><Left>0.00cm</Left><Height>0.38cm</Height><Width>7.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="InvoiceDate">
@@ -34,20 +35,21 @@
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=&quot;Date / التاريخ: &quot; &amp; First(Fields!OrderDate.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
 <Top>2.37cm</Top><Left>0.00cm</Left><Height>0.35cm</Height><Width>7.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
+<Textbox Name="PaymentStatus"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!PaymentStatus.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Top>2.83cm</Top><Left>0cm</Left><Height>0.35cm</Height><Width>7.30cm</Width><Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Customer">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=&quot;Customer / العميل: &quot; &amp; First(Fields!CustomerName.Value,&quot;InvoiceHeader&quot;) &amp; &quot; / &quot; &amp; First(Fields!CustomerNameAr.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>2.80cm</Top><Left>0.00cm</Left><Height>0.58cm</Height><Width>7.30cm</Width>
+<Top>3.25cm</Top><Left>0.00cm</Left><Height>0.58cm</Height><Width>7.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Delivery">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=&quot;Delivery / التسليم: &quot; &amp; First(Fields!DeliveryDate.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>3.45cm</Top><Left>0.00cm</Left><Height>0.38cm</Height><Width>7.30cm</Width>
+<Top>3.90cm</Top><Left>0.00cm</Left><Height>0.38cm</Height><Width>7.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="ItemsLabel">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>Item / الصنف           Qty       KWD</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>3.98cm</Top><Left>0.00cm</Left><Height>0.34cm</Height><Width>7.30cm</Width>
+<Top>4.43cm</Top><Left>0.00cm</Left><Height>0.34cm</Height><Width>7.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Tablix Name="OrderLines"><TablixBody><TablixColumns><TablixColumn><Width>4.20cm</Width></TablixColumn><TablixColumn><Width>0.55cm</Width></TablixColumn><TablixColumn><Width>2.55cm</Width></TablixColumn></TablixColumns>
 <TablixRows><TablixRow><Height>0.80cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="OrderLinesCell0">
@@ -65,57 +67,57 @@
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody>
 <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
 <TablixRowHierarchy><TablixMembers><TablixMember><Group Name="OrderLinesGroup"><GroupExpressions><GroupExpression>=Fields!LineNumber.Value</GroupExpression></GroupExpressions></Group></TablixMember></TablixMembers></TablixRowHierarchy>
-<DataSetName>InvoiceLines</DataSetName><Top>4.40cm</Top><Left>0cm</Left><Height>0.80cm</Height><Width>7.30cm</Width>
+<DataSetName>InvoiceLines</DataSetName><Top>4.85cm</Top><Left>0cm</Left><Height>0.80cm</Height><Width>7.30cm</Width>
 <Style><Border><Style>None</Style></Border></Style></Tablix>
 <Textbox Name="Labela">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>Total / الإجمالي</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>6.00cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
+<Top>6.45cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Amounta">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!Total.Value,&quot;InvoiceHeader&quot;) &amp; &quot; KWD&quot;</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs>
-<Top>6.00cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
+<Top>6.45cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Labelb">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>Net paid / المدفوع</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>6.48cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
+<Top>6.93cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Amountb">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!Paid.Value,&quot;InvoiceHeader&quot;) &amp; &quot; KWD&quot;</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs>
-<Top>6.48cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
+<Top>6.93cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Labelc">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>Refund / المسترد</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>6.96cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
+<Top>7.41cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Amountc">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!Refunded.Value,&quot;InvoiceHeader&quot;) &amp; &quot; KWD&quot;</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs>
-<Top>6.96cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
+<Top>7.41cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Labeld">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>Balance / المتبقي</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>7.44cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
+<Top>7.89cm</Top><Left>0.00cm</Left><Height>0.37cm</Height><Width>3.90cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="Amountd">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!Balance.Value,&quot;InvoiceHeader&quot;) &amp; &quot; KWD&quot;</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs>
-<Top>7.44cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
+<Top>7.89cm</Top><Left>3.90cm</Left><Height>0.37cm</Height><Width>3.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="PaymentsTitle">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
 <Paragraphs><Paragraph><TextRuns><TextRun><Value>PAYMENTS / الدفعات</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>8.07cm</Top><Left>0.00cm</Left><Height>0.38cm</Height><Width>7.30cm</Width>
+<Top>8.52cm</Top><Left>0.00cm</Left><Height>0.38cm</Height><Width>7.30cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Tablix Name="PaymentLines"><TablixBody><TablixColumns><TablixColumn><Width>3.10cm</Width></TablixColumn><TablixColumn><Width>1.40cm</Width></TablixColumn><TablixColumn><Width>2.80cm</Width></TablixColumn></TablixColumns>
 <TablixRows><TablixRow><Height>0.80cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="PaymentLinesCell0">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
-<Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Method.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>7pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
+<Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!Method.Value &amp; IIf(Fields!Change.Value = &quot;&quot;, &quot;&quot;, vbCrLf &amp; &quot;Cash in: &quot; &amp; Fields!Tendered.Value &amp; &quot; KWD&quot; &amp; vbCrLf &amp; &quot;Change: &quot; &amp; Fields!Change.Value &amp; &quot; KWD&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>7pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
 <Top>0.00cm</Top><Left>0.00cm</Left><Height>0.55cm</Height><Width>1.00cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="PaymentLinesCell1">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
@@ -127,8 +129,9 @@
 <Top>0.00cm</Top><Left>0.00cm</Left><Height>0.55cm</Height><Width>1.00cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows></TablixBody>
 <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
-<TablixRowHierarchy><TablixMembers><TablixMember><Group Name="PaymentLinesGroup"><GroupExpressions><GroupExpression>=Fields!Method.Value &amp; Fields!PaymentDate.Value</GroupExpression></GroupExpressions></Group></TablixMember></TablixMembers></TablixRowHierarchy>
-<DataSetName>InvoicePayments</DataSetName><Top>8.56cm</Top><Left>0cm</Left><Height>0.80cm</Height><Width>7.30cm</Width>
-<Style><Border><Style>None</Style></Border></Style></Tablix></ReportItems><Height>11.50cm</Height><Style><Border><Style>None</Style></Border></Style></Body>
+<TablixRowHierarchy><TablixMembers><TablixMember><Group Name="PaymentLinesGroup"><GroupExpressions><GroupExpression>=Fields!PaymentId.Value</GroupExpression></GroupExpressions></Group></TablixMember></TablixMembers></TablixRowHierarchy>
+<DataSetName>InvoicePayments</DataSetName><Top>9.01cm</Top><Left>0cm</Left><Height>0.80cm</Height><Width>7.30cm</Width>
+<Style><Border><Style>None</Style></Border></Style></Tablix><Textbox Name="ReceiptFooter"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=First(Fields!ReceiptFooter.Value,&quot;InvoiceHeader&quot;)</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs><Top>10.55cm</Top><Left>0cm</Left><Height>0.80cm</Height><Width>7.30cm</Width><Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
+</ReportItems><Height>11.80cm</Height><Style><Border><Style>None</Style></Border></Style></Body>
 <Width>7.30cm</Width><Page><PageHeight>15.00cm</PageHeight><PageWidth>8cm</PageWidth><LeftMargin>0.25cm</LeftMargin><RightMargin>0.25cm</RightMargin><TopMargin>0.25cm</TopMargin><BottomMargin>0.25cm</BottomMargin><Style /></Page>
 <Language>en-US</Language><ConsumeContainerWhitespace>true</ConsumeContainerWhitespace><rd:ReportUnitType>Cm</rd:ReportUnitType></Report>
