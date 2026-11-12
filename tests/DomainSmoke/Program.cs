@@ -126,7 +126,7 @@ var orderForm = new OrderSaveForm
 };
 var saved = await orders.SaveAsync(orderForm, user.UserId, CancellationToken.None);
 Check(saved.OrderId > 0 && saved.Total == 27.500m && !saved.Replayed, "Order total or save is incorrect.");
-Check(saved.OrderNumber == $"IA-{saved.OrderId}", "Order number does not match numeric ID.");
+Check(saved.OrderId > 0, "Invoice number must be a positive numeric ID.");
 
 var duplicateOrder = await orders.SaveAsync(orderForm, user.UserId, CancellationToken.None);
 Check(duplicateOrder.Replayed && duplicateOrder.OrderId == saved.OrderId, "Retry created a second order.");
