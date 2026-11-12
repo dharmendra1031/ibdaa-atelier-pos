@@ -50,7 +50,7 @@ public sealed class PosOrderService(AtelierDbContext db, OrderLineBuilder lineBu
                 throw new InvalidOperationException("The request was already used for a different order.");
 
             await transaction.CommitAsync(ct);
-            return new SavedOrder(existing.OrderId, existing.OrderNumber, existing.Total, true);
+            return new SavedOrder(existing.OrderId, existing.Total, true);
         }
 
         if (request.Fingerprint is not null)
@@ -141,6 +141,6 @@ public sealed class PosOrderService(AtelierDbContext db, OrderLineBuilder lineBu
         await db.SaveChangesAsync(ct);
         await transaction.CommitAsync(ct);
 
-        return new SavedOrder(order.OrderId, order.OrderNumber, order.Total, false);
+        return new SavedOrder(order.OrderId, order.Total, false);
     }
 }
