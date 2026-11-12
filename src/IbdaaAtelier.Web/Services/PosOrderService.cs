@@ -94,7 +94,8 @@ public sealed class PosOrderService(AtelierDbContext db, OrderLineBuilder lineBu
             AddressAr = shop?.AddressAr,
             Mobile = shop?.Mobile,
             Email = shop?.Email,
-            LogoPath = shop?.LogoPath
+            LogoPath = shop?.LogoPath,
+            ReceiptFooter = shop?.ReceiptFooter
         });
 
         foreach (var line in lines)

@@ -30,6 +30,9 @@ public sealed class ShopSettings
     [MaxLength(260)]
     public string? LogoPath { get; set; }
     public bool RequireRegisterOpen { get; set; }
+
+    [MaxLength(500)]
+    public string? ReceiptFooter { get; set; }
 }
 
 public sealed class ShopSettingsForm
@@ -54,4 +57,7 @@ public sealed class ShopSettingsForm
 
     public string? LogoPath { get; set; }
     public bool RequireRegisterOpen { get; set; }
+
+    [StringLength(500)]
+    public string? ReceiptFooter { get; set; }
 }

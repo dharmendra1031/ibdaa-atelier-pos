@@ -15,4 +15,5 @@ public sealed class OrderInvoiceSnapshot
     [MaxLength(25)] public string? Mobile { get; set; }
     [MaxLength(150)] public string? Email { get; set; }
     [MaxLength(260)] public string? LogoPath { get; set; }
+    [MaxLength(500)] public string? ReceiptFooter { get; set; }
 }

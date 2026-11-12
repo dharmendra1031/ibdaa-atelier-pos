@@ -60,6 +60,12 @@
                     <img src="@Model.LogoPath" alt="Business logo" loading="lazy" style="max-width:180px;max-height:100px;object-fit:contain" />
                 </div>
             }
+            <div class="mt-4">
+                <label asp-for="ReceiptFooter" class="form-label">@(ar ? "رسالة الشكر أسفل الفاتورة" : "Invoice thank-you message")</label>
+                <textarea asp-for="ReceiptFooter" class="form-control" rows="2" maxlength="500"></textarea>
+                <span asp-validation-for="ReceiptFooter" class="text-danger small"></span>
+                <p class="small text-secondary mb-0">@(ar ? "تظهر في فاتورة A4 وإيصال 80 مم." : "Printed at the bottom of A4 and 80mm invoices.")</p>
+            </div>
             <div class="form-check mt-4">
                 <input asp-for="RequireRegisterOpen" class="form-check-input" />
                 <label asp-for="RequireRegisterOpen" class="form-check-label">

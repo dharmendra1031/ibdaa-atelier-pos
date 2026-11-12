@@ -26,6 +26,7 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
             Address = settings?.Address,
             AddressAr = settings?.AddressAr,
             LogoPath = settings?.LogoPath,
+            ReceiptFooter = settings?.ReceiptFooter,
             RequireRegisterOpen = settings?.RequireRegisterOpen ?? false
         });
     }
@@ -107,6 +108,7 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
         form.Email = form.Email?.Trim();
         form.Address = form.Address?.Trim();
         form.AddressAr = form.AddressAr?.Trim();
+        form.ReceiptFooter = form.ReceiptFooter?.Trim();
 
         if (form.BusinessName.Length == 0)
             ModelState.AddModelError(nameof(form.BusinessName), "English business name is required.");
@@ -139,6 +141,7 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
         settings.Email = string.IsNullOrWhiteSpace(form.Email) ? null : form.Email;
         settings.Address = string.IsNullOrWhiteSpace(form.Address) ? null : form.Address;
         settings.AddressAr = string.IsNullOrWhiteSpace(form.AddressAr) ? null : form.AddressAr;
+        settings.ReceiptFooter = string.IsNullOrWhiteSpace(form.ReceiptFooter) ? null : form.ReceiptFooter;
 
         await db.SaveChangesAsync(ct);
 

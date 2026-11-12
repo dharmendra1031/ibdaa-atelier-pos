@@ -6,6 +6,7 @@ const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8"
 const controller = read("src/IbdaaAtelier.Web/Controllers/ShopSettingsController.cs");
 const schema = read("database/021_shop_settings.sql");
 const singletonMigration = read("database/027_shop_settings_singleton.sql");
+const footerMigration = read("database/031_invoice_receipt_footer.sql");
 const context = read("src/IbdaaAtelier.Web/Data/AtelierDbContext.cs");
 const view = read("src/IbdaaAtelier.Web/Views/ShopSettings/Index.cshtml");
 const runner = read("tests/sql/run-smoke.sh");
@@ -19,6 +20,8 @@ test("settings use a single numeric identity row with no client seed data", () =
     assert.doesNotMatch(schema, /INSERT INTO|UNIQUEIDENTIFIER|NEWID\s*\(/i);
     assert.match(singletonMigration, /DROP CONSTRAINT CK_ShopSettings_Singleton/);
     assert.match(singletonMigration, /CREATE UNIQUE INDEX UX_ShopSettings_OneRow/);
+    assert.match(footerMigration, /ALTER TABLE dbo\.ShopSettings ADD ReceiptFooter NVARCHAR\(500\) NULL/);
+    assert.match(footerMigration, /ALTER TABLE dbo\.OrderInvoiceSnapshots ADD ReceiptFooter NVARCHAR\(500\) NULL/);
     assert.match(context, /DbSet<ShopSettings>/);
 });
 
@@ -40,6 +43,8 @@ test("isolated SQL CI includes guarded settings scripts and smoke test", () => {
     assert.doesNotMatch(settingsVerifier, /CK_ShopSettings_Singleton'/);
     assert.match(singletonVerifier, /UX_ShopSettings_OneRow/);
     assert.match(runner, /shop-settings-smoke\.sql/);
+    assert.match(runner, /031_invoice_receipt_footer\.sql/);
+    assert.match(runner, /032_verify_invoice_receipt_footer\.sql/);
 });
 
 test("logo is validated against existing image headers and stored under a safe shop path", () => {

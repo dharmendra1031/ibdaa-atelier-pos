@@ -65,7 +65,8 @@ for file in \
     database/021_shop_settings.sql \
     database/023_invoice_snapshots.sql \
     database/025_cash_register.sql \
-    database/027_shop_settings_singleton.sql; do
+    database/027_shop_settings_singleton.sql \
+    database/031_invoice_receipt_footer.sql; do
     run_script "$file"
 done
 
@@ -83,7 +84,8 @@ for file in \
     database/022_verify_shop_settings.sql \
     database/024_verify_invoice_snapshots.sql \
     database/026_verify_cash_register.sql \
-    database/028_verify_shop_settings_singleton.sql; do
+    database/028_verify_shop_settings_singleton.sql \
+    database/032_verify_invoice_receipt_footer.sql; do
     run_script "$file"
 done
 

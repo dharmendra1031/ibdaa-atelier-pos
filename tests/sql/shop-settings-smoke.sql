@@ -25,12 +25,14 @@ IF @duplicateBlocked <> 1
     THROW 51088, 'A second settings row was accepted.', 1;
 
 UPDATE dbo.ShopSettings
-SET BusinessName = N'Updated Test Atelier', Email = N'test@example.invalid'
+SET BusinessName = N'Updated Test Atelier', Email = N'test@example.invalid',
+    ReceiptFooter = N'Thank you from settings'
 WHERE SettingsId = @settingsId;
 
 IF NOT EXISTS (SELECT 1 FROM dbo.ShopSettings
     WHERE SettingsId = @settingsId AND BusinessName = N'Updated Test Atelier'
-    AND BusinessNameAr = N'مشغل تجريبي')
+    AND BusinessNameAr = N'مشغل تجريبي'
+    AND ReceiptFooter = N'Thank you from settings')
     THROW 51087, 'Settings update did not preserve bilingual details.', 1;
 
 ROLLBACK TRANSACTION;
