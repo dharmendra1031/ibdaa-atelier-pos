@@ -509,6 +509,76 @@ a:focus-visible, button:focus-visible {
 .pos-dialog-thumbnail { padding: 3px; border: 2px solid transparent; border-radius: 8px; background: #fff; flex: 0 0 auto; }
 .pos-dialog-thumbnail.active { border-color: var(--atelier-primary); }
 .pos-dialog-thumbnail img { display: block; width: 54px; height: 60px; object-fit: cover; border-radius: 5px; }
+/* Product details: keep the title and actions visible while measurements scroll. */
+#productDialog[open] {
+    display: flex;
+    flex-direction: column;
+    width: min(640px, calc(100% - 24px));
+    max-height: calc(100dvh - 32px);
+    padding: 0;
+    overflow: hidden;
+}
+#productDialog .pos-dialog-header,
+#productDialog .pos-dialog-actions {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 14px 20px;
+    background: #fff;
+}
+#productDialog .pos-dialog-header { border-bottom: 1px solid var(--atelier-border); }
+#productDialog .pos-dialog-header h2 { overflow-wrap: anywhere; }
+#productDialog .pos-dialog-header .btn {
+    flex: 0 0 auto; min-width: 44px; min-height: 44px; font-size: 22px;
+}
+#productDialog .pos-dialog-body {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 16px 20px;
+}
+#productDialog .pos-dialog-actions {
+    border-top: 1px solid var(--atelier-border);
+}
+#productDialog .pos-dialog-actions .btn { min-height: 46px; font-size: 15px; }
+#productDialog .pos-dialog-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+#productDialog .pos-dialog-field { min-width: 0; }
+#productDialog .pos-dialog-field .form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+#productDialog .pos-dialog-field .form-control,
+#productDialog .pos-dialog-field .form-select {
+    min-height: 46px;
+    margin-bottom: 0;
+    font-size: 16px;
+}
+#productDialog .pos-dialog-gallery { margin-bottom: 12px !important; }
+#productDialog .pos-dialog-image { max-height: 160px; }
+#productDialog #posNotes { min-height: 80px; }
+@media (max-width: 575.98px) {
+    #productDialog[open] {
+        inset: 0;
+        margin: 0;
+        width: 100vw;
+        max-width: none;
+        height: 100dvh;
+        max-height: 100dvh;
+        border: 0;
+        border-radius: 0;
+    }
+    #productDialog .pos-dialog-form-grid { grid-template-columns: minmax(0, 1fr); }
+    #productDialog .pos-dialog-header,
+    #productDialog .pos-dialog-actions { padding-inline: 16px; }
+    #productDialog .pos-dialog-body { padding-inline: 16px; }
+    #productDialog .pos-dialog-actions .btn-primary { flex: 1 1 auto; }
+}
+
 @media (max-width: 575.98px) {
     .pos-app-layout .pos-shortcuts { max-width: 100%; }
     .pos-app-layout .pos-shortcuts .btn { padding: 6px 10px; }

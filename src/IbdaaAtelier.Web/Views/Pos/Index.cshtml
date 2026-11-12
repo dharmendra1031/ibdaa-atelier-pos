@@ -254,12 +254,14 @@
     <button id="closePosToast" type="button" class="btn-close" aria-label="@(ar ? "إغلاق الرسالة" : "Dismiss message")"></button>
 </div>
 <dialog id="productDialog" class="pos-dialog" aria-labelledby="dialogTitle">
-    <form method="dialog" class="d-flex justify-content-between align-items-start gap-3 mb-3">
+    <form method="dialog" class="pos-dialog-header d-flex justify-content-between align-items-center gap-3">
         <h2 id="dialogTitle" class="h5 mb-0"></h2>
-        <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="Close">×</button>
+        <button type="submit" class="btn btn-outline-secondary" aria-label="@(ar ? "إغلاق" : "Close")">×</button>
     </form>
-    <div id="dialogFields"></div>
-    <div class="d-flex gap-2 mt-4">
+    <div id="productDialogBody" class="pos-dialog-body">
+        <div id="dialogFields"></div>
+    </div>
+    <div class="pos-dialog-actions d-flex gap-2">
         <button type="button" id="addProductButton" class="btn btn-primary">@(ar ? "إضافة للطلب" : "Add to order")</button>
         <button type="button" id="cancelProductButton" class="btn btn-outline-secondary">@(ar ? "إلغاء" : "Cancel")</button>
     </div>

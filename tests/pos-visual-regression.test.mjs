@@ -73,3 +73,18 @@ test("cart header shows compact customer searches and Invoice NO with matched he
     assert.match(css, /@media \(max-width: 420px\)/);
     assert.doesNotMatch(css, /pos-order-preview|pos-customer-bar|pos-customer-mobile/);
 });
+
+test("product dialog has fixed visible actions and responsive measurement fields", () => {
+    assert.match(view, /id="productDialogBody" class="pos-dialog-body"/);
+    assert.match(view, /class="pos-dialog-header/);
+    assert.match(view, /class="pos-dialog-actions/);
+    assert.match(css, /#productDialog\[open\]/);
+    assert.match(css, /#productDialog \.pos-dialog-body/);
+    assert.match(css, /#productDialog \.pos-dialog-form-grid/);
+    assert.match(css, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+    assert.match(css, /#productDialog \.pos-dialog-actions \.btn \{ min-height: 46px/);
+    assert.match(js, /formGrid\.append\(field\)/);
+    assert.match(js, /dialogFields\.append\(formGrid\)/);
+    assert.match(js, /productDialogBody"\)\.scrollTop = 0/);
+    assert.match(js, /input\.required = measurement\.isRequired/);
+});

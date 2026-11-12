@@ -385,29 +385,35 @@
                 dialogFields.append(gallery);
             }
 
+            const formGrid = element("div", "pos-dialog-form-grid");
+            const quantityField = element("div", "pos-dialog-field");
             const quantityLabel = element("label", "form-label", text("Quantity", "الكمية"));
-            const quantity = element("input", "form-control mb-3");
+            const quantity = element("input", "form-control");
             quantity.type = "number"; quantity.min = "1"; quantity.max = "100";
             quantity.value = String(current?.quantity ?? 1); quantity.id = "posQuantity"; quantity.required = true;
             quantityLabel.htmlFor = quantity.id;
-            dialogFields.append(quantityLabel, quantity);
+            quantityField.append(quantityLabel, quantity);
+            formGrid.append(quantityField);
 
             if (product.sizes.length) {
+                const sizeField = element("div", "pos-dialog-field");
                 const label = element("label", "form-label", text("Size", "المقاس"));
                 label.htmlFor = "posSize";
-                const select = element("select", "form-select mb-3");
+                const select = element("select", "form-select");
                 select.id = "posSize";
                 select.required = true;
                 select.append(new Option(text("Select a size", "اختر المقاس"), ""));
                 product.sizes.forEach(size => select.append(new Option(size.name, String(size.sizeId))));
                 if (current?.sizeId) select.value = String(current.sizeId);
-                dialogFields.append(label, select);
+                sizeField.append(label, select);
+                formGrid.append(sizeField);
             }
 
             product.measurements.forEach(measurement => {
+                const field = element("div", "pos-dialog-field");
                 const label = element("label", "form-label",
                     (arabic ? measurement.nameAr || measurement.name : measurement.name) + " (" + measurement.unit + ")");
-                const input = element("input", "form-control mb-2");
+                const input = element("input", "form-control");
                 input.type = "number"; input.min = "0"; input.max = "9999999.99";
                 input.step = ".01"; input.required = measurement.isRequired;
                 input.dataset.measurementId = String(measurement.measurementId);
@@ -416,8 +422,10 @@
                 const previous = current?.measurements?.find(value => value.measurementId === measurement.measurementId);
                 if (previous) input.value = String(previous.value);
                 label.htmlFor = input.id;
-                dialogFields.append(label, input);
+                field.append(label, input);
+                formGrid.append(field);
             });
+            dialogFields.append(formGrid);
 
             const notesLabel = element("label", "form-label mt-2", text("Instructions", "ملاحظات"));
             const notes = element("textarea", "form-control");
@@ -425,6 +433,7 @@
             notes.value = current?.notes ?? "";
             notesLabel.htmlFor = notes.id;
             dialogFields.append(notesLabel, notes);
+            document.getElementById("productDialogBody").scrollTop = 0;
             notice("");
             dialog.showModal();
         } catch (error) {
@@ -458,6 +467,7 @@
         notes.value = line.notes ?? "";
         notesLabel.htmlFor = notes.id;
         dialogFields.append(quantityLabel, quantity, notesLabel, notes);
+        document.getElementById("productDialogBody").scrollTop = 0;
         dialog.showModal();
     }
 
