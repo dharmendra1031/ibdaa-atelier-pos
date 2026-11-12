@@ -803,7 +803,7 @@
         unpaidButton.disabled = completed || saving || paymentBusy;
     }
 
-    const paymentInputs = ["posPaymentAmount", "posCashReceived", "posSplitCash",
+    const paymentInputs = ["posPaymentAmount", "posSplitCash",
         "posSplitKnet", "posSplitWamd", "posSplitCashReceived"]
         .map(id => document.getElementById(id));
 
@@ -849,9 +849,12 @@
             if (lines.length < 2) throw new Error(text(
                 "Enter amounts in at least two payment methods.",
                 "أدخل مبالغ في طريقتي دفع على الأقل."));
+        } else if (paymentMethod === "Cash") {
+            const received = parseMills(paymentAmount.value);
+            const applied = Math.min(due, received);
+            add("Cash", (applied / 1000).toFixed(3), paymentAmount.value);
         } else {
-            add(paymentMethod, paymentAmount.value,
-                paymentMethod === "Cash" ? document.getElementById("posCashReceived").value : "");
+            add(paymentMethod, paymentAmount.value);
         }
         const total = lines.reduce((sum, line) => sum + Math.round(line.amount * 1000), 0);
         if (total <= 0 || total > due) throw new Error(text(
@@ -898,8 +901,14 @@
         });
         document.getElementById("posSinglePayment").hidden = method === "Split";
         document.getElementById("posSplitPayment").hidden = method !== "Split";
-        document.getElementById("posCashReceivedRow").hidden = method !== "Cash";
+        document.getElementById("posPaymentAmountLabel").textContent = method === "Cash"
+            ? text("Cash Received (KWD)", "النقد المستلم (د.ك)")
+            : text("Payment Amount (KWD)", "مبلغ الدفع (د.ك)");
         updatePaymentPreview();
+        if (method === "Cash" && paymentDialog.open && !paymentPayload) {
+            paymentAmount.focus();
+            paymentAmount.select();
+        }
     }
 
     function openPaymentDialog() {
@@ -923,6 +932,10 @@
             ? text("Receive Balance", "تحصيل المتبقي") : text("Collect Payment", "تحصيل الدفع");
         updatePaymentPreview();
         paymentDialog.showModal();
+        if (paymentMethod === "Cash" && !paymentPayload) {
+            paymentAmount.focus();
+            paymentAmount.select();
+        }
     }
 
     unpaidButton.addEventListener("click", () => {
@@ -958,8 +971,7 @@
         setBusy(paymentConfirm, true, text("Processing payment...", "جار حفظ الدفعة..."));
         paymentError.textContent = "";
         try {
-            const order = boundInvoiceId ? { orderId: boundInvoiceId,
-                orderId: boundInvoiceId } : await saveOrder();
+            const order = boundInvoiceId ? { orderId: boundInvoiceId } : await saveOrder();
             if (!paymentPayload) {
                 if (!paymentRequestId) {
                     const prepared = await getJson(shell.dataset.paymentPrepareUrl, {
