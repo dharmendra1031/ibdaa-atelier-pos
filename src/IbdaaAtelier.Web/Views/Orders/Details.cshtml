@@ -1,13 +1,13 @@
 @model IbdaaAtelier.Web.Models.Orders.OrderDetailsPage
 @using System.Globalization
 @{
-    ViewData["Title"] = "Order " + Model.Order.OrderNumber;
+    ViewData["Title"] = "Order " + Model.Order.OrderId;
     var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
 }
 <section class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
     <div>
         <span class="eyebrow">IBDAA ATELIER · ORDER</span>
-        <h1 class="section-title mt-2 mb-1">@Model.Order.OrderNumber</h1>
+        <h1 class="section-title mt-2 mb-1">@Model.Order.OrderId</h1>
         <p class="text-secondary mb-0">@(ar ? Model.Order.CustomerNameAr : Model.Order.CustomerName) · @Model.Order.CustomerMobile</p>
     </div>
     <div class="d-flex gap-2">
