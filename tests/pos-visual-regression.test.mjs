@@ -51,7 +51,7 @@ test("cashier POS header shows authenticated role and username without changing 
     assert.match(auth, /new Claim\(ClaimTypes\.Role, user\.Role\)/);
 });
 
-test("cart header shows compact customer searches and Invoice NO with matched heading size", () => {
+test("cart header shows customer search and actual saved invoice number", () => {
     const checkout = view.indexOf('class="card filter-card pos-checkout"');
     const name = view.indexOf('id="customerSearch"');
     const mobile = view.indexOf('id="customerMobileSearch"');
@@ -59,13 +59,13 @@ test("cart header shows compact customer searches and Invoice NO with matched he
 
     assert.ok(checkout >= 0 && checkout < name && name < mobile && mobile < cart);
     assert.match(view, /class="pos-cart-header"[\s\S]*?id="cartCount"[\s\S]*?id="nextOrderNumber"/);
-    assert.match(view, /NextOrderNumber\.Replace\("IA-", "NO-"\)/);
+    assert.match(view, /id="nextOrderNumber">@Model.NextOrderNumber/);
     assert.match(view, /\? "فاتورة" : "Invoice"/);
     assert.doesNotMatch(view, /pos-customer-bar|pos-order-preview|customerMobileDisplay/);
     assert.match(js, /async function searchCustomers\(input\)/);
     assert.match(js, /customerSearch\.addEventListener\("input", \(\) => searchCustomers\(customerSearch\)\)/);
     assert.match(js, /customerMobileSearch\.addEventListener\("input", \(\) => searchCustomers\(customerMobileSearch\)\)/);
-    assert.match(js, /nextOrderNumber\.textContent = "NO-" \+ number\[1\]/);
+    assert.match(js, /invoiceNumberView\.textContent = data\.orderNumber/);
     assert.match(css, /\.pos-app-layout \.pos-cart-header/);
     assert.match(css, /\.pos-order-number \{/);
     assert.match(css, /font-size: 22px; font-weight: 650; white-space: nowrap/);
