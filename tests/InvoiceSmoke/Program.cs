@@ -13,7 +13,7 @@ foreach (System.Data.DataColumn column in data.Header.Columns)
     if (column.ColumnName == "Logo") header[column] = DBNull.Value;
     else header[column] = column.ColumnName switch
     {
-        "OrderNumber" => "IA-123",
+        "OrderNumber" => "123",
         "BusinessName" => "TEST REPORT - IBDAA Atelier",
         "BusinessNameAr" => "إبداع أتيليه",
         "CustomerName" => "Arabic and English Customer",
