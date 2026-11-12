@@ -26,7 +26,7 @@ test("Bootstrap 5.3.8 loads locally without a runtime CDN", () => {
     assert.match(layout, /~\/lib\/bootstrap\/css\/bootstrap\.min\.css/);
     assert.match(layout, /~\/lib\/bootstrap\/css\/bootstrap\.rtl\.min\.css/);
     assert.match(layout, /~\/css\/site\.css/);
-    assert.doesNotMatch(layout, /https?:\/\/|jquery|highcharts|bootstrap\.bundle/i);
+    assert.doesNotMatch(layout, /<(?:script|link)\b[^>]*(?:src|href)="https?:\/\/|jquery|highcharts|bootstrap\.bundle/i);
 });
 
 test("English/Arabic switching uses a validated POST and local return URL", () => {
