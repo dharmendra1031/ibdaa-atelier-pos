@@ -7,8 +7,6 @@ namespace IbdaaAtelier.Web.Models.Orders;
 public sealed class Order
 {
     [Key] public long OrderId { get; set; }
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    [MaxLength(24)] public string OrderNumber { get; private set; } = "";
     public long RequestId { get; set; }
     public long CustomerId { get; set; }
     public int CreatedByUserId { get; set; }
