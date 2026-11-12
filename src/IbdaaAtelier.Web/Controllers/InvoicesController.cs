@@ -16,14 +16,10 @@ public sealed class InvoicesController(InvoiceReportService invoices, AtelierDbC
         if (id <= 0 || paper is not ("a4" or "80mm"))
             return BadRequest();
 
-        var invoiceNumber = await db.Orders.AsNoTracking()
-            .Where(order => order.OrderId == id)
-            .Select(order => order.OrderNumber)
-            .SingleOrDefaultAsync(ct);
-        if (invoiceNumber is null)
+        if (!await db.Orders.AnyAsync(order => order.OrderId == id, ct))
             return NotFound();
 
-        return View(new InvoicePreviewPage(id, invoiceNumber, paper));
+        return View(new InvoicePreviewPage(id, paper));
     }
 
     [HttpGet]
