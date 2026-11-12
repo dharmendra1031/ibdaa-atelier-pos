@@ -26,9 +26,12 @@
     const toastText = document.getElementById("posToastText");
     const saveButton = document.getElementById("saveOrderButton");
     const clearCartButton = document.getElementById("clearCartButton");
-    const newButton = document.getElementById("newOrderButton");
-    const savedOrderLink = document.getElementById("savedOrderLink");
-    const viewSavedOrderLink = document.getElementById("viewSavedOrderLink");
+    const unpaidButton = document.getElementById("posChooseUnpaid");
+    const paidButton = document.getElementById("posChoosePaid");
+    const paymentDialog = document.getElementById("posPaymentDialog");
+    const paymentConfirm = document.getElementById("confirmPosPayment");
+    const paymentError = document.getElementById("posPaymentError");
+    const paymentAmount = document.getElementById("posPaymentAmount");
     const deliveryDate = document.getElementById("deliveryDate");
     const quickCustomerDialog = document.getElementById("quickCustomerDialog");
     const quickCustomerForm = document.getElementById("quickCustomerForm");
@@ -40,6 +43,8 @@
     const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
     const pendingKey = "ibdaa.pending-order-request";
     const cartKey = "ibdaa.current-cart";
+    const checkoutKey = "ibdaa.pending-checkout";
+    const lastSaleKey = "ibdaa.last-sale-message";
     let customerId = 0;
     let customerName = "";
     let customerMobile = "";
@@ -52,11 +57,26 @@
     let customerAbort = null;
     let productAbort = null;
     let boundInvoiceId = 0;
+    let boundInvoiceBalance = 0;
+    let paidMode = false;
+    let paymentMethod = "Cash";
+    let savedOrder = null;
+    let paymentRequestId = 0;
+    let paymentPayload = null;
+    let paymentBusy = false;
     let newInvoiceNumber = invoiceNumberView.textContent;
     const text = (en, ar) => arabic ? ar : en;
 
     try {
         requestId = Number(sessionStorage.getItem(pendingKey)) || 0;
+        const pending = JSON.parse(sessionStorage.getItem(checkoutKey) || "null");
+        if (pending && Number.isSafeInteger(pending.order?.orderId) && pending.order.orderId > 0) {
+            savedOrder = pending.order;
+            paymentRequestId = pending.requestId || 0;
+            paymentPayload = pending.payload || null;
+            completed = true;
+            paidMode = true;
+        }
         const saved = JSON.parse(sessionStorage.getItem(cartKey) || "null");
         if (saved && Array.isArray(saved.items)) {
             items = saved.items;
@@ -145,6 +165,7 @@
 
     function showInvoice(invoice) {
         boundInvoiceId = invoice.orderId;
+        boundInvoiceBalance = invoice.balance;
         invoiceNumberView.textContent = invoice.orderNumber;
         document.getElementById("boundInvoiceCustomer").textContent =
             arabic ? invoice.customerNameAr || invoice.customerName : invoice.customerName;
@@ -180,11 +201,8 @@
         document.getElementById("boundInvoiceTotal").textContent = money(invoice.total);
         document.getElementById("boundInvoicePaid").textContent = money(invoice.paid);
         document.getElementById("boundInvoiceBalance").textContent = money(invoice.balance);
-        const id = "?id=" + encodeURIComponent(invoice.orderId);
         const receive = document.getElementById("boundInvoicePayment");
-        receive.href = shell.dataset.paymentUrl + id;
         receive.hidden = invoice.balance <= 0 || invoice.status === "Cancelled";
-        document.getElementById("boundInvoiceDetails").href = shell.dataset.orderUrl + id;
         newOrderCart.hidden = true;
         boundInvoiceView.hidden = false;
         notice("");
@@ -192,7 +210,8 @@
 
     invoiceForm.addEventListener("submit", async event => {
         event.preventDefault();
-        if (saving || invoiceButton.disabled || !invoiceInput.reportValidity()) return;
+        if (saving || paymentBusy || savedOrder || paymentPayload ||
+            invoiceButton.disabled || !invoiceInput.reportValidity()) return;
         const number = invoiceInput.value.trim();
         if (!number) return;
         if (!boundInvoiceId && items.length && !window.confirm(text(
@@ -216,7 +235,13 @@
     });
 
     document.getElementById("closeInvoiceButton").addEventListener("click", () => {
+        if (paymentBusy || paymentPayload) {
+            notice(text("Finish the pending payment before leaving this invoice.",
+                "أكمل الدفع المعلق قبل مغادرة الفاتورة."), true);
+            return;
+        }
         boundInvoiceId = 0;
+        boundInvoiceBalance = 0;
         boundInvoiceView.hidden = true;
         newOrderCart.hidden = false;
         invoiceNumberView.textContent = newInvoiceNumber;
