@@ -192,14 +192,14 @@
                     <h2 class="h5 mb-0 pos-order-heading"><svg class="pos-cart-heading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 3h2l2.5 12h12l2-9H5"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg> @(ar ? "عناصر السلة" : "Cart Items") (<span id="cartCount">0</span>)</h2>
                     <span class="pos-order-number" aria-live="polite">
                         <span>@(ar ? "فاتورة" : "Invoice")</span>
-                        <strong id="nextOrderNumber">@Model.NextOrderNumber</strong>
+                        <strong id="nextOrderNumber">—</strong>
                     </span>
                 </div>
                 <form id="findInvoiceForm" class="d-flex align-items-end gap-2 mb-2" role="search">
                     <div class="flex-grow-1">
                         <label for="findInvoiceNumber" class="form-label">@(ar ? "البحث عن فاتورة" : "Find Invoice")</label>
-                        <input id="findInvoiceNumber" type="search" class="form-control" maxlength="24"
-                               autocomplete="off" placeholder="IA-105" required />
+                        <input id="findInvoiceNumber" type="search" class="form-control" maxlength="20"
+                               inputmode="numeric" pattern="[0-9]+" autocomplete="off" placeholder="105" required />
                     </div>
                     <button id="findInvoiceButton" type="submit" class="btn btn-outline-primary">@(ar ? "بحث" : "Find")</button>
                 </form>
