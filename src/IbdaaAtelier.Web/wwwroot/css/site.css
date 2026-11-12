@@ -782,6 +782,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     padding: 13px; margin: 24px 0 0; border-radius: 10px;
     border: 1px solid #eeded7; background: #fbf3ee;
     color: #75515c; font-size: .82rem; text-align: center;
+    overflow-wrap: anywhere;
 }
 @media (max-width: 575.98px) {
     .auth-services > span { width: 88px; min-height: 74px; }
@@ -1044,13 +1045,18 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 @media (max-width: 575.98px) {
     .pos-order-preview { grid-column: 1; }
     .pos-new-customer { justify-self: stretch; }
-    .auth-showcase { min-height: 250px; padding: 22px; }
+    .auth-wrap { min-height: 100dvh; }
+    .auth-showcase { min-height: 150px; padding: 20px 24px; background-position: center 35%; }
     .auth-showcase-mark { font-size: 30px; }
-    .auth-showcase-mark em { font-size: 12px; margin-top: 10px; }
-    .auth-showcase-content h2 { font-size: 25px; }
-    .auth-showcase-content > p { display: none; }
-    .auth-card { padding: 0; }
-    .auth-card .card-body { width: 100%; border: 0; border-radius: 0; box-shadow: none; padding: 28px !important; }
+    .auth-showcase-mark em { display: none; }
+    .auth-showcase-content { margin: 10px 0 0; }
+    .auth-showcase-content h2 { margin: 0; font-size: 23px; }
+    .auth-showcase-content > p, .auth-services { display: none; }
+    .auth-card { min-width: 0; padding: 0; }
+    .auth-card .card-body { width: 100%; border: 0; border-radius: 0; box-shadow: none; padding: 24px !important; }
+    .auth-card h1 { font-size: 30px; }
+    .auth-card .form-control { min-height: 52px; font-size: 16px; }
+    .auth-submit { min-height: 54px; }
     .admin-page .page-shell { padding: 0 14px 24px; }
     .admin-page .admin-hero { margin-inline: -14px; min-height: 170px; padding: 20px; background-position: 70% center; }
     .admin-page .admin-hero .section-title { font-size: 31px; }

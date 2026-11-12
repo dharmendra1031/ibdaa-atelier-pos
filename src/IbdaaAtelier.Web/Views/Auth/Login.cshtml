@@ -24,7 +24,7 @@
             <span class="eyebrow">IBDAA ATELIER · SECURE ACCESS</span>
             <h1 class="h2 mt-3 mb-2">@(isArabic ? "تسجيل الدخول إلى إبداع أتيليه" : "Sign In to IBDAA Atelier")</h1>
             <p class="text-secondary mb-4">@(isArabic ? "سجّل الدخول للوصول إلى مساحة العمل المخصصة لك." : "Access your workspace to manage your shop.")</p>
-            <form asp-controller="Auth" asp-action="Login" method="post" asp-antiforgery="true">
+            <form id="loginForm" asp-controller="Auth" asp-action="Login" method="post" asp-antiforgery="true">
                 <input asp-for="ReturnUrl" type="hidden" />
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
                 <div class="mb-3">
@@ -37,7 +37,10 @@
                     <input asp-for="Password" class="form-control" autocomplete="current-password" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 auth-submit">@(isArabic ? "تسجيل الدخول" : "Sign In")</button>
+                <button type="submit" class="btn btn-primary w-100 auth-submit">
+                    <span class="auth-submit-label">@(isArabic ? "تسجيل الدخول" : "Sign In")</span>
+                    <span class="auth-submit-loading d-none"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>@(isArabic ? "جارٍ تسجيل الدخول..." : "Signing in...")</span>
+                </button>
             </form>
             <p class="auth-role-note">@(isArabic ? "يتم فتح مساحة العمل المناسبة لصلاحيتك تلقائياً." : "Your role opens the correct workspace automatically.")</p>
             <form class="auth-language" method="post" asp-controller="Language" asp-action="Set" asp-antiforgery="true">
@@ -47,3 +50,15 @@
         </div>
     </div>
 </section>
+@section Scripts {
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            if (!this.checkValidity()) return;
+            const button = this.querySelector('.auth-submit');
+            if (button.disabled) { event.preventDefault(); return; }
+            button.disabled = true;
+            button.querySelector('.auth-submit-label').classList.add('d-none');
+            button.querySelector('.auth-submit-loading').classList.remove('d-none');
+        });
+    </script>
+}
