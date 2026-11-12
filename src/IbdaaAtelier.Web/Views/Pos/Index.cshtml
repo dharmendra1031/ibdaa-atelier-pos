@@ -288,6 +288,9 @@
                         <span></span>
                     </div>
                     <div id="boundInvoiceItems" class="pos-cart"></div>
+                    <button id="viewAllInvoiceItems" type="button" class="btn btn-outline-primary btn-sm align-self-start mt-1" hidden>
+                        @(ar ? "عرض جميع العناصر" : "View All Items") (<span id="allInvoiceItemCount">0</span>)
+                    </button>
                     <hr />
                     <div class="d-flex justify-content-between small mb-2">
                         <span>@(ar ? "المجموع الفرعي" : "Subtotal")</span>
