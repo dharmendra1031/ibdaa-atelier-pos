@@ -77,6 +77,7 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
             Search = search,
             Page = page,
             TotalPages = totalPages,
+            NextInvoiceNumber = await GetNextInvoiceNumberAsync(ct),
             EnablePosDiscount = await db.ShopSettings.AsNoTracking()
                 .Select(s => s.EnablePosDiscount).SingleOrDefaultAsync(ct)
         });
@@ -178,7 +179,14 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
             return Unauthorized();
 
         var requestId = await orders.ReserveAsync(userId, ct);
-        return Json(new { requestId });
+        return Json(new { requestId, nextInvoiceNumber = await GetNextInvoiceNumberAsync(ct) });
+    }
+
+    private async Task<long> GetNextInvoiceNumberAsync(CancellationToken ct)
+    {
+        var lastInvoiceId = await db.Orders.AsNoTracking()
+            .MaxAsync(order => (long?)order.OrderId, ct) ?? 0;
+        return checked(lastInvoiceId + 1);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
