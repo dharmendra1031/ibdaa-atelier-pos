@@ -274,7 +274,11 @@
                         <strong id="boundInvoiceCustomer"></strong>
                         <span id="boundInvoiceStatus" class="badge text-bg-light border text-dark"></span>
                     </div>
-                    <p id="boundInvoiceMobile" class="small text-secondary mb-3"></p>
+                    <p class="small text-secondary mb-3">
+                        <span id="boundInvoiceMobile"></span>
+                        <span class="mx-1">·</span><span id="boundInvoiceDelivery"></span>
+                        <span class="mx-1">·</span><span id="boundOrderStatus"></span>
+                    </p>
                     <div class="pos-cart-columns" aria-hidden="true">
                         <span>@(ar ? "العنصر" : "Item")</span>
                         <span>@(ar ? "الكمية" : "Qty")</span>
