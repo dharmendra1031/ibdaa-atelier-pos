@@ -77,7 +77,6 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
             Search = search,
             Page = page,
             TotalPages = totalPages,
-            NextOrderNumber = "IA-" + ((await db.Orders.CountAsync(ct)) + 1),
             EnablePosDiscount = await db.ShopSettings.AsNoTracking()
                 .Select(s => s.EnablePosDiscount).SingleOrDefaultAsync(ct)
         });
@@ -137,18 +136,16 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
     [HttpGet]
     public async Task<IActionResult> FindInvoice(string? number, CancellationToken ct)
     {
-        var invoiceNumber = number?.Trim().ToUpperInvariant() ?? "";
-        if (invoiceNumber.StartsWith("NO-", StringComparison.Ordinal))
-            invoiceNumber = "IA-" + invoiceNumber[3..];
-        if (invoiceNumber.Length is < 4 or > 24 ||
-            !invoiceNumber.StartsWith("IA-", StringComparison.Ordinal))
-            return BadRequest(new { error = "Enter a valid invoice number." });
+        var input = number?.Trim() ?? "";
+        if (input.Length is < 1 or > 20 || !input.All(char.IsAsciiDigit) ||
+            !long.TryParse(input, out var invoiceId) || invoiceId <= 0)
+            return BadRequest(new { error = "Enter a numeric invoice number." });
 
         var order = await db.Orders.AsNoTracking()
-            .Where(o => o.OrderNumber == invoiceNumber)
+            .Where(o => o.OrderId == invoiceId)
             .Select(o => new
             {
-                o.OrderId, o.OrderNumber, o.CustomerName, o.CustomerNameAr,
+                o.OrderId, o.CustomerName, o.CustomerNameAr,
                 o.CustomerMobile, o.DeliveryDate, o.Status,
                 o.Subtotal, o.DiscountAmount, o.Total
             })
@@ -165,7 +162,7 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
 
         return Json(new
         {
-            order.OrderId, order.OrderNumber, order.CustomerName, order.CustomerNameAr,
+            order.OrderId, order.CustomerName, order.CustomerNameAr,
             order.CustomerMobile, order.DeliveryDate, order.Status,
             order.Subtotal, order.DiscountAmount, order.Total,
             Paid = paid,
