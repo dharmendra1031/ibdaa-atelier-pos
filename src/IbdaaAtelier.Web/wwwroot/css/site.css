@@ -1104,3 +1104,23 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     .pos-app-layout .pos-checkout .card-body { padding: 24px !important; }
 }
 
+@media (min-width: 1200px) {
+    .pos-app-layout .app-workspace { padding: 8px 14px 8px; }
+    .pos-app-layout .pos-shell { --bs-gutter-y: 12px; }
+    .pos-app-layout .pos-customer-bar { padding: 10px 16px; }
+    .pos-app-layout .pos-customer-form { gap: 10px; }
+    .pos-app-layout .pos-customer-form .form-label { margin-bottom: 3px; }
+    .pos-app-layout .pos-customer-field #selectedCustomer { margin-top: 3px !important; min-height: 16px; }
+    .pos-app-layout .pos-customer-form .form-control { min-height: 42px; }
+    .pos-app-layout .pos-order-preview { min-height: 52px; }
+    .pos-app-layout .pos-catalogue-switch .btn { min-height: 40px; padding-block: 7px; }
+    .pos-app-layout #catalogueProducts { gap: 10px; }
+    .pos-app-layout #catalogueProducts .pos-catalogue-tools > form { padding: 6px; }
+    .pos-app-layout #catalogueProducts .pos-category { padding-block: 10px; }
+    .pos-app-layout .pos-product-grid { --bs-gutter-y: 10px; }
+    .pos-app-layout .pos-product-grid .product-media { height: clamp(108px, 18dvh, 165px); aspect-ratio: auto; }
+    .pos-app-layout .pos-product .card-body { min-height: 64px; padding: 8px 10px !important; }
+    .pos-app-layout .pos-checkout { min-height: min(600px, calc(100dvh - 335px)); }
+    .pos-app-layout .pos-checkout .card-body { padding: 18px !important; }
+}
+
