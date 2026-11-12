@@ -2,7 +2,7 @@
 @using System.Globalization
 @{
     var ar = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
-    ViewData["Title"] = (ar ? "فاتورة " : "Invoice ") + Model.InvoiceNumber;
+    ViewData["Title"] = (ar ? "فاتورة " : "Invoice ") + Model.OrderId;
     var pdfUrl = Url.Action("Print", "Invoices", new { id = Model.OrderId, paper = Model.Paper });
 }
 <section class="mb-4">
@@ -11,7 +11,7 @@
         <div class="alert alert-success" role="status">@message</div>
     }
     <span class="eyebrow">IBDAA ATELIER · INVOICE</span>
-    <h1 class="section-title mt-2 mb-2">@(ar ? "رقم الفاتورة" : "Invoice No.") @Model.InvoiceNumber</h1>
+    <h1 class="section-title mt-2 mb-2">@(ar ? "رقم الفاتورة" : "Invoice No.") @Model.OrderId</h1>
     <div class="d-flex flex-wrap gap-2 align-items-center">
         <a asp-action="Index" asp-route-id="@Model.OrderId" asp-route-paper="80mm"
            class="btn @(Model.Paper == "80mm" ? "btn-primary" : "btn-outline-primary")">80mm</a>
