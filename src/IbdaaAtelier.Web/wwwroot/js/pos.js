@@ -10,6 +10,13 @@
     const totalView = document.getElementById("cartTotal");
     const subtotalView = document.getElementById("cartSubtotal");
     const discountInput = document.getElementById("posDiscountAmount");
+    const invoiceForm = document.getElementById("findInvoiceForm");
+    const invoiceInput = document.getElementById("findInvoiceNumber");
+    const invoiceButton = document.getElementById("findInvoiceButton");
+    const invoiceMessage = document.getElementById("findInvoiceMessage");
+    const newOrderCart = document.getElementById("newOrderCart");
+    const boundInvoiceView = document.getElementById("boundInvoice");
+    const invoiceNumberView = document.getElementById("nextOrderNumber");
     const customerSearch = document.getElementById("customerSearch");
     const customerResults = document.getElementById("customerResults");
     const customerLabel = document.getElementById("selectedCustomer");
@@ -44,6 +51,8 @@
     let requestId = 0;
     let customerAbort = null;
     let productAbort = null;
+    let boundInvoiceId = 0;
+    let newInvoiceNumber = invoiceNumberView.textContent;
     const text = (en, ar) => arabic ? ar : en;
 
     try {
@@ -133,6 +142,84 @@
     productsTab.addEventListener("click", () => switchCatalogue(false));
     servicesTab.addEventListener("click", () => switchCatalogue(true));
     if (shell.dataset.showServices === "true") switchCatalogue(true);
+
+    function showInvoice(invoice) {
+        boundInvoiceId = invoice.orderId;
+        invoiceNumberView.textContent = invoice.orderNumber;
+        document.getElementById("boundInvoiceCustomer").textContent =
+            arabic ? invoice.customerNameAr || invoice.customerName : invoice.customerName;
+        document.getElementById("boundInvoiceMobile").textContent = invoice.customerMobile;
+        document.getElementById("boundInvoiceStatus").textContent =
+            invoice.status === "Cancelled" ? text("CANCELLED", "ملغى") :
+            invoice.balance <= 0 ? text("PAID", "مدفوع") :
+            invoice.paid > 0 ? text("PARTIALLY PAID", "مدفوع جزئياً") : text("UNPAID", "غير مدفوع");
+
+        const lines = document.getElementById("boundInvoiceItems");
+        lines.replaceChildren();
+        invoice.items.forEach(line => {
+            const row = element("div", "pos-cart-item");
+            const name = element("div", "pos-cart-item-name");
+            name.append(element("strong", "", arabic ? line.nameAr || line.name : line.name));
+            if (line.sizeName) name.append(element("small", "d-block text-secondary", line.sizeName));
+            row.append(name);
+            row.append(element("span", "pos-cart-quantity", String(line.quantity)));
+            row.append(element("span", "pos-cart-unit-price", money(line.unitPrice)));
+            row.append(element("strong", "pos-cart-line-total", money(line.lineTotal)));
+            row.append(element("span", "pos-cart-actions"));
+            lines.append(row);
+        });
+        cartCount.textContent = String(invoice.items.length);
+        document.getElementById("boundInvoiceSubtotal").textContent = money(invoice.subtotal);
+        document.getElementById("boundInvoiceDiscountRow").hidden = invoice.discountAmount <= 0;
+        document.getElementById("boundInvoiceDiscount").textContent = "-" + money(invoice.discountAmount);
+        document.getElementById("boundInvoiceTotal").textContent = money(invoice.total);
+        document.getElementById("boundInvoicePaid").textContent = money(invoice.paid);
+        document.getElementById("boundInvoiceBalance").textContent = money(invoice.balance);
+        const id = "?id=" + encodeURIComponent(invoice.orderId);
+        const receive = document.getElementById("boundInvoicePayment");
+        receive.href = shell.dataset.paymentUrl + id;
+        receive.hidden = invoice.balance <= 0 || invoice.status === "Cancelled";
+        document.getElementById("boundInvoiceDetails").href = shell.dataset.orderUrl + id;
+        newOrderCart.hidden = true;
+        boundInvoiceView.hidden = false;
+        notice("");
+    }
+
+    invoiceForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (saving || invoiceButton.disabled || !invoiceInput.reportValidity()) return;
+        const number = invoiceInput.value.trim();
+        if (!number) return;
+        if (!boundInvoiceId && items.length && !window.confirm(text(
+            "Open saved invoice? Your unsaved cart will be kept until you return.",
+            "فتح فاتورة محفوظة؟ ستبقى السلة الحالية حتى تعود."))) return;
+
+        invoiceMessage.textContent = "";
+        invoiceMessage.className = "small text-secondary mb-2";
+        setBusy(invoiceButton, true, text("Finding...", "جار البحث..."));
+        try {
+            const invoice = await getJson(shell.dataset.invoiceUrl +
+                "?number=" + encodeURIComponent(number));
+            showInvoice(invoice);
+            invoiceMessage.textContent = text("Saved invoice loaded (read-only).", "تم عرض الفاتورة المحفوظة للقراءة فقط.");
+        } catch (error) {
+            invoiceMessage.textContent = error.message;
+            invoiceMessage.className = "small text-danger mb-2";
+        } finally {
+            setBusy(invoiceButton, false);
+        }
+    });
+
+    document.getElementById("closeInvoiceButton").addEventListener("click", () => {
+        boundInvoiceId = 0;
+        boundInvoiceView.hidden = true;
+        newOrderCart.hidden = false;
+        invoiceNumberView.textContent = newInvoiceNumber;
+        invoiceInput.value = "";
+        invoiceMessage.textContent = "";
+        invoiceMessage.className = "small text-secondary mb-2";
+        renderCart();
+    });
 
     function renderCart() {
         cartView.replaceChildren();
@@ -333,6 +420,10 @@
 
     async function openProduct(productId, index = -1) {
         if (saving || completed) return;
+        if (boundInvoiceId) {
+            notice(text("Close the saved invoice before adding items.", "أغلق الفاتورة المحفوظة قبل إضافة عناصر."), true);
+            return;
+        }
         if (index < 0 && items.length >= 30) {
             notice(text("One order supports up to 30 items. Save this order first.",
                 "الحد الأقصى للطلب ٣٠ عنصراً. احفظ الطلب أولاً."), true);
@@ -528,6 +619,10 @@
 
     document.querySelectorAll(".pos-service").forEach(button => button.addEventListener("click", () => {
         if (saving || completed) return;
+        if (boundInvoiceId) {
+            notice(text("Close the saved invoice before adding items.", "أغلق الفاتورة المحفوظة قبل إضافة عناصر."), true);
+            return;
+        }
         if (items.length >= 30) {
             notice(text("One order supports up to 30 items. Save this order first.",
                 "الحد الأقصى للطلب ٣٠ عنصراً. احفظ الطلب أولاً."), true);
@@ -561,7 +656,7 @@
 
     form.addEventListener("submit", async event => {
         event.preventDefault();
-        if (saving || completed) return;
+        if (saving || completed || boundInvoiceId) return;
         const date = deliveryDate.value;
         if (!customerId || items.length < 1 || !date) {
             notice(text("Select a customer, delivery date and at least one item.", "اختر العميل وتاريخ التسليم وأضف عنصراً."), true);
@@ -601,7 +696,8 @@
             const nextOrderNumber = document.getElementById("nextOrderNumber");
             if (nextOrderNumber) {
                 const number = /^IA-(\d+)$/.exec(data.orderNumber);
-                if (number) nextOrderNumber.textContent = "NO-" + number[1];
+                if (number) nextOrderNumber.textContent = data.orderNumber;
+                newInvoiceNumber = nextOrderNumber.textContent;
             }
             try {
                 sessionStorage.removeItem(pendingKey);
