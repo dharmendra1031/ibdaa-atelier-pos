@@ -71,7 +71,7 @@ public sealed class InvoiceReportService(AtelierDbContext db, IWebHostEnvironmen
         }
 
         var header = data.Header.NewRow();
-        header["OrderNumber"] = order.OrderNumber;
+        header["OrderNumber"] = order.OrderId.ToString(CultureInfo.InvariantCulture);
         header["OrderDate"] = order.CreatedAtUtc.AddHours(3)
             .ToString("dd-MM-yyyy HH:mm", MoneyCulture);
         header["DeliveryDate"] = order.DeliveryDate.ToString("dd-MM-yyyy", MoneyCulture);
