@@ -54,6 +54,14 @@
             <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end @(authenticated && controller == "Pos" ? "pos-header-actions" : "")">
                 @if (authenticated && controller == "Pos" && User.IsInRole("Cashier"))
                 {
+                    <details class="pos-quick-menu">
+                        <summary class="btn btn-outline-secondary btn-sm">@(isArabic ? "القائمة" : "Menu")</summary>
+                        <nav class="pos-quick-menu-links" aria-label="@(isArabic ? "روابط أمين الصندوق" : "Cashier shortcuts")">
+                            <a asp-controller="Orders" asp-action="Index">@(isArabic ? "الفواتير والطلبات" : "Orders & invoices")</a>
+                            <a asp-controller="Register" asp-action="Index">@(isArabic ? "الصندوق" : "Cash register")</a>
+                            <a asp-controller="Customers" asp-action="Index">@(isArabic ? "العملاء" : "Customers")</a>
+                        </nav>
+                    </details>
                     <div class="pos-header-account" aria-label="@(isArabic ? "حساب أمين الصندوق" : "Cashier account")">
                         <span class="pos-header-avatar" aria-hidden="true">@(string.IsNullOrEmpty(User.Identity?.Name) ? "C" : User.Identity.Name[..1].ToUpperInvariant())</span>
                         <span class="pos-header-account-copy">

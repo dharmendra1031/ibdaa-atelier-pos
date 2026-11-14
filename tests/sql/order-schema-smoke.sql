@@ -29,10 +29,10 @@ DECLARE @serviceId INT = SCOPE_IDENTITY();
 INSERT dbo.OrderRequests(UserId, Fingerprint) VALUES(@userId, REPLICATE('A', 64));
 DECLARE @requestId BIGINT = SCOPE_IDENTITY();
 INSERT dbo.Orders(RequestId, CustomerId, CreatedByUserId,
-    CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Total)
+    CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Subtotal, Total)
 VALUES(@requestId, @customerId, @userId,
     N'Test Customer', N'عميل اختبار', N'12345678',
-    DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 27.500);
+    DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 27.500, 27.500);
 DECLARE @orderId BIGINT = SCOPE_IDENTITY();
 INSERT dbo.OrderInvoiceSnapshots(OrderId, BusinessName, BusinessNameAr, Mobile, LogoPath)
 VALUES (@orderId, N'Old IBDAA Branding', N'اسم المتجر القديم', N'12345678',
@@ -57,10 +57,10 @@ INSERT dbo.OrderStatusHistory(OrderId, UserId, NewStatus) VALUES(@orderId, @user
 DECLARE @blocked BIT = 0;
 BEGIN TRY
     INSERT dbo.Orders(RequestId, CustomerId, CreatedByUserId,
-        CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Total)
+        CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Subtotal, Total)
     VALUES(@requestId, @customerId, @userId,
         N'Test Customer', N'عميل اختبار', N'12345678',
-        DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 27.500);
+        DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 27.500, 27.500);
 END TRY
 BEGIN CATCH
     IF ERROR_NUMBER() NOT IN (2601, 2627) THROW;

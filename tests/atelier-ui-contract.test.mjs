@@ -38,11 +38,12 @@ test("login preserves the real credential form and role-based redirection", () =
 
 test("two-section cashier POS has no nested scrolling cart and retains saved actions", () => {
     assert.match(pos, /class="pos-shell row g-4"/);
-    assert.match(pos, /class="pos-checkout-actions"/);
+    assert.match(pos, /class="pos-checkout-actions(?:\s|")/);
     assert.match(pos, /id="orderCart"/);
     assert.match(pos, /id="saveOrderButton"/);
-    assert.match(pos, /id="savedOrderLink"/);
-    assert.match(pos, /id="viewSavedOrderLink"/);
+    assert.match(pos, /id="openFindInvoice"/);
+    assert.match(pos, /id="boundInvoicePayment"/);
+    assert.match(pos, /data-direct-print-url=/);
     assert.match(css, /\.pos-app-layout \.pos-checkout \.pos-cart \{ max-height: none; overflow: visible; \}/);
     assert.match(css, /\.pos-app-layout \.pos-checkout-actions[\s\S]*?position: sticky; bottom: 0/);
 });
@@ -55,7 +56,7 @@ test("approved mockup images are retained as reference files", () => {
 });
 
 test("POS Arabic labels are readable and retired customer layout styles stay removed", () => {
-    assert.match(pos, /نقطة البيع/);
+    assert.match(layout, /نقطة البيع/);
     assert.match(pos, /حفظ واختيار العميل/);
     assert.doesNotMatch(pos, /ط§|ظ„|ظ†|آ·|أ—/);
     assert.doesNotMatch(css, /\.pos-order-context|\.pos-context-customer|\.pos-context-delivery/);

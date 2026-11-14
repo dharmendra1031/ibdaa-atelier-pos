@@ -129,7 +129,7 @@ public sealed class ReportsController(AtelierDbContext db) : Controller
 
         await using var writer = new StreamWriter(Response.Body,
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), bufferSize: 8192, leaveOpen: true);
-        await writer.WriteLineAsync("Order ID,Order Number,Order Date (Kuwait),Customer,Mobile,Status,Total KWD,Net Paid KWD,Refunded KWD,Balance KWD");
+        await writer.WriteLineAsync("Invoice Number,Order Date (Kuwait),Customer,Mobile,Status,Total KWD,Net Paid KWD,Refunded KWD,Balance KWD");
 
         var sales = db.Orders.AsNoTracking().Where(order =>
             order.CreatedAtUtc >= startUtc && order.CreatedAtUtc < endUtc &&
@@ -144,7 +144,6 @@ public sealed class ReportsController(AtelierDbContext db) : Controller
                 .Select(order => new
                 {
                     order.OrderId,
-                    order.OrderNumber,
                     order.CreatedAtUtc,
                     order.CustomerName,
                     order.CustomerMobile,
@@ -166,7 +165,6 @@ public sealed class ReportsController(AtelierDbContext db) : Controller
                 var fields = new[]
                 {
                     order.OrderId.ToString(CultureInfo.InvariantCulture),
-                    order.OrderNumber,
                     order.CreatedAtUtc.AddHours(3).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
                     order.CustomerName,
                     order.CustomerMobile,

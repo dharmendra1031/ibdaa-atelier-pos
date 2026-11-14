@@ -15,10 +15,10 @@ INSERT dbo.OrderRequests(UserId, Fingerprint)
     VALUES(@userId, REPLICATE('B', 64));
 DECLARE @orderRequestId BIGINT = SCOPE_IDENTITY();
 INSERT dbo.Orders(RequestId, CustomerId, CreatedByUserId,
-    CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Total)
+    CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Subtotal, Total)
     VALUES(@orderRequestId, @customerId, @userId,
         N'Payment Customer', N'عميل الدفع', N'29990000',
-        DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 25.000);
+        DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 25.000, 25.000);
 DECLARE @orderId BIGINT = SCOPE_IDENTITY();
 
 INSERT dbo.PaymentRequests(OrderId, UserId, Fingerprint)

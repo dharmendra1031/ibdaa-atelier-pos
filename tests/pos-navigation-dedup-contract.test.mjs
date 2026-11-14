@@ -9,6 +9,12 @@ const css = read("src/IbdaaAtelier.Web/wwwroot/css/site.css");
 
 test("POS renders a single cashier header without duplicate navigation sections", () => {
     assert.match(layout, /class="workspace-header-title pos-header-title"/);
+    assert.match(layout, /<details class="pos-quick-menu">/);
+    assert.match(layout, /<nav class="pos-quick-menu-links"/);
+    assert.match(layout, /asp-controller="Orders" asp-action="Index"/);
+    assert.match(layout, /asp-controller="Register" asp-action="Index"/);
+    assert.match(layout, /asp-controller="Customers" asp-action="Index"/);
+    assert.match(css, /\.pos-quick-menu-links \{/);
     assert.match(layout, /@if \(controller != "Pos"\)\s*\{\s*<aside class="app-sidebar"/);
     assert.match(layout, /@if \(controller != "Pos"\)\s*\{\s*<details class="mobile-menu/);
     assert.match(layout, /@if \(controller != "Pos"\)\s*\{\s*<footer class="site-footer"/);

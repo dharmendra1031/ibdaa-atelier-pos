@@ -14,9 +14,9 @@ INSERT dbo.OrderRequests(UserId, Fingerprint)
     VALUES(@userId, REPLICATE('E', 64));
 DECLARE @requestId BIGINT = SCOPE_IDENTITY();
 INSERT dbo.Orders(RequestId, CustomerId, CreatedByUserId,
-    CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Total)
+    CustomerName, CustomerNameAr, CustomerMobile, DeliveryDate, Subtotal, Total)
     VALUES(@requestId, @customerId, @userId, N'Status Customer', N'عميل الحالة',
-        N'29991111', DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 0.000);
+        N'29991111', DATEADD(DAY, 1, CAST(GETUTCDATE() AS DATE)), 0.000, 0.000);
 DECLARE @orderId BIGINT = SCOPE_IDENTITY();
 UPDATE dbo.Orders SET Status = N'Confirmed' WHERE OrderId = @orderId;
 INSERT dbo.OrderStatusHistory(OrderId, UserId, OldStatus, NewStatus, Remarks)
