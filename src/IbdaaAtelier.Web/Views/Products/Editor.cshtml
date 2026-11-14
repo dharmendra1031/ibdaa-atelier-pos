@@ -22,7 +22,7 @@ else
 }
 <div class="card filter-card">
     <div class="card-body p-4 p-lg-5">
-        <form asp-controller="Products" asp-action="@(editing ? "Edit" : "Create")" method="post" asp-antiforgery="true">
+        <form id="productEditorForm" asp-controller="Products" asp-action="@(editing ? "Edit" : "Create")" method="post" asp-antiforgery="true">
             <input asp-for="ProductId" type="hidden" />
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             <div class="row g-3">
@@ -86,3 +86,22 @@ else
         </form>
     </div>
 </div>
+
+@section Scripts
+{
+    <script>
+        const productForm = document.getElementById("productEditorForm");
+        const productSave = productForm.querySelector('button[type="submit"]');
+        const originalLabel = productSave.textContent;
+        productForm.addEventListener("submit", event => {
+            if (productSave.disabled) { event.preventDefault(); return; }
+            if (!productForm.reportValidity()) { event.preventDefault(); return; }
+            productSave.disabled = true;
+            productSave.textContent = document.documentElement.lang === "ar" ? "جار الحفظ..." : "Saving...";
+        });
+        window.addEventListener("pageshow", () => {
+            productSave.disabled = false;
+            productSave.textContent = originalLabel;
+        });
+    </script>
+}

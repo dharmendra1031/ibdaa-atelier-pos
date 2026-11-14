@@ -69,11 +69,20 @@ public sealed class ProductsController(AtelierDbContext db) : Controller
             return View("Editor", form);
         }
 
+        await using var transaction = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, ct);
+        var duplicate = await db.Products.FromSqlInterpolated(
+            $"SELECT * FROM dbo.Products WITH (UPDLOCK, HOLDLOCK) WHERE CategoryId = {form.CategoryId} AND Name = {form.Name} AND ProductType = {form.ProductType}")
+            .AsNoTracking().AnyAsync(ct);
+        if (duplicate)
+        {
+            ModelState.AddModelError(nameof(form.Name), "A product with this name and type already exists in this category.");
+            await LoadCategoriesAsync(ct);
+            return View("Editor", form);
+        }
+
         var product = new Product();
         CopyValues(form, product);
         db.Products.Add(product);
-
-        await using var transaction = await db.Database.BeginTransactionAsync(ct);
         try
         {
             await db.SaveChangesAsync(ct);

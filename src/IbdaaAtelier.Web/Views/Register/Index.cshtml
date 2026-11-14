@@ -73,15 +73,16 @@ else
         </div>
     </div>
     <div class="row g-3">
-        @if (admin && Model.ExpenseRequestId > 0)
+        @if (admin)
         {
             <div class="col-lg-6">
                 <div class="card filter-card h-100"><div class="card-body p-4">
                     <h2 class="h5">@(ar ? "نفقات الصندوق" : "Record cash expense")</h2>
                     <p class="small text-secondary">@(ar ? "إجراء متاح للمسؤول فقط، وتُحفظ العملية في سجل المراجعة." : "Admin only. Each expense is saved with an audit record.")</p>
-                    <form asp-action="Expense" method="post" asp-antiforgery="true">
+                    <form id="cashExpenseForm" asp-action="Expense" method="post" asp-antiforgery="true"
+                          data-reserve-url="@Url.Action("ReserveExpense", "Register")">
                         <input type="hidden" name="sessionId" value="@open.SessionId" />
-                        <input type="hidden" name="requestId" value="@Model.ExpenseRequestId" />
+                        <input id="expenseRequestId" type="hidden" name="requestId" />
                         <div class="mb-3">
                             <label for="expenseAmount" class="form-label">@(ar ? "المبلغ (د.ك)" : "Amount (KWD)")</label>
                             <input id="expenseAmount" name="amount" type="number" min=".001" step=".001" class="form-control" required />
@@ -90,7 +91,8 @@ else
                             <label for="expenseReason" class="form-label">@(ar ? "سبب النفقة" : "Reason")</label>
                             <textarea id="expenseReason" name="reason" class="form-control" minlength="10" maxlength="500" required></textarea>
                         </div>
-                        <button class="btn btn-outline-primary" type="submit">@(ar ? "حفظ النفقة" : "Save expense")</button>
+                        <p id="expenseError" class="small text-danger" role="alert" hidden></p>
+                        <button id="saveCashExpense" class="btn btn-outline-primary" type="submit">@(ar ? "حفظ النفقة" : "Save expense")</button>
                     </form>
                 </div></div>
             </div>
@@ -99,7 +101,7 @@ else
             <div class="card filter-card h-100"><div class="card-body p-4">
                 <h2 class="h5">@(ar ? "إغلاق الصندوق" : "Close register")</h2>
                 <p class="small text-secondary">@(ar ? "أدخل المبلغ النقدي الفعلي. تُحسب الفروقات تلقائياً." : "Enter the actual counted cash; differences are calculated on the server.")</p>
-                <form asp-action="Close" method="post" asp-antiforgery="true">
+                <form id="closeRegisterForm" asp-action="Close" method="post" asp-antiforgery="true">
                     <input type="hidden" name="sessionId" value="@open.SessionId" />
                     <div class="mb-3">
                         <label for="countedCash" class="form-label">@(ar ? "النقد الفعلي (د.ك)" : "Counted cash (KWD)")</label>
@@ -162,3 +164,8 @@ else
         </div>
     </div>
 </section>
+
+@section Scripts
+{
+    <script src="~/js/register.js" asp-append-version="true" defer></script>
+}

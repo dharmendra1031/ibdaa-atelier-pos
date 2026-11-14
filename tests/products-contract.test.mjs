@@ -36,3 +36,12 @@ test("product list is paged and inactive products remain for history", () => {
     assert.match(list, /CultureInfo\.InvariantCulture/);
     assert.match(list, /asp-route-page/);
 });
+
+
+test("product create prevents repeated submissions and same-name same-type duplicates", () => {
+    assert.match(controller, /IsolationLevel\.Serializable/);
+    assert.match(controller, /WITH \(UPDLOCK, HOLDLOCK\)/);
+    assert.match(controller, /CategoryId = \{form.CategoryId\} AND Name = \{form.Name\} AND ProductType = \{form.ProductType\}/);
+    assert.match(view, /id="productEditorForm"/);
+    assert.match(view, /productSave\.disabled = true/);
+});

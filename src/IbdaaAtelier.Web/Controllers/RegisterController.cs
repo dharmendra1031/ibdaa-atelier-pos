@@ -15,7 +15,7 @@ public sealed class RegisterController(CashRegisterService register) : Controlle
         if (!CurrentUser(out var userId))
             return Unauthorized();
 
-        var page = await register.GetPageAsync(User.IsInRole("Admin"), userId, ct);
+        var page = await register.GetPageAsync(ct);
         return View(page);
     }
 
@@ -57,6 +57,24 @@ public sealed class RegisterController(CashRegisterService register) : Controlle
         catch (InvalidOperationException exception) { return Failed(exception.Message); }
 
         return RedirectToAction(nameof(Index));
+    }
+
+
+    [HttpPost, Authorize(Roles = "Admin"), ValidateAntiForgeryToken]
+    public async Task<IActionResult> ReserveExpense(long sessionId, CancellationToken ct)
+    {
+        if (!CurrentUser(out var userId))
+            return Unauthorized();
+
+        try
+        {
+            var requestId = await register.ReserveExpenseAsync(sessionId, userId, ct);
+            return Ok(new { requestId });
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Conflict(new { error = exception.Message });
+        }
     }
 
     [HttpPost, Authorize(Roles = "Admin"), ValidateAntiForgeryToken]

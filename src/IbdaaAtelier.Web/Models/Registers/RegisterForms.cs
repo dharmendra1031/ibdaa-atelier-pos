@@ -26,6 +26,5 @@ public sealed class RegisterPage
     public RegisterTotals Cash { get; init; } = new(0m, 0m, 0m);
     public decimal ReceivedOther { get; init; }
     public decimal RefundedOther { get; init; }
-    public long ExpenseRequestId { get; init; }
     public bool OpeningRequired { get; init; }
 }

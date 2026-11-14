@@ -72,6 +72,20 @@ db.Products.Add(product);
 db.AlterationServices.Add(service);
 await db.SaveChangesAsync();
 
+await using (var productCheck = await db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable))
+{
+    var duplicate = await db.Products.FromSqlInterpolated(
+        $"SELECT * FROM dbo.Products WITH (UPDLOCK, HOLDLOCK) WHERE CategoryId = {category.CategoryId} AND Name = {product.Name} AND ProductType = {product.ProductType}")
+        .AsNoTracking().AnyAsync();
+    Check(duplicate, "Product duplicate guard did not detect an existing product.");
+
+    var distinct = await db.Products.FromSqlInterpolated(
+        $"SELECT * FROM dbo.Products WITH (UPDLOCK, HOLDLOCK) WHERE CategoryId = {category.CategoryId} AND Name = {"Another Garment"} AND ProductType = {product.ProductType}")
+        .AsNoTracking().AnyAsync();
+    Check(!distinct, "Product duplicate guard rejected a different product.");
+    await productCheck.CommitAsync();
+}
+
 var size = new ProductSize { ProductId = product.ProductId, Name = "M" };
 var chest = new MeasurementDefinition
 {
@@ -171,6 +185,12 @@ var sessionId = await register.OpenAsync(5.000m, user.UserId, CancellationToken.
 Check(sessionId > 0, "Cash register did not receive numeric identity.");
 Check(await register.OpenAsync(9.000m, user.UserId, CancellationToken.None) == sessionId,
     "A second register was opened while one was already active.");
+
+var expenseRequestCount = await db.CashExpenseRequests.CountAsync();
+await register.GetPageAsync(CancellationToken.None);
+await register.GetPageAsync(CancellationToken.None);
+Check(await db.CashExpenseRequests.CountAsync() == expenseRequestCount,
+    "Opening or refreshing the register page created expense requests.");
 
 var firstPayment = await payments.PrepareAsync(saved.OrderId, user.UserId, CancellationToken.None);
 var splitForm = new PaymentForm

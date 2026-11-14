@@ -13,7 +13,7 @@ public sealed class CashRegisterService(AtelierDbContext db)
 {
     private const decimal MaxAmount = 999999999999999.999m;
 
-    public async Task<RegisterPage> GetPageAsync(bool isAdmin, int userId, CancellationToken ct)
+    public async Task<RegisterPage> GetPageAsync(CancellationToken ct)
     {
         var open = await db.CashRegisterSessions.AsNoTracking()
             .SingleOrDefaultAsync(s => s.ClosedAtUtc == null, ct);
@@ -26,8 +26,6 @@ public sealed class CashRegisterService(AtelierDbContext db)
         var expenses = 0m;
         var receivedOther = 0m;
         var refundedOther = 0m;
-        long expenseRequestId = 0;
-
         if (open is not null)
         {
             var receipts = await db.OrderPayments.AsNoTracking()
@@ -49,13 +47,6 @@ public sealed class CashRegisterService(AtelierDbContext db)
                 .Where(x => x.SessionId == open.SessionId)
                 .SumAsync(x => (decimal?)x.Amount, ct) ?? 0m;
 
-            if (isAdmin)
-            {
-                var request = new CashExpenseRequest { SessionId = open.SessionId, UserId = userId };
-                db.CashExpenseRequests.Add(request);
-                await db.SaveChangesAsync(ct);
-                expenseRequestId = request.RequestId;
-            }
         }
 
         var openingRequired = await db.ShopSettings.AsNoTracking()
@@ -67,7 +58,6 @@ public sealed class CashRegisterService(AtelierDbContext db)
             Cash = new RegisterTotals(receivedCash, refundedCash, expenses),
             ReceivedOther = receivedOther,
             RefundedOther = refundedOther,
-            ExpenseRequestId = expenseRequestId,
             OpeningRequired = openingRequired
         };
     }

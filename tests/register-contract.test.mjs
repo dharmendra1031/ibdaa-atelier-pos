@@ -36,3 +36,18 @@ test("register expense actions require Admin, CSRF protection and numeric reques
     assert.match(service, /Existing|existing is not null/);
     assert.match(controller, /register\.CloseAsync/);
 });
+
+
+test("register overview stays read-only and expense request is reserved on submit", () => {
+    const view = read("src/IbdaaAtelier.Web/Views/Register/Index.cshtml");
+    const js = read("src/IbdaaAtelier.Web/wwwroot/js/register.js");
+    const getPage = service.slice(service.indexOf("public async Task<RegisterPage> GetPageAsync"),
+        service.indexOf("public async Task<long> OpenAsync"));
+    assert.doesNotMatch(getPage, /SaveChangesAsync|CashExpenseRequests\.Add/);
+    assert.match(controller, /public async Task<IActionResult> ReserveExpense/);
+    assert.match(controller, /register\.ReserveExpenseAsync\(sessionId, userId, ct\)/);
+    assert.match(view, /id="cashExpenseForm"/);
+    assert.match(view, /id="expenseRequestId"/);
+    assert.match(js, /form\.requestSubmit\(submit\)/);
+    assert.match(js, /closeRegisterForm/);
+});
