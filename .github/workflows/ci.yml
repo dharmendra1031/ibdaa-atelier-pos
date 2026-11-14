@@ -32,8 +32,8 @@ jobs:
         run: node --check src/IbdaaAtelier.Web/wwwroot/js/pos.js
       - name: Gallery JavaScript syntax
         run: node --check src/IbdaaAtelier.Web/wwwroot/js/product-gallery.js
-      - name: Payment JavaScript syntax
-        run: node --check src/IbdaaAtelier.Web/wwwroot/js/payments.js
+      - name: Register JavaScript syntax
+        run: node --check src/IbdaaAtelier.Web/wwwroot/js/register.js
       - name: Source contract tests
         run: node --test tests/*.test.mjs
       - uses: actions/upload-artifact@v4
