@@ -6,7 +6,8 @@ const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8"
 const sql = read("database/013_payment_ledger.sql");
 const service = read("src/IbdaaAtelier.Web/Services/PaymentService.cs");
 const controller = read("src/IbdaaAtelier.Web/Controllers/PaymentsController.cs");
-const page = read("src/IbdaaAtelier.Web/Views/Payments/Take.cshtml");
+const page = read("src/IbdaaAtelier.Web/Views/Pos/Index.cshtml");
+const pos = read("src/IbdaaAtelier.Web/wwwroot/js/pos.js");
 
 test("payment batches use numeric SQL identities and unique request IDs", () => {
     for (const name of ["RequestId", "PaymentBatchId", "PaymentId"])
@@ -40,6 +41,8 @@ test("cashier-only payment collection requires antiforgery", () => {
     assert.match(controller, /Authorize\(Roles = "Cashier"\)/);
     assert.match(controller, /ValidateAntiForgeryToken/);
     assert.match(page, /asp-antiforgery="true"/);
-    assert.match(page, /Lines\[@i\]\.Method/);
-    assert.match(page, /Lines\[@i\]\.Amount/);
+    assert.match(page, /id="posPaymentDialog"/);
+    assert.match(page, /data-payment-record-url=/);
+    assert.match(pos, /body: JSON\.stringify\(paymentPayload\)/);
+    assert.match(controller, /public async Task<IActionResult> Record/);
 });

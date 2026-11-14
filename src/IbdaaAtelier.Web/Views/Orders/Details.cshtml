@@ -13,7 +13,7 @@
     <div class="d-flex gap-2">
         @if (User.IsInRole("Cashier") && Model.Balance > 0 && Model.Order.Status != "Cancelled")
         {
-            <a asp-controller="Payments" asp-action="Take" asp-route-id="@Model.Order.OrderId" class="btn btn-primary">
+            <a asp-controller="Pos" asp-action="Index" asp-route-invoiceId="@Model.Order.OrderId" asp-route-receive="true" class="btn btn-primary">
                 @(ar ? "تحصيل الباقي" : "Receive Balance")
             </a>
         }

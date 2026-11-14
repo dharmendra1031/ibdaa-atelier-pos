@@ -77,16 +77,12 @@ test("POS shows loading and clear success or failed messages", () => {
     assert.match(pos, /false, true\)/);
 });
 
-test("payment and order status submissions show processing without changing financial APIs", () => {
-    const payment = read("src/IbdaaAtelier.Web/wwwroot/js/payments.js");
+test("POS popup payment and order-status submission expose processing states", () => {
     const details = read("src/IbdaaAtelier.Web/Views/Orders/Details.cshtml");
-    assert.match(payment, /Processing payment\.\.\./);
-    assert.match(payment, /if \(save\.disabled\)/);
-    assert.match(payment, /save\.setAttribute\("aria-busy", "true"\)/);
-    assert.match(payment, /window\.addEventListener\("pageshow"/);
-    assert.match(payment, /\.order-feedback \.btn-close/);
-    assert.match(read("src/IbdaaAtelier.Web/Views/Payments/Take.cshtml"),
-        /class="order-feedback order-feedback-error"/);
+    assert.match(pos, /Processing payment\.\.\./);
+    assert.match(pos, /setBusy\(paymentConfirm, true/);
+    assert.match(pos, /setBusy\(paymentConfirm, false/);
+    assert.match(pos, /Retry Confirm Payment without changing amounts/);
     assert.match(details, /class="order-feedback"/);
     assert.match(details, /class="order-feedback order-feedback-error"/);
     assert.match(details, /id="orderStatusForm"/);

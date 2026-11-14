@@ -50,7 +50,7 @@
                                  order.Status != "Cancelled" &&
                                  Model.BalanceByOrder.GetValueOrDefault(order.OrderId) > 0m)
                             {
-                                <a asp-controller="Payments" asp-action="Take" asp-route-id="@order.OrderId"
+                                <a asp-controller="Pos" asp-action="Index" asp-route-invoiceId="@order.OrderId" asp-route-receive="true"
                                    class="btn btn-primary btn-sm">@(ar ? "تحصيل الباقي" : "Receive Balance")</a>
                             }
                             <a asp-action="Details" asp-route-id="@order.OrderId"

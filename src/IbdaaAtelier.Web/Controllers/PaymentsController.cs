@@ -9,26 +9,14 @@ namespace IbdaaAtelier.Web.Controllers;
 [Authorize(Roles = "Cashier")]
 public sealed class PaymentsController(PaymentService payments) : Controller
 {
+    // Old bookmarked payment links continue into the POS payment popup.
     [HttpGet]
-    public async Task<IActionResult> Take(long id, CancellationToken ct)
+    public IActionResult Take(long id)
     {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
-            return Unauthorized();
-
-        try
-        {
-            var page = await payments.PrepareAsync(id, userId, ct);
-            return View(page);
-        }
-        catch (ArgumentException)
-        {
+        if (id <= 0)
             return NotFound();
-        }
-        catch (InvalidOperationException exception)
-        {
-            TempData["Error"] = exception.Message;
-            return RedirectToAction("Details", "Orders", new { id });
-        }
+
+        return RedirectToAction("Index", "Pos", new { invoiceId = id, receive = true });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -77,35 +65,4 @@ public sealed class PaymentsController(PaymentService payments) : Controller
         }
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Take(PaymentForm form, CancellationToken ct)
-    {
-        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
-            return Unauthorized();
-
-        if (!ModelState.IsValid)
-        {
-            TempData["Error"] = "Invalid payment details.";
-            return RedirectToAction(nameof(Take), new { id = form.OrderId });
-        }
-
-        try
-        {
-            var receipt = await payments.SaveAsync(form, userId, ct);
-            TempData["Message"] = receipt.Replayed
-                ? "Payment already saved. Duplicate entry was prevented."
-                : "Payment recorded successfully. Updated invoice is ready to print.";
-            return RedirectToAction("Index", "Invoices", new { id = form.OrderId, paper = "80mm" });
-        }
-        catch (ArgumentException exception)
-        {
-            TempData["Error"] = exception.Message;
-            return RedirectToAction(nameof(Take), new { id = form.OrderId });
-        }
-        catch (InvalidOperationException exception)
-        {
-            TempData["Error"] = exception.Message;
-            return RedirectToAction("Details", "Orders", new { id = form.OrderId });
-        }
-    }
 }

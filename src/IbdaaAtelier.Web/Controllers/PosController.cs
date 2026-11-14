@@ -16,7 +16,8 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
     [HttpGet]
     public async Task<IActionResult> Index(int? categoryId, string? search, int page = 1,
         string? serviceSearch = null, int? serviceCategoryId = null, int servicePage = 1,
-        bool services = false, CancellationToken ct = default)
+        bool services = false, long? invoiceId = null, bool receive = false,
+        CancellationToken ct = default)
     {
         search = search?.Trim() ?? "";
         if (search.Length > 100) search = search[..100];
@@ -73,6 +74,8 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
             ServicePage = servicePage,
             ServiceTotalPages = serviceTotalPages,
             ShowServices = services,
+            OpenInvoiceId = invoiceId is > 0 ? invoiceId : null,
+            OpenInvoicePayment = invoiceId is > 0 && receive,
             CategoryId = categoryId,
             Search = search,
             Page = page,

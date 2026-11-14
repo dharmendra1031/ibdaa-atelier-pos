@@ -11,8 +11,6 @@ const paymentSchema = read("database/013_payment_ledger.sql");
 const controller = read("src/IbdaaAtelier.Web/Controllers/PosController.cs");
 const view = read("src/IbdaaAtelier.Web/Views/Pos/Index.cshtml");
 const pos = read("src/IbdaaAtelier.Web/wwwroot/js/pos.js");
-const paymentPage = read("src/IbdaaAtelier.Web/Views/Payments/Take.cshtml");
-const paymentJs = read("src/IbdaaAtelier.Web/wwwroot/js/payments.js");
 const invoices = read("src/IbdaaAtelier.Web/Controllers/InvoicesController.cs");
 
 test("parallel bills have independent numeric order requests and unique order IDs", () => {
@@ -43,8 +41,9 @@ test("parallel full, advance and split payments cannot exceed saved balance", ()
     assert.match(payments, /WITH \(UPDLOCK, HOLDLOCK\) WHERE OrderId/);
     assert.match(payments, /amount > balance/);
     assert.match(payments, /request\.Fingerprint != fingerprint/);
-    assert.match(paymentJs, /amount > balance \+ 0\.000001/);
-    assert.match(paymentPage, /id="paymentError"/);
+    assert.match(pos, /total <= 0 \|\| total > due/);
+    assert.match(view, /id="posPaymentError"/);
+    assert.match(pos, /paymentPayload\.lines/);
 });
 
 test("alterations beyond first 24 results remain reachable via server search and paging", () => {

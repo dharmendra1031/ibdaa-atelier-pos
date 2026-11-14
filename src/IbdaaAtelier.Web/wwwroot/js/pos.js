@@ -1163,4 +1163,26 @@
         } catch { /* Storage unavailable. */ }
     }
     renderCart();
+
+    // Orders links open their invoice and reuse the normal POS payment dialog.
+    const linkedInvoiceId = shell.dataset.openInvoiceId;
+    if (/^[1-9][0-9]*$/.test(linkedInvoiceId || "")) {
+        if (savedOrder || paymentPayload || recoveryInvoiceNumber) {
+            notice(text("Finish the pending payment before opening another invoice.",
+                "أكمل الدفع المعلق قبل فتح فاتورة أخرى."), true);
+        } else {
+            getJson(shell.dataset.invoiceUrl + "?number=" + encodeURIComponent(linkedInvoiceId))
+                .then(invoice => {
+                    showInvoice(invoice);
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete("invoiceId");
+                    url.searchParams.delete("receive");
+                    window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+                    if (shell.dataset.openInvoicePayment === "true" &&
+                        invoice.balance > 0 && invoice.status !== "Cancelled")
+                        openPaymentDialog();
+                })
+                .catch(error => notice(error.message, true));
+        }
+    }
 })();

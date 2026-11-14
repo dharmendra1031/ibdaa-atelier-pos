@@ -7,8 +7,8 @@ const orderController = read("src/IbdaaAtelier.Web/Controllers/OrdersController.
 const orderView = read("src/IbdaaAtelier.Web/Views/Orders/Index.cshtml");
 const details = read("src/IbdaaAtelier.Web/Views/Orders/Details.cshtml");
 const model = read("src/IbdaaAtelier.Web/Models/Orders/OrderDetailsPage.cs");
-const payment = read("src/IbdaaAtelier.Web/Views/Payments/Take.cshtml");
-const js = read("src/IbdaaAtelier.Web/wwwroot/js/payments.js");
+const pos = read("src/IbdaaAtelier.Web/Views/Pos/Index.cshtml");
+const posJs = read("src/IbdaaAtelier.Web/wwwroot/js/pos.js");
 
 test("order list uses existing payment and refund ledger to show paid and outstanding", () => {
     assert.match(orderController, /orderIds\.Contains\(p\.OrderId\)/);
@@ -29,15 +29,15 @@ test("refund and order cancellation controls stay separate from cashier payment 
     assert.match(details, /Record a refund/);
     assert.match(details, /asp-controller="Refunds"/);
     assert.match(details, /asp-controller="OrderStatus"/);
-    assert.match(details, /asp-controller="Payments"/);
+    assert.match(details, /asp-controller="Pos" asp-action="Index" asp-route-invoiceId=/);
+    assert.doesNotMatch(details, /asp-controller="Payments" asp-action="Take"/);
 });
 
-test("one-click full payment fills the selected method without altering server totals", () => {
-    assert.match(payment, /id="quickPaymentMethod"/);
-    assert.match(payment, /id="fillPaymentBalance"/);
-    assert.match(payment, /data-balance=/);
-    assert.match(payment, /data-method="@line.Method"/);
-    assert.match(js, /input\.dataset\.method === method\.value/);
-    assert.match(js, /if \(tendered\) tendered\.value = ""/);
-    assert.match(js, /if \(!form\.reportValidity\(\)\)/);
+test("cashier follows one POS payment flow from orders and details", () => {
+    assert.match(orderView, /asp-controller="Pos" asp-action="Index" asp-route-invoiceId=/);
+    assert.match(details, /asp-controller="Pos" asp-action="Index" asp-route-invoiceId=/);
+    assert.match(pos, /id="boundInvoicePayment"/);
+    assert.match(pos, /id="posPaymentDialog"/);
+    assert.match(posJs, /getJson\(shell\.dataset\.invoiceUrl/);
+    assert.match(posJs, /openPaymentDialog\(\)/);
 });

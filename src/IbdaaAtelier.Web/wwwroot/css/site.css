@@ -1172,9 +1172,6 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .admin-page .dashboard-main-grid { display: grid; grid-template-columns: minmax(0, 2.25fr) minmax(270px, 1fr); gap: 18px; }
 .admin-page .dashboard-left-stack,
 .admin-page .dashboard-right-stack { display: grid; gap: 16px; align-content: start; }
-.admin-page .dashboard-quick-links { display: grid; gap: 2px; }
-.admin-page .dashboard-quick-links .btn { text-align: start; border: 0; border-bottom: 1px solid #eee2dc; border-radius: 0; background: transparent; color: #4a2430; }
-.admin-page .dashboard-quick-links .btn:hover { background: #fbf2eb; }
 .admin-page .dashboard-glance-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eee2dc; }
 .admin-page .dashboard-glance-row strong { color: #630d2d; font-variant-numeric: tabular-nums; }
 .admin-page .dashboard-recent-table { min-width: 550px; }

@@ -10,6 +10,8 @@
      data-customer-url="@Url.Action("FindCustomers", "Pos")"
      data-customer-create-url="@Url.Action("QuickCreate", "Customers")"
      data-invoice-url="@Url.Action("FindInvoice", "Pos")"
+     data-open-invoice-id="@Model.OpenInvoiceId"
+     data-open-invoice-payment="@(Model.OpenInvoicePayment ? "true" : "false")"
      data-payment-prepare-url="@Url.Action("Prepare", "Payments")"
      data-payment-record-url="@Url.Action("Record", "Payments")"
      data-print-url="@Url.Action("Print", "Invoices")"
