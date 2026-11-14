@@ -78,7 +78,7 @@
                         <tbody>
                         @foreach (var method in Model.Methods)
                         {
-                            <tr><td>@method.Method</td>
+                            <tr><td>@(method.Method == "Card" ? "WAMD" : method.Method)</td>
                                 <td class="text-end">@method.Received.ToString("0.000", CultureInfo.InvariantCulture)</td>
                                 <td class="text-end">@method.Net.ToString("0.000", CultureInfo.InvariantCulture)</td></tr>
                         }
@@ -131,3 +131,12 @@
     @(ar ? "عدد الطلبات في الفترة" : "Orders in period"): @Model.Orders.
     @(ar ? "التقارير التفصيلية والتصدير ما زالا قيد التطوير." : "Additional detailed reports and PDF/Excel export remain pending.")
 </div>
+
+@section Scripts
+{
+    <script>
+        const reportPeriod = document.getElementById("reportPeriod");
+        for (const id of ["reportFrom", "reportTo"])
+            document.getElementById(id).addEventListener("change", () => reportPeriod.value = "custom");
+    </script>
+}

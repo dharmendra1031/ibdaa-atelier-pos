@@ -19,3 +19,13 @@ document.querySelectorAll(".image-upload-input").forEach(input => {
         if (previewUrl) URL.revokeObjectURL(previewUrl);
     }, { once: true });
 });
+
+// Confirm irreversible photo deletion before posting the existing form.
+document.querySelectorAll(".image-delete-form").forEach(form => {
+    form.addEventListener("submit", event => {
+        const message = document.documentElement.lang === "ar"
+            ? "هل تريد حذف هذه الصورة؟ لا يمكن التراجع عن ذلك."
+            : "Remove this photograph? This cannot be undone.";
+        if (!window.confirm(message)) event.preventDefault();
+    });
+});

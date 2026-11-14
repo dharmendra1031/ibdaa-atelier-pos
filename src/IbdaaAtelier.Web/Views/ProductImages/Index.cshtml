@@ -87,7 +87,7 @@
                         <img class="image-preview rounded-3 mb-2" hidden alt="@(ar ? "معاينة" : "Replacement preview")" />
                         <button type="submit" class="btn btn-outline-primary btn-sm w-100">@(ar ? "استبدال" : "Replace")</button>
                     </form>
-                    <form asp-action="Delete" method="post" asp-antiforgery="true">
+                    <form asp-action="Delete" method="post" asp-antiforgery="true" class="image-delete-form">
                         <input type="hidden" name="productId" value="@Model.Product.ProductId" />
                         <input type="hidden" name="imageId" value="@image.ProductImageId" />
                         <button type="submit" class="btn btn-outline-danger btn-sm w-100">

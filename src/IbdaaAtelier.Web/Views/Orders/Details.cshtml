@@ -124,8 +124,8 @@
                 @foreach (var receipt in Model.Payments)
                 {
                     <tr>
-                        <td>@receipt.CreatedAtUtc.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
-                        <td>@receipt.Method</td>
+                        <td>@receipt.CreatedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+                        <td>@(receipt.Method == "Card" ? "WAMD" : receipt.Method)</td>
                         <td>@receipt.Amount.ToString("0.000", CultureInfo.InvariantCulture)</td>
                         <td>@receipt.Tendered.ToString("0.000", CultureInfo.InvariantCulture)</td>
                         <td>@receipt.Change.ToString("0.000", CultureInfo.InvariantCulture)</td>
@@ -156,8 +156,8 @@
             @foreach (var refund in Model.Refunds)
             {
                 <tr>
-                    <td>@refund.CreatedAtUtc.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
-                    <td>@refund.Method</td>
+                    <td>@refund.CreatedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+                    <td>@(refund.Method == "Card" ? "WAMD" : refund.Method)</td>
                     <td>@refund.Amount.ToString("0.000", CultureInfo.InvariantCulture)</td>
                     <td>@refund.Reason</td>
                 </tr>
@@ -220,7 +220,7 @@
             @foreach (var step in Model.StatusHistory)
             {
                 <tr>
-                    <td>@step.ChangedAtUtc.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
+                    <td>@step.ChangedAtUtc.AddHours(3).ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)</td>
                     <td>@(step.OldStatus ?? "—")</td>
                     <td>@step.NewStatus</td>
                     <td>@(step.Remarks ?? "—")</td>

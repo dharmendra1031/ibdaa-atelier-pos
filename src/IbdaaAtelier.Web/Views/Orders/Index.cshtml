@@ -37,7 +37,7 @@
             @foreach (var order in Model.Orders)
             {
                 <tr>
-                    <td><strong>@order.OrderId</strong><small class="d-block text-secondary">@order.CreatedAtUtc.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</small></td>
+                    <td><strong>@order.OrderId</strong><small class="d-block text-secondary">@order.CreatedAtUtc.AddHours(3).ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</small></td>
                     <td>@(ar ? order.CustomerNameAr : order.CustomerName)<small class="d-block text-secondary">@order.CustomerMobile</small></td>
                     <td class="text-nowrap">@order.Total.ToString("0.000", CultureInfo.InvariantCulture)</td>
                     <td class="text-nowrap">@Model.PaidByOrder.GetValueOrDefault(order.OrderId).ToString("0.000", CultureInfo.InvariantCulture)</td>

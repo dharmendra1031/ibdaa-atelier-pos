@@ -30,7 +30,7 @@
                     <td>@customer.CustomerId</td>
                     <td><strong>@customer.Name</strong><span class="d-block text-secondary" dir="rtl" lang="ar">@customer.NameAr</span></td>
                     <td>@customer.Mobile</td>
-                    <td class="text-secondary">@customer.RegisteredAtUtc.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
+                    <td class="text-secondary">@customer.RegisteredAtUtc.AddHours(3).ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)</td>
                     <td class="text-end"><a asp-action="Edit" asp-route-id="@customer.CustomerId" class="btn btn-outline-primary btn-sm">@(ar ? "تعديل" : "Edit")</a></td>
                 </tr>
             }

@@ -42,10 +42,6 @@
                     <span class="auth-submit-loading d-none"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>@(isArabic ? "جارٍ تسجيل الدخول..." : "Signing in...")</span>
                 </button>
             </form>
-            <form class="auth-language" method="post" asp-controller="Language" asp-action="Set" asp-antiforgery="true">
-                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                <button class="btn btn-outline-primary" type="submit" name="culture" value="@(isArabic ? "en-US" : "ar-KW")">@(isArabic ? "English" : "العربية / English")</button>
-            </form>
         </div>
         <div class="login-keifac-credit"><partial name="_KeifacCredit" /></div>
     </div>

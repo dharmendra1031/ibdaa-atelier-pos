@@ -73,7 +73,7 @@
                                 <small class="d-block text-secondary" lang="@(ar ? "en" : "ar")">@((ar ? service.Name : service.NameAr))</small>
                             </td>
                             <td>@service.Price.ToString("0.000", CultureInfo.InvariantCulture)</td>
-                            <td><span class="badge @(service.IsActive ? "text-bg-success" : "text-bg-secondary")">@(service.IsActive ? "Active" : "Inactive")</span></td>
+                            <td><span class="badge @(service.IsActive ? "text-bg-success" : "text-bg-secondary")">@(service.IsActive ? (ar ? "نشطة" : "Active") : (ar ? "غير نشطة" : "Inactive"))</span></td>
                             <td class="text-end">
                                 <div class="d-inline-flex flex-wrap gap-2">
                                     <a asp-action="Edit" asp-route-id="@service.ServiceId" class="btn btn-sm btn-outline-primary">@(ar ? "تعديل" : "Edit")</a>

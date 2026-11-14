@@ -35,7 +35,7 @@
                             @foreach (var method in Model.AvailableByMethod.Where(x => x.Value > 0))
                             {
                                 <option value="@method.Key" selected="@(method.Key == Model.Form.Method)">
-                                    @method.Key — @method.Value.ToString("0.000", CultureInfo.InvariantCulture) KWD
+                                    @(method.Key == "Card" ? "WAMD" : method.Key) — @method.Value.ToString("0.000", CultureInfo.InvariantCulture) KWD
                                 </option>
                             }
                         </select>
