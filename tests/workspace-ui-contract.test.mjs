@@ -29,12 +29,13 @@ test("cashier has sales links, administration links require Admin role", () => {
     assert.match(menu, /asp-controller="Reports"/);
 });
 
-test("dashboard has real financial KPIs with focused quick actions", () => {
+test("dashboard keeps operational KPIs without repeating sidebar navigation", () => {
     assert.match(dashboard, /Model\.Collected/);
     assert.match(dashboard, /Model\.Outstanding/);
     assert.match(dashboard, /Model\.PendingDeliveries/);
-    assert.match(dashboard, /dashboard-quick-links/);
-    assert.doesNotMatch(dashboard, /Manage categories|Manage services|Manage users|Manage products/);
+    assert.doesNotMatch(dashboard, /dashboard-quick-links|Sizes \/ Measurements/);
+    assert.match(dashboard, /admin-master-link/);
+    assert.equal((dashboard.match(/asp-controller="Products" asp-action="Index"/g) || []).length, 1);
 });
 
 test("authenticated users land on their authorized operational workspace", () => {
