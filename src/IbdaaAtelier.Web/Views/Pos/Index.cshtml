@@ -339,6 +339,10 @@
         <span>@(ar ? "المبلغ المستحق" : "Net Payable")</span>
         <strong id="posPaymentDue">0.000 KWD</strong>
     </div>
+    <section id="posPreviousPayments" class="mb-3" hidden>
+        <strong class="d-block small mb-2">@(ar ? "الدفعات السابقة" : "Previous payments")</strong>
+        <div id="posPreviousPaymentRows" class="pos-payment-history small"></div>
+    </section>
     <div id="posPaymentMethods" class="pos-payment-methods mb-3" role="group" aria-label="@(ar ? "طريقة الدفع" : "Payment method")">
         <button type="button" data-pos-method="Cash" class="btn btn-primary" aria-pressed="true">Cash</button>
         <button type="button" data-pos-method="KNET" class="btn btn-outline-primary" aria-pressed="false">KNET</button>

@@ -13,7 +13,8 @@ test("cashier can find an existing invoice by its saved number", () => {
     assert.match(lookup, /o\.OrderId == invoiceId/);
     assert.match(lookup, /db\.OrderItems\.AsNoTracking\(\)/);
     assert.match(lookup, /payments\.GetPaidAsync\(order\.OrderId, ct\)/);
-    assert.doesNotMatch(lookup, /db\.OrderPayments|db\.OrderRefunds/);
+    assert.match(lookup, /db\.OrderPayments\.AsNoTracking\(\)/);
+    assert.doesNotMatch(lookup, /db\.OrderRefunds/);
     assert.match(lookup, /order\.Status == "Cancelled" \? 0m/);
     assert.doesNotMatch(lookup, /SaveChangesAsync|Orders\.Add|OrderPayments\.Add/);
 });

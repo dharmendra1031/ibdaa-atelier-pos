@@ -71,6 +71,7 @@
     let recoveryInvoiceNumber = "";
     let newInvoiceNumber = invoiceNumberView.textContent;
     let retryPrintOrderId = 0;
+    let lastSaleNotice = null;
     const text = (en, ar) => arabic ? ar : en;
 
     try {
@@ -230,6 +231,21 @@
         document.getElementById("boundInvoiceTotal").textContent = money(invoice.total);
         document.getElementById("boundInvoicePaid").textContent = money(invoice.paid);
         document.getElementById("boundInvoiceBalance").textContent = money(invoice.balance);
+
+        const paymentRows = document.getElementById("posPreviousPaymentRows");
+        paymentRows.replaceChildren();
+        for (const payment of invoice.payments || []) {
+            const row = element("div", "d-flex justify-content-between gap-2 border-bottom py-1");
+            const details = element("span", "text-secondary",
+                payment.date + " · " + (payment.method === "Card" ? "WAMD" : payment.method));
+            if (payment.change > 0)
+                details.append(element("small", "d-block",
+                    text("Change: ", "الباقي: ") + money(payment.change)));
+            row.append(details, element("strong", "text-nowrap", money(payment.amount)));
+            paymentRows.append(row);
+        }
+        document.getElementById("posPreviousPayments").hidden = !paymentRows.childElementCount;
+
         const receive = document.getElementById("boundInvoicePayment");
         receive.hidden = (invoice.balance <= 0 && !paymentPayload) || invoice.status === "Cancelled";
         newOrderCart.hidden = true;
@@ -237,6 +253,10 @@
         openInvoiceButton.hidden = true;
         backToNewBill.hidden = false;
         if (invoiceDialog.open) invoiceDialog.close();
+        const url = new URL(window.location.href);
+        url.searchParams.set("invoiceId", String(invoice.orderId));
+        url.searchParams.delete("receive");
+        window.history.replaceState(null, "", url.pathname + url.search + url.hash);
         window.requestAnimationFrame(updateCartOverflow);
         notice("");
     }
@@ -295,6 +315,11 @@
         boundInvoiceId = 0;
         boundInvoiceBalance = 0;
         boundInvoiceView.hidden = true;
+        document.getElementById("posPreviousPayments").hidden = true;
+        const url = new URL(window.location.href);
+        url.searchParams.delete("invoiceId");
+        url.searchParams.delete("receive");
+        window.history.replaceState(null, "", url.pathname + url.search + url.hash);
         newOrderCart.hidden = false;
         openInvoiceButton.hidden = false;
         backToNewBill.hidden = true;
@@ -1159,6 +1184,7 @@
                 retryPrintOrderId = printFailed ? orderId : 0;
                 retryPrintButton.hidden = !printFailed;
                 notice(status, printFailed, true);
+                lastSaleNotice = { status, printFailed, orderId };
             }
         } catch { /* Storage unavailable. */ }
     }
@@ -1174,10 +1200,8 @@
             getJson(shell.dataset.invoiceUrl + "?number=" + encodeURIComponent(linkedInvoiceId))
                 .then(invoice => {
                     showInvoice(invoice);
-                    const url = new URL(window.location.href);
-                    url.searchParams.delete("invoiceId");
-                    url.searchParams.delete("receive");
-                    window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+                    if (lastSaleNotice?.orderId === invoice.orderId)
+                        notice(lastSaleNotice.status, lastSaleNotice.printFailed, true);
                     if (shell.dataset.openInvoicePayment === "true" &&
                         invoice.balance > 0 && invoice.status !== "Cancelled")
                         openPaymentDialog();

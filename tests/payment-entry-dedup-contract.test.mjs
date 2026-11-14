@@ -32,6 +32,7 @@ test("cashier balance action loads the same saved invoice and POS popup", () => 
     assert.match(pos, /shell\.dataset\.openInvoicePayment === "true"/);
     assert.match(pos, /openPaymentDialog\(\)/);
     assert.match(pos, /savedOrder \|\| paymentPayload \|\| recoveryInvoiceNumber/);
+    assert.match(pos, /url\.searchParams\.set\("invoiceId", String\(invoice\.orderId\)\)/);
     assert.match(pos, /url\.searchParams\.delete\("invoiceId"\)/);
     assert.match(pos, /paymentPayload = \{ requestId: paymentRequestId, orderId: order\.orderId, lines \}/);
 });
@@ -39,4 +40,27 @@ test("cashier balance action loads the same saved invoice and POS popup", () => 
 test("dashboard has one product shortcut, no duplicate sidebar links", () => {
     assert.equal((dashboard.match(/asp-controller="Products" asp-action="Index"/g) || []).length, 1);
     assert.doesNotMatch(dashboard, /Quick Links|Sizes \/ Measurements/);
+});
+
+test("saved invoice survives refresh and its payment history stays in the POS popup", () => {
+    const lookup = posController.split("public async Task<IActionResult> FindInvoice")[1].split("[HttpPost")[0];
+    assert.match(lookup, /db\.OrderPayments\.AsNoTracking\(\)/);
+    assert.match(lookup, /OrderBy\(payment => payment\.PaymentId\)/);
+    assert.match(lookup, /payment\.CreatedAtUtc\.AddHours\(3\)/);
+    assert.match(lookup, /Payments = previousPayments\.Select/);
+    assert.match(posView, /id="posPreviousPayments"/);
+    assert.match(posView, /id="posPreviousPaymentRows"/);
+    assert.match(pos, /for \(const payment of invoice\.payments \|\| \[\]\)/);
+    assert.match(pos, /payment\.method === "Card" \? "WAMD"/);
+
+    const invoiceStart = pos.indexOf("function showInvoice(invoice)");
+    const invoiceEnd = pos.indexOf("openInvoiceButton.addEventListener", invoiceStart);
+    const showInvoice = pos.slice(invoiceStart, invoiceEnd);
+    assert.match(showInvoice, /url\.searchParams\.set\("invoiceId"/);
+    assert.doesNotMatch(showInvoice, /url\.searchParams\.delete\("invoiceId"/);
+
+    const returnStart = pos.indexOf('backToNewBill.addEventListener');
+    const returnEnd = pos.indexOf('const allItemsDialog', returnStart);
+    assert.match(pos.slice(returnStart, returnEnd), /url\.searchParams\.delete\("invoiceId"\)/);
+    assert.match(pos, /shell\.dataset\.openInvoicePayment === "true"/);
 });

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Catalog;
@@ -165,6 +166,14 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
             .Select(i => new { i.Name, i.NameAr, i.SizeName, i.Quantity, i.UnitPrice, i.LineTotal })
             .ToListAsync(ct);
         var paid = await payments.GetPaidAsync(order.OrderId, ct);
+        var previousPayments = await db.OrderPayments.AsNoTracking()
+            .Where(payment => payment.OrderId == order.OrderId)
+            .OrderBy(payment => payment.PaymentId)
+            .Select(payment => new
+            {
+                payment.Method, payment.Amount, payment.Change, payment.CreatedAtUtc
+            })
+            .ToListAsync(ct);
 
         return Json(new
         {
@@ -173,7 +182,13 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
             order.Subtotal, order.DiscountAmount, order.Total,
             Paid = paid,
             Balance = order.Status == "Cancelled" ? 0m : Math.Max(0m, order.Total - paid),
-            Items = items
+            Items = items,
+            Payments = previousPayments.Select(payment => new
+            {
+                payment.Method, payment.Amount, payment.Change,
+                Date = payment.CreatedAtUtc.AddHours(3)
+                    .ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture)
+            })
         });
     }
 
