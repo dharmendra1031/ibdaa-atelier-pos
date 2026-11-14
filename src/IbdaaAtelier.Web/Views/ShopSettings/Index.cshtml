@@ -88,8 +88,8 @@
                     @(ar ? "فتح PDF الفاتورة في علامة تبويب جديدة" : "Open invoice PDF in a new tab")
                 </label>
                 <p class="small text-secondary mb-0">
-                    @(ar ? "عند الإيقاف، تُرسل فاتورة RDLC مباشرة إلى الطابعة الافتراضية على جهاز Windows الذي يشغّل التطبيق."
-                          : "When off, the RDLC invoice prints directly to the default printer on the Windows PC running this app.")
+                    @(ar ? "عند الإيقاف، تُرسل الفاتورة إلى وكيل الطباعة على جهاز أمين الصندوق المقترن أدناه."
+                          : "When off, invoices are sent to the paired Windows Print Agent. Pair a cashier PC below.")
                 </p>
             </div>
             <div class="d-flex gap-2 mt-4">
@@ -97,6 +97,40 @@
                 <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">@(ar ? "رجوع" : "Back")</a>
             </div>
         </form>
+        <hr class="my-4" />
+        <h2 class="h5">@(ar ? "طابعات نقاط البيع" : "Cashier printers")</h2>
+        <p class="small text-secondary">@(ar ? "أضف جهاز الطباعة مرة واحدة، ثم ثبّت الوكيل على جهاز الكاشير." : "Add a terminal once, then run the Windows Print Agent on that cashier PC.")</p>
+        @if (TempData["NewTerminalToken"] is string newToken && TempData["NewTerminalId"] is int newTerminalId)
+        {
+            <div class="alert alert-warning" role="status">
+                <strong>@(ar ? "انسخ الرمز الآن. لن يظهر مرة أخرى." : "Copy this agent token now. It will not be shown again.")</strong>
+                <div class="mt-2">Terminal ID: <strong>@newTerminalId</strong></div>
+                <code class="d-block text-break user-select-all">@newToken</code>
+            </div>
+        }
+        <form asp-action="AddPrintTerminal" method="post" asp-antiforgery="true" class="d-flex flex-wrap gap-2 mb-3">
+            <input name="name" class="form-control flex-grow-1" style="max-width:300px" maxlength="80"
+                   aria-label="@(ar ? "اسم جهاز الكاشير" : "Cashier terminal name")"
+                   placeholder="Cashier PC 1" required />
+            <button class="btn btn-outline-primary" type="submit">@(ar ? "إضافة جهاز" : "Add terminal")</button>
+        </form>
+        @foreach (var terminal in Model.PrintTerminals)
+        {
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-bottom py-2">
+                <div>
+                    <strong>@terminal.Name</strong> · #@terminal.TerminalId
+                    <small class="d-block text-secondary">POS: /Pos?terminalId=@terminal.TerminalId</small>
+                    @if (!terminal.IsActive) { <small class="text-danger">Disabled</small> }
+                </div>
+                @if (terminal.IsActive)
+                {
+                    <form asp-action="DisablePrintTerminal" method="post" asp-antiforgery="true">
+                        <input type="hidden" name="terminalId" value="@terminal.TerminalId" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">@(ar ? "تعطيل" : "Disable")</button>
+                    </form>
+                }
+            </div>
+        }
         <hr class="my-4" />
         <h2 class="h5">@(ar ? "شعار المتجر" : "Shop logo")</h2>
         <p class="small text-secondary">@(ar ? "JPEG أو PNG بحد أقصى 5 ميغابايت. احفظ بيانات المتجر أولاً." : "JPEG or PNG; maximum 5 MB. Save business details first.")</p>

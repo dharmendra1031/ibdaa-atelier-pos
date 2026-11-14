@@ -28,6 +28,8 @@ jobs:
           test -s "$RUNNER_TEMP/ibdaa-publish/Reports/Invoice80mm.rdlc"
       - name: Public-page HTTP and RTL smoke
         run: bash tests/http-smoke.sh
+      - name: Windows print agent build
+        run: dotnet build src/IbdaaAtelier.PrintAgent/IbdaaAtelier.PrintAgent.csproj --configuration Release
       - name: POS JavaScript syntax
         run: node --check src/IbdaaAtelier.Web/wwwroot/js/pos.js
       - name: Gallery JavaScript syntax

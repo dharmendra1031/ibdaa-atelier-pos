@@ -49,6 +49,15 @@
     const cartKey = "ibdaa.current-cart";
     const checkoutKey = "ibdaa.pending-checkout";
     const lastSaleKey = "ibdaa.last-sale-message";
+    const printJobKey = "ibdaa.pending-print-job";
+    const printTerminalKey = "ibdaa.print-terminal-id";
+    let printTerminalId = 0;
+    try {
+        const selected = new URLSearchParams(window.location.search).get("terminalId");
+        if (selected && /^[1-9][0-9]*$/.test(selected) && Number.isSafeInteger(Number(selected)))
+            localStorage.setItem(printTerminalKey, selected);
+        printTerminalId = Number(localStorage.getItem(printTerminalKey)) || 0;
+    } catch { /* A disabled browser store leaves direct printing unpaired. */ }
     let customerId = 0;
     let customerName = "";
     let customerMobile = "";
@@ -129,15 +138,21 @@
         if (!retryPrintOrderId || retryPrintButton.disabled) return;
         const tab = openPrintTab();
         retryPrintButton.disabled = true;
-        const result = await printInvoice(retryPrintOrderId, tab);
+        const orderId = retryPrintOrderId;
+        const result = await printInvoice(orderId, tab);
         if (result.printed) {
             retryPrintOrderId = 0;
             retryPrintButton.hidden = true;
-            notice(text("Invoice sent to printer.", "تم إرسال الفاتورة إلى الطابعة."), false, true);
-        } else {
-            notice(text("Print failed: ", "فشلت الطباعة: ") +
-                (result.error || text("PDF tab was blocked.", "تم حظر تبويب PDF.")), true);
-        }
+            if (result.printJobId) {
+                if (result.status === "Completed")
+                    notice(text("Printer already accepted this invoice.", "قبلت الطابعة الفاتورة سابقاً."), false, true);
+                else {
+                    rememberPrintJob(result.printJobId, orderId);
+                    void watchPrintJob(result.printJobId, orderId);
+                }
+            } else notice(text("Invoice PDF opened.", "تم فتح ملف الفاتورة."), false, true);
+        } else notice(text("Print failed: ", "فشلت الطباعة: ") +
+            (result.error || text("PDF tab was blocked.", "تم حظر تبويب PDF.")), true);
         retryPrintButton.disabled = false;
     });
 
@@ -897,14 +912,66 @@
         }
 
         try {
-            await getJson(shell.dataset.directPrintUrl + "?id=" + encodeURIComponent(orderId), {
+            if (!Number.isSafeInteger(printTerminalId) || printTerminalId <= 0)
+                throw new Error(text("Pair this cashier PC from Shop Settings before direct printing.",
+                    "اربط جهاز الكاشير من إعدادات المتجر قبل الطباعة المباشرة."));
+            const job = await getJson(shell.dataset.directPrintUrl + "?id=" +
+                encodeURIComponent(orderId) + "&terminalId=" + printTerminalId, {
                 method: "POST",
                 headers: { RequestVerificationToken: token }
             });
-            return { printed: true };
+            return { printed: true, printJobId: job.printJobId, status: job.status };
         } catch (error) {
             return { printed: false, error: error.message };
         }
+    }
+
+    function rememberPrintJob(printJobId, orderId) {
+        try { sessionStorage.setItem(printJobKey, JSON.stringify({ printJobId, orderId })); }
+        catch { /* Print job remains queued on the server. */ }
+    }
+
+    function clearPrintJob() {
+        try { sessionStorage.removeItem(printJobKey); }
+        catch { /* Storage unavailable. */ }
+    }
+
+    async function watchPrintJob(printJobId, orderId) {
+        for (let attempt = 0; attempt < 24; attempt++) {
+            try {
+                const result = await getJson(shell.dataset.printStatusUrl +
+                    "?jobId=" + encodeURIComponent(printJobId));
+                if (result.status === "Completed") {
+                    clearPrintJob();
+                    notice(text("Printer accepted invoice #", "قبلت الطابعة الفاتورة رقم ") +
+                        orderId + text(". Check the receipt.", ". تحقق من الإيصال."), false, true);
+                    return;
+                }
+                if (result.status === "Failed") {
+                    clearPrintJob();
+                    retryPrintOrderId = orderId;
+                    retryPrintButton.hidden = false;
+                    notice(text("Invoice saved. Printer failed: ", "تم حفظ الفاتورة. فشلت الطباعة: ") +
+                        (result.error || text("Check the printer.", "تحقق من الطابعة.")), true);
+                    return;
+                }
+                if (result.status === "NeedsReview") {
+                    clearPrintJob();
+                    notice(text("Print status uncertain. Check the paper before any manual reprint.",
+                        "حالة الطباعة غير مؤكدة. افحص الورق قبل إعادة الطباعة."), true);
+                    return;
+                }
+                if (attempt === 0)
+                    notice(text("Invoice saved. Waiting for cashier printer...",
+                        "تم حفظ الفاتورة. في انتظار طابعة الكاشير..."), false, true);
+            } catch (error) {
+                notice(text("Cannot check printer status: ", "تعذر التحقق من حالة الطابعة: ") + error.message, true);
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+        notice(text("Invoice saved; print job is still pending. Do not print again until checked.",
+            "تم حفظ الفاتورة، والطباعة لا تزال معلقة. تحقق قبل الإعادة."), true);
     }
 
     async function finishSale(orderId, tab, savedMessage, isPrevious = false) {
@@ -916,7 +983,11 @@
             ? text(" · Print failed: ", " · فشلت الطباعة: ") +
               (printResult.error || text("PDF tab was blocked.", "تم حظر تبويب PDF.")) +
               text(" Open this invoice from Orders to retry.", " افتح هذه الفاتورة من الطلبات لإعادة المحاولة.")
-            : "");
+            : printResult.printJobId
+                ? text(" · Print job queued.", " · تم وضع الفاتورة في قائمة الطباعة.")
+                : "");
+        if (printResult.printJobId && printResult.status !== "Completed")
+            rememberPrintJob(printResult.printJobId, orderId);
         try {
             sessionStorage.removeItem(checkoutKey);
             if (!isPrevious) {
@@ -1189,6 +1260,12 @@
         } catch { /* Storage unavailable. */ }
     }
     renderCart();
+    try {
+        const pendingPrint = JSON.parse(sessionStorage.getItem(printJobKey) || "null");
+        if (pendingPrint && Number.isSafeInteger(pendingPrint.printJobId) &&
+            Number.isSafeInteger(pendingPrint.orderId) && pendingPrint.printJobId > 0)
+            void watchPrintJob(pendingPrint.printJobId, pendingPrint.orderId);
+    } catch { /* Print job can be checked from the server if browser storage is unavailable. */ }
 
     // Orders links open their invoice and reuse the normal POS payment dialog.
     const linkedInvoiceId = shell.dataset.openInvoiceId;

@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
+using IbdaaAtelier.Web.Models.Printing;
 using IbdaaAtelier.Web.Data;
 using IbdaaAtelier.Web.Models.Masters;
 using IbdaaAtelier.Web.Models.Security;
@@ -29,8 +31,45 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
             ReceiptFooter = settings?.ReceiptFooter,
             RequireRegisterOpen = settings?.RequireRegisterOpen ?? false,
             EnablePosDiscount = settings?.EnablePosDiscount ?? false,
-            OpenInvoicePdfInNewTab = settings?.OpenInvoicePdfInNewTab ?? true
+            OpenInvoicePdfInNewTab = settings?.OpenInvoicePdfInNewTab ?? true,
+            PrintTerminals = await db.PrintTerminals.AsNoTracking()
+                .OrderBy(t => t.TerminalId).ToListAsync(ct)
         });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddPrintTerminal(string? name, CancellationToken ct)
+    {
+        name = name?.Trim();
+        if (string.IsNullOrWhiteSpace(name) || name.Length > 80)
+        {
+            TempData["Error"] = "Enter a printer terminal name (maximum 80 characters).";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var key = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        var terminal = new PrintTerminal
+        {
+            Name = name,
+            TokenHash = Convert.ToHexString(SHA256.HashData(Convert.FromHexString(key)))
+        };
+        db.PrintTerminals.Add(terminal);
+        await db.SaveChangesAsync(ct);
+
+        TempData["NewTerminalId"] = terminal.TerminalId;
+        TempData["NewTerminalToken"] = key;
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> DisablePrintTerminal(int terminalId, CancellationToken ct)
+    {
+        var terminal = await db.PrintTerminals.SingleOrDefaultAsync(t => t.TerminalId == terminalId, ct);
+        if (terminal is null) return NotFound();
+        terminal.IsActive = false;
+        await db.SaveChangesAsync(ct);
+        TempData["Message"] = "Printer terminal disabled.";
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -126,6 +165,8 @@ public sealed class ShopSettingsController(AtelierDbContext db, ProductImageFile
         if (!ModelState.IsValid)
         {
             form.LogoPath = await db.ShopSettings.AsNoTracking().Select(s => s.LogoPath).SingleOrDefaultAsync(ct);
+            form.PrintTerminals = await db.PrintTerminals.AsNoTracking()
+                .OrderBy(t => t.TerminalId).ToListAsync(ct);
             return View("Index", form);
         }
 

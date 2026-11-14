@@ -24,7 +24,7 @@ builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<RefundService>();
 builder.Services.AddScoped<OrderStatusService>();
 builder.Services.AddScoped<InvoiceReportService>();
-builder.Services.AddScoped<DirectInvoicePrinter>();
+builder.Services.AddScoped<PrintQueueService>();
 builder.Services.AddScoped<CashRegisterService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -135,6 +135,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

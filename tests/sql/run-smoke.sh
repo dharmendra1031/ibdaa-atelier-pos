@@ -69,7 +69,8 @@ for file in \
     database/031_invoice_receipt_footer.sql \
     database/033_pos_order_discount.sql \
     database/035_numeric_invoice_number.sql \
-    database/040_invoice_print_mode.sql; do
+    database/040_invoice_print_mode.sql \
+    database/041_print_agent_queue.sql; do
     run_script "$file"
 done
 
@@ -90,7 +91,8 @@ for file in \
     database/028_verify_shop_settings_singleton.sql \
     database/032_verify_invoice_receipt_footer.sql \
     database/034_verify_pos_order_discount.sql \
-    database/036_verify_numeric_invoice_number.sql; do
+    database/036_verify_numeric_invoice_number.sql \
+    database/042_verify_print_agent_queue.sql; do
     run_script "$file"
 done
 
@@ -102,6 +104,7 @@ run_script tests/sql/status-smoke.sql
 run_script tests/sql/user-access-smoke.sql
 run_script tests/sql/shop-settings-smoke.sql
 run_script tests/sql/register-smoke.sql
+run_script tests/sql/print-agent-smoke.sql
 echo "SQL migrations and constraints passed. Running real EF Core order/payment/refund integration..."
 IBDAA_CI_CONNECTION="Server=127.0.0.1,14333;Database=IBDAA_CI;User Id=sa;Password=$ci_password;Encrypt=True;TrustServerCertificate=True" \
     dotnet run --project tests/DomainSmoke/DomainSmoke.csproj --configuration Release

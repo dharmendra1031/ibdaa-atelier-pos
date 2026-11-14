@@ -5,6 +5,8 @@ using IbdaaAtelier.Web.Models.Orders;
 using IbdaaAtelier.Web.Models.Payments;
 using IbdaaAtelier.Web.Models.Security;
 using IbdaaAtelier.Web.Models.Registers;
+using IbdaaAtelier.Web.Models.Printing;
+using System.Security.Cryptography;
 using IbdaaAtelier.Web.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -141,6 +143,54 @@ var orderForm = new OrderSaveForm
 var saved = await orders.SaveAsync(orderForm, user.UserId, CancellationToken.None);
 Check(saved.OrderId > 0 && saved.Total == 27.500m && !saved.Replayed, "Order total or save is incorrect.");
 Check(saved.OrderId > 0, "Invoice number must be a positive numeric ID.");
+
+var printToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+var anotherToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+var terminal = new PrintTerminal
+{
+    Name = "Cashier PC",
+    TokenHash = Convert.ToHexString(SHA256.HashData(Convert.FromHexString(printToken)))
+};
+var anotherTerminal = new PrintTerminal
+{
+    Name = "Second PC",
+    TokenHash = Convert.ToHexString(SHA256.HashData(Convert.FromHexString(anotherToken)))
+};
+db.PrintTerminals.AddRange(terminal, anotherTerminal);
+await db.SaveChangesAsync();
+Check(terminal.TerminalId > 0 && anotherTerminal.TerminalId > 0 &&
+    terminal.TerminalId != anotherTerminal.TerminalId, "Printer terminal IDs must be numeric and unique.");
+
+var queue = new PrintQueueService(db);
+Check(await queue.AuthenticateAsync(terminal.TerminalId, printToken, CancellationToken.None),
+    "Correct terminal token was rejected.");
+Check(!await queue.AuthenticateAsync(terminal.TerminalId, anotherToken, CancellationToken.None),
+    "A foreign terminal token was accepted.");
+var printJob = await queue.QueueAsync(saved.OrderId, terminal.TerminalId, CancellationToken.None);
+Check(printJob.PrintJobId > 0 && printJob.Status == "Pending", "Print job was not queued.");
+Check((await queue.QueueAsync(saved.OrderId, terminal.TerminalId, CancellationToken.None)).PrintJobId ==
+    printJob.PrintJobId, "Repeated save queued a duplicate print.");
+Check((await queue.ClaimAsync(terminal.TerminalId, CancellationToken.None))?.PrintJobId ==
+    printJob.PrintJobId, "Agent could not claim its job.");
+Check(await queue.ClaimAsync(terminal.TerminalId, CancellationToken.None) is null,
+    "A claimed print job was delivered twice.");
+Check(await queue.GetClaimedAsync(anotherTerminal.TerminalId, printJob.PrintJobId, CancellationToken.None)
+    is null, "Another terminal accessed a print job.");
+Check(!await queue.CompleteAsync(anotherTerminal.TerminalId, printJob.PrintJobId, true, null,
+    CancellationToken.None), "Another terminal completed a print job.");
+Check(await queue.CompleteAsync(terminal.TerminalId, printJob.PrintJobId, true, null,
+    CancellationToken.None), "Agent result was not recorded.");
+Check((await queue.QueueAsync(saved.OrderId, terminal.TerminalId, CancellationToken.None)).Status ==
+    "Completed", "Completed print job was automatically queued again.");
+
+var failedJob = await queue.QueueAsync(saved.OrderId, anotherTerminal.TerminalId, CancellationToken.None);
+await queue.ClaimAsync(anotherTerminal.TerminalId, CancellationToken.None);
+Check(await queue.CompleteAsync(anotherTerminal.TerminalId, failedJob.PrintJobId, false, "Paper out",
+    CancellationToken.None), "Printer failure was not recorded.");
+Check((await queue.QueueAsync(saved.OrderId, anotherTerminal.TerminalId, CancellationToken.None)).Status ==
+    "Pending", "An explicit retry did not reset the failed job.");
+Check((await queue.ClaimAsync(anotherTerminal.TerminalId, CancellationToken.None))?.Attempts == 2,
+    "Print retry did not track attempts.");
 
 var duplicateOrder = await orders.SaveAsync(orderForm, user.UserId, CancellationToken.None);
 Check(duplicateOrder.Replayed && duplicateOrder.OrderId == saved.OrderId, "Retry created a second order.");

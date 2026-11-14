@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using IbdaaAtelier.Web.Models.Printing;
 
 namespace IbdaaAtelier.Web.Models.Masters;
 
@@ -39,6 +40,7 @@ public sealed class ShopSettings
 
 public sealed class ShopSettingsForm
 {
+    public List<PrintTerminal> PrintTerminals { get; set; } = [];
     [Required, StringLength(150)]
     public string BusinessName { get; set; } = "";
 

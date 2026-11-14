@@ -4,6 +4,7 @@ using IbdaaAtelier.Web.Models.Masters;
 using IbdaaAtelier.Web.Models.Orders;
 using IbdaaAtelier.Web.Models.Payments;
 using IbdaaAtelier.Web.Models.Registers;
+using IbdaaAtelier.Web.Models.Printing;
 using Microsoft.EntityFrameworkCore;
 
 namespace IbdaaAtelier.Web.Data;
@@ -40,4 +41,6 @@ public sealed class AtelierDbContext(DbContextOptions<AtelierDbContext> options)
     public DbSet<CashExpense> CashExpenses => Set<CashExpense>();
     public DbSet<RefundRequest> RefundRequests => Set<RefundRequest>();
     public DbSet<OrderRefund> OrderRefunds => Set<OrderRefund>();
+    public DbSet<PrintTerminal> PrintTerminals => Set<PrintTerminal>();
+    public DbSet<PrintJob> PrintJobs => Set<PrintJob>();
 }
