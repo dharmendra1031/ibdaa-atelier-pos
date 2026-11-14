@@ -48,8 +48,18 @@
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom></Style></Textbox>
 <Textbox Name="ItemsLabel">
 <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
-<Paragraphs><Paragraph><TextRuns><TextRun><Value>Item / الصنف               Qty       Total KWD</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#6B1535</Color></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
-<Top>4.43cm</Top><Left>0.00cm</Left><Height>0.34cm</Height><Width>7.30cm</Width>
+<Paragraphs><Paragraph><TextRuns><TextRun><Value>Item / الصنف</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#6B1535</Color></Style></TextRun></TextRuns><Style><TextAlign>Left</TextAlign></Style></Paragraph></Paragraphs>
+<Top>4.43cm</Top><Left>0.00cm</Left><Height>0.34cm</Height><Width>4.20cm</Width>
+<Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom><BackgroundColor>#F7EDF0</BackgroundColor><BottomBorder><Color>#6B1535</Color><Style>Solid</Style><Width>0.5pt</Width></BottomBorder></Style></Textbox>
+<Textbox Name="QtyLabel">
+<CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+<Paragraphs><Paragraph><TextRuns><TextRun><Value>Qty</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#6B1535</Color></Style></TextRun></TextRuns><Style><TextAlign>Center</TextAlign></Style></Paragraph></Paragraphs>
+<Top>4.43cm</Top><Left>4.20cm</Left><Height>0.34cm</Height><Width>0.55cm</Width>
+<Style><Border><Style>None</Style></Border><PaddingLeft>0cm</PaddingLeft><PaddingRight>0cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom><BackgroundColor>#F7EDF0</BackgroundColor><BottomBorder><Color>#6B1535</Color><Style>Solid</Style><Width>0.5pt</Width></BottomBorder></Style></Textbox>
+<Textbox Name="TotalKwdLabel">
+<CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+<Paragraphs><Paragraph><TextRuns><TextRun><Value>Total KWD</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#6B1535</Color></Style></TextRun></TextRuns><Style><TextAlign>Right</TextAlign></Style></Paragraph></Paragraphs>
+<Top>4.43cm</Top><Left>4.75cm</Left><Height>0.34cm</Height><Width>2.55cm</Width>
 <Style><Border><Style>None</Style></Border><PaddingLeft>0.04cm</PaddingLeft><PaddingRight>0.04cm</PaddingRight><PaddingTop>0.03cm</PaddingTop><PaddingBottom>0.03cm</PaddingBottom><BackgroundColor>#F7EDF0</BackgroundColor><BottomBorder><Color>#6B1535</Color><Style>Solid</Style><Width>0.5pt</Width></BottomBorder></Style></Textbox>
 <Tablix Name="OrderLines"><TablixBody><TablixColumns><TablixColumn><Width>4.20cm</Width></TablixColumn><TablixColumn><Width>0.55cm</Width></TablixColumn><TablixColumn><Width>2.55cm</Width></TablixColumn></TablixColumns>
 <TablixRows><TablixRow><Height>0.80cm</Height><TablixCells><TablixCell><CellContents><Textbox Name="OrderLinesCell0">
