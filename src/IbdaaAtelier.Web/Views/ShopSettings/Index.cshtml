@@ -82,6 +82,16 @@
                 <label asp-for="EnablePosDiscount" class="form-check-label">@(ar ? "السماح بخصم الطلب في نقطة البيع" : "Allow order discount in POS")</label>
                 <p class="small text-secondary mb-0">@(ar ? "عند الإيقاف لا يظهر حقل الخصم ويرفض الخادم أي خصم جديد." : "When off, the discount field is hidden and new discounts are rejected by the server.")</p>
             </div>
+            <div class="form-check form-switch mt-4">
+                <input asp-for="OpenInvoicePdfInNewTab" class="form-check-input" role="switch" />
+                <label asp-for="OpenInvoicePdfInNewTab" class="form-check-label">
+                    @(ar ? "فتح PDF الفاتورة في علامة تبويب جديدة" : "Open invoice PDF in a new tab")
+                </label>
+                <p class="small text-secondary mb-0">
+                    @(ar ? "عند الإيقاف، تُرسل فاتورة RDLC مباشرة إلى الطابعة الافتراضية على جهاز Windows الذي يشغّل التطبيق."
+                          : "When off, the RDLC invoice prints directly to the default printer on the Windows PC running this app.")
+                </p>
+            </div>
             <div class="d-flex gap-2 mt-4">
                 <button class="btn btn-primary" type="submit">@(ar ? "حفظ" : "Save settings")</button>
                 <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">@(ar ? "رجوع" : "Back")</a>

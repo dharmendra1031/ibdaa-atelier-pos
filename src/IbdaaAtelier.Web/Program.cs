@@ -24,6 +24,7 @@ builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<RefundService>();
 builder.Services.AddScoped<OrderStatusService>();
 builder.Services.AddScoped<InvoiceReportService>();
+builder.Services.AddScoped<DirectInvoicePrinter>();
 builder.Services.AddScoped<CashRegisterService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

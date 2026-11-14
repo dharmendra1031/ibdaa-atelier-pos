@@ -79,7 +79,9 @@ public sealed class PosController(AtelierDbContext db, PosOrderService orders, P
             TotalPages = totalPages,
             NextInvoiceNumber = await GetNextInvoiceNumberAsync(ct),
             EnablePosDiscount = await db.ShopSettings.AsNoTracking()
-                .Select(s => s.EnablePosDiscount).SingleOrDefaultAsync(ct)
+                .Select(s => s.EnablePosDiscount).SingleOrDefaultAsync(ct),
+            OpenInvoicePdfInNewTab = await db.ShopSettings.AsNoTracking()
+                .Select(s => (bool?)s.OpenInvoicePdfInNewTab).SingleOrDefaultAsync(ct) ?? true
         });
     }
 

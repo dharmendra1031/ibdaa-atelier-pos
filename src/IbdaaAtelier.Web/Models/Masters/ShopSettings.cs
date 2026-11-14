@@ -31,6 +31,7 @@ public sealed class ShopSettings
     public string? LogoPath { get; set; }
     public bool RequireRegisterOpen { get; set; }
     public bool EnablePosDiscount { get; set; }
+    public bool OpenInvoicePdfInNewTab { get; set; } = true;
 
     [MaxLength(500)]
     public string? ReceiptFooter { get; set; }
@@ -59,6 +60,7 @@ public sealed class ShopSettingsForm
     public string? LogoPath { get; set; }
     public bool RequireRegisterOpen { get; set; }
     public bool EnablePosDiscount { get; set; }
+    public bool OpenInvoicePdfInNewTab { get; set; } = true;
 
     [StringLength(500)]
     public string? ReceiptFooter { get; set; }

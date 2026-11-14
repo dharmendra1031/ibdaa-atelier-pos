@@ -1080,7 +1080,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
 .auth-showcase {
     padding: clamp(32px, 4vw, 72px); justify-content: space-between;
     background: linear-gradient(90deg, rgb(73 0 26 / 58%), rgb(73 0 26 / 8%)),
-                url('/images/atelier-hero.png') center / cover no-repeat;
+                url('/images/atelier-hero-reference.jpg') center / cover no-repeat;
 }
 .auth-showcase-mark { width: max-content; font-size: clamp(38px, 4vw, 66px); line-height: .95; color: #fff4eb; }
 .auth-showcase-mark small { margin-top: 12px; text-align: center; font-size: .38em; letter-spacing: .31em; }
@@ -1140,7 +1140,7 @@ h1, h2, h3, .section-title { color: var(--atelier-ink); }
     padding: 28px 44px; display: flex; flex-direction: column; justify-content: center;
     border: 0; border-inline-start: 0;
     border-radius: 0; background: linear-gradient(90deg, #fffaf5 30%, rgb(255 250 245 / 86%) 50%, transparent 77%),
-                             url('/images/atelier-hero.png') 75% 38% / cover no-repeat;
+                             url('/images/atelier-hero-reference.jpg') 75% 38% / cover no-repeat;
 }
 .admin-page .admin-hero .eyebrow { color: #a16b25; }
 .admin-page .admin-hero .section-title { font: 46px/1.06 Georgia, serif; color: #5f0c2c; }

@@ -1,8 +1,21 @@
 # IBDAA Atelier — official gents catalogue
 
+## Live test import — 14 November 2026
+
+The earlier 16-product snapshot below is historical. The current public catalogue API
+returned 38 active products and 171 image references on 14 November 2026.
+`scripts/import_live_catalog.py` imported all 38 products and 170 downloadable
+gallery images into `IBDAA_TEST`, retaining source UUID mappings in
+`WebsiteProductImportMap`. One source image returned HTTP 400; its product has
+another primary image. The script preserves existing order items and deactivates
+the previous 16-product snapshot. Downloaded files live under
+`wwwroot/uploads/products/site-{source UUID}/` and are excluded from Git; rerun
+the script to repopulate them in another test environment. This is test data,
+not a production migration.
+
 Source: https://www.ibdaaatelier.com/products
 Checked: 12 November 2026. Public Arabic product names and KWD prices below are
-the source of truth. English translations and broad POS category groupings
+a historical snapshot. English translations and broad POS category groupings
 are for navigation, not claims about fabric, color, stock or sizing.
 
 | Original product title | Display price (KWD) |

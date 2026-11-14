@@ -27,6 +27,7 @@
     const message = document.getElementById("posMessage");
     const toast = document.getElementById("posToast");
     const toastText = document.getElementById("posToastText");
+    const retryPrintButton = document.getElementById("retryInvoicePrint");
     const saveButton = document.getElementById("saveOrderButton");
     const clearCartButton = document.getElementById("clearCartButton");
     const unpaidButton = document.getElementById("posChooseUnpaid");
@@ -69,6 +70,7 @@
     let paymentBusy = false;
     let recoveryInvoiceNumber = "";
     let newInvoiceNumber = invoiceNumberView.textContent;
+    let retryPrintOrderId = 0;
     const text = (en, ar) => arabic ? ar : en;
 
     try {
@@ -121,6 +123,21 @@
     };
     document.getElementById("closePosToast").addEventListener("click", () => {
         toast.hidden = true;
+    });
+    retryPrintButton.addEventListener("click", async () => {
+        if (!retryPrintOrderId || retryPrintButton.disabled) return;
+        const tab = openPrintTab();
+        retryPrintButton.disabled = true;
+        const result = await printInvoice(retryPrintOrderId, tab);
+        if (result.printed) {
+            retryPrintOrderId = 0;
+            retryPrintButton.hidden = true;
+            notice(text("Invoice sent to printer.", "تم إرسال الفاتورة إلى الطابعة."), false, true);
+        } else {
+            notice(text("Print failed: ", "فشلت الطباعة: ") +
+                (result.error || text("PDF tab was blocked.", "تم حظر تبويب PDF.")), true);
+        }
+        retryPrintButton.disabled = false;
     });
 
     async function getJson(url, options = {}) {
@@ -837,6 +854,7 @@
     }
 
     function openPrintTab() {
+        if (shell.dataset.openInvoicePdf !== "true") return null;
         const tab = window.open("", "_blank");
         if (tab) {
             tab.document.title = "Preparing invoice";
@@ -845,23 +863,42 @@
         return tab;
     }
 
-    function printInvoice(orderId, tab) {
-        if (!tab || tab.closed) return false;
-        tab.location.replace(shell.dataset.printPreviewUrl + "?id=" +
-            encodeURIComponent(orderId) + "&paper=80mm&autoPrint=1");
-        return true;
+    async function printInvoice(orderId, tab) {
+        const pdfUrl = shell.dataset.printUrl + "?id=" + encodeURIComponent(orderId) + "&paper=80mm";
+        if (shell.dataset.openInvoicePdf === "true") {
+            if (!tab || tab.closed) return { printed: false };
+            tab.location.replace(pdfUrl);
+            return { printed: true };
+        }
+
+        try {
+            await getJson(shell.dataset.directPrintUrl + "?id=" + encodeURIComponent(orderId), {
+                method: "POST",
+                headers: { RequestVerificationToken: token }
+            });
+            return { printed: true };
+        } catch (error) {
+            return { printed: false, error: error.message };
+        }
     }
 
-    function finishSale(orderId, tab, savedMessage, isPrevious = false) {
-        const printOpened = printInvoice(orderId, tab);
+    async function finishSale(orderId, tab, savedMessage, isPrevious = false) {
+        const printResult = await printInvoice(orderId, tab);
+        const printFailed = !printResult.printed;
+        retryPrintOrderId = printFailed ? orderId : 0;
+        retryPrintButton.hidden = !printFailed;
+        const status = savedMessage + (printFailed
+            ? text(" · Print failed: ", " · فشلت الطباعة: ") +
+              (printResult.error || text("PDF tab was blocked.", "تم حظر تبويب PDF.")) +
+              text(" Open this invoice from Orders to retry.", " افتح هذه الفاتورة من الطلبات لإعادة المحاولة.")
+            : "");
         try {
             sessionStorage.removeItem(checkoutKey);
             if (!isPrevious) {
                 sessionStorage.removeItem(pendingKey);
                 sessionStorage.removeItem(cartKey);
             }
-            sessionStorage.setItem(lastSaleKey, savedMessage +
-                (printOpened ? "" : text(" · Print from Orders.", " · اطبع من الطلبات.")));
+            sessionStorage.setItem(lastSaleKey, JSON.stringify({ status, printFailed, orderId }));
         } catch { /* No financial change depends on browser storage. */ }
         window.location.reload();
     }
@@ -1064,7 +1101,7 @@
                 body: JSON.stringify(paymentPayload)
             });
             paymentDialog.close();
-            finishSale(order.orderId, tab, order.orderId + " · " +
+            await finishSale(order.orderId, tab, order.orderId + " · " +
                 text(result.balance > 0 ? "Partially paid" : "Paid",
                     result.balance > 0 ? "مدفوع جزئياً" : "مدفوع"), !!boundInvoiceId);
         } catch (error) {
@@ -1088,7 +1125,7 @@
         const tab = openPrintTab();
         try {
             const order = await saveOrder();
-            finishSale(order.orderId, tab, text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
+            await finishSale(order.orderId, tab, text("Saved unpaid order: ", "تم حفظ طلب غير مدفوع: ") +
                 order.orderId);
         } catch (error) {
             if (tab && !tab.closed) tab.close();
@@ -1115,10 +1152,13 @@
             .catch(error => notice(error.message, true));
     } else {
         try {
-            const status = sessionStorage.getItem(lastSaleKey);
-            if (status) {
+            const savedStatus = sessionStorage.getItem(lastSaleKey);
+            if (savedStatus) {
                 sessionStorage.removeItem(lastSaleKey);
-                notice(status, false, true);
+                const { status, printFailed, orderId } = JSON.parse(savedStatus);
+                retryPrintOrderId = printFailed ? orderId : 0;
+                retryPrintButton.hidden = !printFailed;
+                notice(status, printFailed, true);
             }
         } catch { /* Storage unavailable. */ }
     }

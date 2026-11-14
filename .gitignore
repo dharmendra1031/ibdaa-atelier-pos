@@ -8,6 +8,8 @@
 .vscode/
 TestResults/
 *.trx
+*.bak
+__pycache__/
 
 # Local environment and credentials
 .env

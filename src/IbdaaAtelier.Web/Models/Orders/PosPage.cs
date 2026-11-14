@@ -20,4 +20,5 @@ public sealed class PosPage
     public bool ShowServices { get; init; }
     public long NextInvoiceNumber { get; init; }
     public bool EnablePosDiscount { get; init; }
+    public bool OpenInvoicePdfInNewTab { get; init; } = true;
 }
